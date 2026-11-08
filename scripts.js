@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* --- 3. XỬ LÝ PLAYLIST NHẠC (ĐƯỜNG DẪN MP3 LOCAL & PHÁT LẦN LƯỢT) --- */
-    // Đã thay đường dẫn trỏ vào thư mục local mp3/
     const playlist = [
         { title: "Bài Hát 1", artist: "Ca Sĩ A", src: "mp3/song1.mp3" },
         { title: "Bài Hát 2", artist: "Ca Sĩ B", src: "mp3/song2.mp3" },
@@ -37,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSongIndex = 0;
     let isPlaying = false;
     const audio = new Audio();
+    audio.volume = 0.8; // Mặc định âm lượng chuẩn
 
     const songTitle = document.getElementById('songTitle');
     const songArtist = document.getElementById('songArtist');
@@ -44,11 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const playIcon = document.getElementById('playIcon');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const volumeIcon = document.getElementById('volumeIcon');
-
-    // Thiết lập âm lượng mặc định ban đầu
-    audio.volume = volumeSlider ? volumeSlider.value : 0.8;
 
     function loadSong(index) {
         if (songTitle && songArtist) {
@@ -106,26 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         playSong();
     });
 
-    /* --- TĂNG / GIẢM ÂM LƯỢNG --- */
-    if (volumeSlider) {
-        volumeSlider.addEventListener('input', (e) => {
-            const volValue = e.target.value;
-            audio.volume = volValue;
-
-            // Cập nhật biểu tượng loa theo mức âm lượng
-            if (volumeIcon) {
-                if (volValue == 0) {
-                    volumeIcon.className = 'fa-solid fa-volume-xmark';
-                } else if (volValue < 0.5) {
-                    volumeIcon.className = 'fa-solid fa-volume-low';
-                } else {
-                    volumeIcon.className = 'fa-solid fa-volume-high';
-                }
-            }
-        });
-    }
-
-    // Tải thông tin bài hát đầu tiên
     loadSong(currentSongIndex);
 
     /* --- 4. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
