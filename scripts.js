@@ -81,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Khởi tạo bài hát đầu tiên
     loadSong(currentSongIndex);
 
     /* --- 4. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
