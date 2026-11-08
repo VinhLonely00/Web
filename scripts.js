@@ -1,4 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
+    /* --- 0. HIỆU ỨNG ĐÁNH MÁY & XÓA TIÊU ĐỀ TRANG --- */
+    const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
+    const typedTitleElement = document.getElementById('typed-title');
+    let charIndex = 0;
+    let isDeleting = false;
+
+    function typeEffect() {
+        if (!typedTitleElement) return;
+
+        if (!isDeleting) {
+            // Đang gõ chữ vào
+            typedTitleElement.innerText = textToType.substring(0, charIndex + 1);
+            charIndex++;
+            if (charIndex === textToType.length) {
+                // Gõ xong thì dừng lại 1.5 giây rồi bắt đầu xóa
+                setTimeout(() => { isDeleting = true; }, 1500);
+            }
+        } else {
+            // Đang xóa chữ đi
+            typedTitleElement.innerText = textToType.substring(0, charIndex - 1);
+            charIndex--;
+            if (charIndex === 0) {
+                // Xóa xong thì dừng một chút rồi lặp lại từ đầu
+                isDeleting = false;
+            }
+        }
+
+        const typingSpeed = isDeleting ? 100 : 150; // Tốc độ xóa và gõ
+        setTimeout(typeEffect, typingSpeed);
+    }
+
+    typeEffect();
+
     /* --- 1. THU GỌN / MỞ RỘNG SIDEBAR MENU --- */
     const sidebar = document.getElementById('sidebar');
     const toggleSidebarBtn = document.getElementById('toggleSidebar');
@@ -28,15 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* --- 3. XỬ LÝ PLAYLIST NHẠC (ĐƯỜNG DẪN MP3 LOCAL & PHÁT LẦN LƯỢT) --- */
     const playlist = [
-        { title: "Về Bên Anh", artist: "Jack-J97", src: "mp3/Về Bên Anh.mp3" },
-        { title: "Sao Em Vô Tình", artist: "Jack-J97", src: "mp3/Sao Em Vô Tình.mp3" },
-        { title: "Đom Đóm", artist: "Jack-J97", src: "mp3/Đom Đóm.mp3" }
+        { title: "Bài Hát 1", artist: "Ca Sĩ A", src: "mp3/song1.mp3" },
+        { title: "Bài Hát 2", artist: "Ca Sĩ B", src: "mp3/song2.mp3" },
+        { title: "Bài Hát 3", artist: "Ca Sĩ C", src: "mp3/song3.mp3" }
     ];
 
     let currentSongIndex = 0;
     let isPlaying = false;
     const audio = new Audio();
-    audio.volume = 0.8; // Mặc định âm lượng chuẩn
+    audio.volume = 0.8;
 
     const songTitle = document.getElementById('songTitle');
     const songArtist = document.getElementById('songArtist');
