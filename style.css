@@ -1,24 +1,13 @@
 :root {
-    --bg-color: #f4f6f9;
-    --card-bg: #ffffff;
-    --text-color: #1a1a1a;
-    --text-secondary: #666666;
-    --primary-color: #4f46e5;
-    --primary-hover: #4338ca;
-    --border-color: #e5e7eb;
-    --sidebar-width: 260px;
-    --sidebar-collapsed: 70px;
-    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="dark"] {
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
+    --bg-color: rgba(15, 23, 42, 0.88);
+    --card-bg: rgba(30, 41, 59, 0.85);
     --text-color: #f8fafc;
     --text-secondary: #94a3b8;
     --primary-color: #6366f1;
     --primary-hover: #818cf8;
-    --border-color: #334155;
+    --border-color: rgba(51, 65, 85, 0.6);
+    --sidebar-width: 260px;
+    --sidebar-collapsed: 70px;
     --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
@@ -35,6 +24,22 @@ body {
     color: var(--text-color);
     min-height: 100vh;
     display: flex;
+    position: relative;
+}
+
+/* --- LỚP NỀN VIDEO MP4 Ở TẦNG CUỐI CÙNG --- */
+.background-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    object-fit: cover;
+    pointer-events: none;
+    display: none; /* Mặc định ẩn, bật khi bấm nút */
 }
 
 /* --- Sidebar Menu Dọc --- */
@@ -50,6 +55,7 @@ sidebar {
     left: 0;
     z-index: 100;
     overflow-x: hidden;
+    backdrop-filter: blur(10px);
 }
 
 sidebar.collapsed {
@@ -120,21 +126,22 @@ sidebar.collapsed .sidebar-menu span {
     padding: 1rem;
     border-top: 1px solid var(--border-color);
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .theme-btn {
     background: none;
     border: none;
     color: var(--text-color);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 1rem;
     width: 100%;
     font-weight: 600;
+    padding: 0.5rem 0;
 }
 
 sidebar.collapsed .theme-btn span {
@@ -148,6 +155,7 @@ main-content {
     padding: 2rem;
     max-width: 1000px;
     width: calc(100% - var(--sidebar-width));
+    z-index: 10;
 }
 
 sidebar.collapsed ~ main-content {
@@ -188,6 +196,7 @@ sidebar.collapsed ~ main-content {
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     margin-bottom: 2rem;
+    backdrop-filter: blur(8px);
 }
 
 /* --- Thẻ Cá Nhân --- */
@@ -225,7 +234,7 @@ sidebar.collapsed ~ main-content {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: var(--bg-color);
+    background-color: var(--card-bg);
     color: var(--text-color);
     display: flex;
     align-items: center;
@@ -233,6 +242,7 @@ sidebar.collapsed ~ main-content {
     text-decoration: none;
     font-size: 1.2rem;
     transition: transform 0.2s, background-color 0.2s;
+    border: 1px solid var(--border-color);
 }
 
 .social-icon:hover {
@@ -320,6 +330,7 @@ sidebar.collapsed ~ main-content {
     width: 90%;
     text-align: center;
     box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
 }
 
 .modal-btns {
@@ -347,7 +358,7 @@ sidebar.collapsed ~ main-content {
     margin-top: 1.2rem;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    background-color: var(--bg-color);
+    background-color: rgba(15, 23, 42, 0.5);
     color: var(--text-color);
     font-size: 1rem;
     outline: none;
