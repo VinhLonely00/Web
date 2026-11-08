@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Đổi lại thành tiêu đề trống hoặc chữ bình thường -->
     <title>@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ</title>
     <!-- Icon FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,6 +10,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- LỚP NỀN VIDEO MP4 (Nằm ở tầng cuối cùng, chạy ẩn, không che nội dung) -->
+    <video autoplay muted loop id="bgVideo" class="background-video">
+        <source src="mp3/background.mp4" type="video/mp4">
+        Trình duyệt của bạn không hỗ trợ video nền.
+    </video>
 
     <!-- Menu Dọc Sidebar -->
     <sidebar id="sidebar">
@@ -26,8 +31,9 @@
             </li>
         </ul>
         <div class="sidebar-footer">
-            <button class="theme-btn" id="themeToggle">
-                <i class="fa-solid fa-moon"></i> <span>Giao diện</span>
+            <!-- Nút bật/tắt chế độ nền Video MP4 -->
+            <button class="theme-btn" id="videoBgToggle" title="Bật/Tắt Video Nền">
+                <i class="fa-solid fa-film"></i> <span>Video Nền</span>
             </button>
         </div>
     </sidebar>
