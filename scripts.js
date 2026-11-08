@@ -9,24 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!typedTitleElement) return;
 
         if (!isDeleting) {
-            // Đang gõ chữ vào
             typedTitleElement.innerText = textToType.substring(0, charIndex + 1);
             charIndex++;
             if (charIndex === textToType.length) {
-                // Gõ xong thì dừng lại 1.5 giây rồi bắt đầu xóa
                 setTimeout(() => { isDeleting = true; }, 1500);
             }
         } else {
-            // Đang xóa chữ đi
             typedTitleElement.innerText = textToType.substring(0, charIndex - 1);
             charIndex--;
             if (charIndex === 0) {
-                // Xóa xong thì dừng một chút rồi lặp lại từ đầu
                 isDeleting = false;
             }
         }
 
-        const typingSpeed = isDeleting ? 100 : 150; // Tốc độ xóa và gõ
+        const typingSpeed = isDeleting ? 100 : 150;
         setTimeout(typeEffect, typingSpeed);
     }
 
@@ -59,11 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* --- 3. XỬ LÝ PLAYLIST NHẠC (ĐƯỜNG DẪN MP3 LOCAL & PHÁT LẦN LƯỢT) --- */
+    /* --- 3. XỬ LÝ PLAYLIST NHẠC (3 BÀI HÁT MỚI) --- */
     const playlist = [
-        { title: "Bài Hát 1", artist: "Ca Sĩ A", src: "mp3/song1.mp3" },
-        { title: "Bài Hát 2", artist: "Ca Sĩ B", src: "mp3/song2.mp3" },
-        { title: "Bài Hát 3", artist: "Ca Sĩ C", src: "mp3/song3.mp3" }
+        { title: "Sao Em Vô Tình", artist: "Vinh", src: "mp3/Sao Em Vô Tình.mp3" },
+        { title: "Về Bên Anh", artist: "Vinh", src: "mp3/Về Bên Anh.mp3" },
+        { title: "Đom Đóm", artist: "Vinh", src: "mp3/Đom Đóm.mp3" }
     ];
 
     let currentSongIndex = 0;
@@ -91,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             isPlaying = true;
             if (playIcon) playIcon.className = 'fa-solid fa-pause';
         }).catch(err => {
-            console.log("Không thể phát nhạc tự động hoặc chưa có file nhạc trong mp3/: ", err);
+            console.log("Không thể phát nhạc tự động hoặc chưa có file nhạc trong thư mục mp3/: ", err);
         });
     }
 
