@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Mặc định bật Dark Mode ngay khi tải trang
     document.body.setAttribute('data-theme', 'dark');
     if (themeIcon) {
-        themeIcon.className = 'fa-solid fa-sun'; // Đổi icon sang mặt trời để chuẩn bị cho lượt bấm chuyển về Light Mode
+        themeIcon.className = 'fa-solid fa-sun';
     }
 
     // 2. Mặc định Thu gọn Menu Sidebar ngay khi tải trang
@@ -15,27 +15,30 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebar.classList.add('collapsed');
     }
 
-    /* --- 0. HIỆU ỨNG ĐÁNH MÁY & XÓA TIÊU ĐỀ TRANG --- */
+    /* --- 0. HIỆU ỨNG ĐÁNH MÁY (CHỈ XÓA ĐẾN KÝ TỰ '@') --- */
     const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
-    let charIndex = 0;
-    let isDeleting = false;
+    let charIndex = textToType.length;
+    let isDeleting = true; // Bắt đầu bằng trạng thái xóa bớt để tạo vòng lặp mượt mà
 
     function typeEffect() {
         if (!isDeleting) {
+            // Đang gõ chữ tiến lên
             document.title = textToType.substring(0, charIndex + 1);
             charIndex++;
             if (charIndex === textToType.length) {
+                // Gõ đầy đủ thì dừng lại 1.5 giây rồi chuyển sang xóa
                 setTimeout(() => { isDeleting = true; }, 1500);
             }
         } else {
-            document.title = textToType.substring(0, charIndex - 1);
+            // Đang xóa lùi lại, nhưng dừng lại ngay khi đến vị trí của chữ '@' (index = 1)
+            document.title = textToType.substring(0, charIndex);
             charIndex--;
-            if (charIndex === 0) {
+            if (charIndex === 0) { // Chạm đến ký tự '@' thì dừng xóa, chuyển sang viết lại
                 isDeleting = false;
             }
         }
 
-        const typingSpeed = isDeleting ? 100 : 150;
+        const typingSpeed = isDeleting ? 80 : 130;
         setTimeout(typeEffect, typingSpeed);
     }
 
