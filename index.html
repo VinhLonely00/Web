@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Web Cá Nhân</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --text-secondary: #666666;
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --border-color: #e5e7eb;
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 70px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-secondary: #94a3b8;
+            --primary-color: #6366f1;
+            --primary-hover: #818cf8;
+            --border-color: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, width 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* --- Sidebar Menu Dọc --- */
+        sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            overflow-x: hidden;
+        }
+
+        sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+
+        sidebar.collapsed .logo {
+            display: none;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1rem 0;
+            flex: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 1.2rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu li a:hover {
+            background-color: var(--border-color);
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu li a i {
+            font-size: 1.2rem;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        sidebar.collapsed .sidebar-menu span {
+            display: none;
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        sidebar.collapsed .theme-btn span {
+            display: none;
+        }
+
+        /* --- Main Content --- */
+        main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            max-width: 1000px;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        sidebar.collapsed ~ main-content {
+            margin-left: var(--sidebar-collapsed);
+            width: calc(100% - var(--sidebar-collapsed));
+        }
+
+        @media (max-width: 768px) {
+            sidebar {
+                width: var(--sidebar-collapsed);
+            }
+            sidebar .logo, sidebar .sidebar-menu span, sidebar .theme-btn span {
+                display: none;
+            }
+            main-content {
+                margin-left: var(--sidebar-collapsed) !important;
+                width: calc(100% - var(--sidebar-collapsed)) !important;
+                padding: 1rem;
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .profile {
+            text-align: center;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 4px solid var(--primary-color);
+        }
+
+        .profile h2 {
+            font-size: 1.4rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .profile p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px);
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .player-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .song-info {
+            margin-bottom: 1rem;
+        }
+
+        .song-title {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .song-artist {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .player-btn.play-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        #secret-section {
+            display: none;
+        }
+
+        .secret-menu-item {
+            display: none;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444 !important;
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-secondary { background-color: var(--border-color); color: var(--text-color); }
+
+        .password-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .password-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .status-msg {
+            font-size: 0.9rem;
+            color: #ef4444;
+            margin-top: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menu Dọc Sidebar -->
+    <sidebar id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">MyPortfolio</div>
+            <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#about"><i class="fa-solid fa-user"></i> <span>Giới thiệu</span></a></li>
+            <li><a href="#projects"><i class="fa-solid fa-code"></i> <span>Dự án</span></a></li>
+            <li id="secretMenuLi" class="secret-menu-item">
+                <a href="#secret-section"><i class="fa-solid fa-lock-open"></i> <span>Bí Mật</span></a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="theme-btn" id="themeToggle">
+                <i class="fa-solid fa-moon"></i> <span>Giao diện</span>
+            </button>
+        </div>
+    </sidebar>
+
+    <!-- Nội dung chính -->
+    <main-content>
+        <div class="grid">
+            <div>
+                <div class="card profile">
+                    <img src="https://via.placeholder.com/150" alt="Avatar" class="avatar">
+                    <h2>Vinh</h2>
+                    <p>Developer & Content Creator</p>
+                    <div class="social-links">
+                        <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://youtube.com" target="_blank" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="https://github.com" target="_blank" class="social-icon"><i class="fa-brands fa-github"></i></a>
+                        <a href="https://tiktok.com" target="_blank" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="player-title">
+                        <i class="fa-solid fa-music"></i> Album Yêu Thích
+                    </div>
+                    <div class="song-info">
+                        <div class="song-title" id="songTitle">Tên bài hát</div>
+                        <div class="song-artist" id="songArtist">Ca sĩ</div>
+                    </div>
+                    <div class="player-controls">
+                        <button class="player-btn" id="prevBtn"><i class="fa-solid fa-backward-step"></i></button>
+                        <button class="player-btn play-btn" id="playBtn"><i class="fa-solid fa-play" id="playIcon"></i></button>
+                        <button class="player-btn" id="nextBtn"><i class="fa-solid fa-forward-step"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="card" id="about">
+                    <h2>Giới Thiệu</h2>
+                    <p style="margin-top: 1rem; color: var(--text-secondary); line-height: 1.6;">
+                        Xin chào! Đây là trang web cá nhân của tôi. Nơi tôi chia sẻ về bản thân, các dự án và sở thích cá nhân. Hãy khám phá giao diện và âm nhạc nhé!
+                    </p>
+                </div>
+
+                <div class="card" id="projects">
+                    <h2>Kỹ Năng / Dự Án</h2>
+                    <ul style="margin-top: 1rem; margin-left: 1.2rem; color: var(--text-secondary); line-height: 1.8;">
+                        <li>Lập trình Web (HTML, CSS, JS)</li>
+                        <li>Sáng tạo nội dung</li>
+                        <li>Thiết kế UI/UX Modern</li>
+                    </ul>
+                </div>
+
+                <div class="card" id="secret-section">
+                    <h2 style="color: #ef4444;">🔒 Khu Vực Bí Mật (Dành Cho Chủ Nhân)</h2>
+                    <p style="margin-top: 1rem; color: var(--text-secondary); line-height: 1.6;">
+                        Chào mừng Vinh đã truy cập khu vực riêng tư dành cho Chủ nhân! Các thông tin bảo mật và ghi chú đặc biệt hiển thị ở đây.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main-content>
+
+    <!-- Modal chọn Khách / Chủ -->
+    <div class="modal-overlay" id="roleModal">
+        <div class="modal">
+            <h2>Chào Mừng Bạn!</h2>
+            <p style="margin-top: 0.5rem; color: var(--text-secondary);">Vui lòng xác nhận danh tính của bạn:</p>
+            <div class="modal-btns">
+                <button class="btn btn-secondary" onclick="selectRole('guest')">Tôi là Khách</button>
+                <button class="btn btn-primary" onclick="selectRole('owner')">Tôi là Chủ trang web</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal nhập mật khẩu khi chọn Chủ -->
+    <div class="modal-overlay" id="passwordModal" style="display: none;">
+        <div class="modal">
+            <h2>Xác Thực Mật Khẩu</h2>
+            <p style="margin-top: 0.5rem; color: var(--text-secondary);">Vui lòng nhập mật khẩu Chủ nhân để mở khóa:</p>
+            <input type="password" id="passInput" class="password-input" placeholder="Nhập mật khẩu..." onkeyup="checkEnterKey(event)">
+            <div class="status-msg" id="passError">Mật khẩu không chính xác! Vui lòng thử lại.</div>
+            <div class="modal-btns">
+                <button class="btn btn-secondary" onclick="backToRoleModal()">Quay lại</button>
+                <button class="btn btn-primary" onclick="verifyPassword()">Mở khóa</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* --- Thu gọn / Kéo ra Menu Dọc --- */
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebarBtn = document.getElementById('toggleSidebar');
+
+        toggleSidebarBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+
+        /* --- Dark / Light Mode --- */
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = themeToggleBtn.querySelector('i');
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.body.removeAttribute('data-theme');
+                themeIcon.className = 'fa-solid fa-moon';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fa-solid fa-sun';
+            }
+        });
+
+        /* --- Playlist Nhạc --- */
+        const playlist = [
+            { title: "Bài Hát Demo 1", artist: "Ca Sĩ A", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+            { title: "Bài Hát Demo 2", artist: "Ca Sĩ B", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+            { title: "Bài Hát Demo 3", artist: "Ca Sĩ C", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+        ];
+
+        let currentSongIndex = 0;
+        let isPlaying = false;
+        const audio = new Audio();
+
+        const songTitle = document.getElementById('songTitle');
+        const songArtist = document.getElementById('songArtist');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function loadSong(index) {
+            songTitle.innerText = playlist[index].title;
+            songArtist.innerText = playlist[index].artist;
+            audio.src = playlist[index].src;
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                playIcon.className = 'fa-solid fa-play';
+            } else {
+                audio.play();
+                playIcon.className = 'fa-solid fa-pause';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+            loadSong(currentSongIndex);
+            if (isPlaying) audio.play();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            loadSong(currentSongIndex);
+            if (isPlaying) audio.play();
+        });
+
+        loadSong(currentSongIndex);
+
+        /* --- Khách / Chủ & Mật khẩu --- */
+        const roleModal = document.getElementById('roleModal');
+        const passwordModal = document.getElementById('passwordModal');
+        const secretMenuLi = document.getElementById('secretMenuLi');
+        const secretSection = document.getElementById('secret-section');
+        const passInput = document.getElementById('passInput');
+        const passError = document.getElementById('passError');
+
+        function selectRole(role) {
+            roleModal.style.display = 'none';
+            if (role === 'guest') {
+                secretMenuLi.style.display = 'none';
+                secretSection.style.display = 'none';
+            } else if (role === 'owner') {
+                passwordModal.style.display = 'flex';
+                passInput.focus();
+            }
+        }
+
+        function backToRoleModal() {
+            passwordModal.style.display = 'none';
+            roleModal.style.display = 'flex';
+            passError.style.display = 'none';
+            passInput.value = '';
+        }
+
+        function verifyPassword() {
+            const enteredPass = passInput.value;
+            if (enteredPass === 'Vinh23456f@@') {
+                passwordModal.style.display = 'none';
+                secretMenuLi.style.display = 'block'; // Hiện tab bí mật trên menu dọc
+                secretSection.style.display = 'block'; // Hiện nội dung bảo mật
+                passError.style.display = 'none';
+            } else {
+                passError.style.display = 'block';
+            }
+        }
+
+        function checkEnterKey(event) {
+            if (event.key === 'Enter') {
+                verifyPassword();
+            }
+        }
+    </script>
+</body>
+</html>
