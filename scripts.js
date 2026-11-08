@@ -26,11 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* --- 3. XỬ LÝ PLAYLIST NHẠC ALBUM --- */
+    /* --- 3. XỬ LÝ PLAYLIST NHẠC (ĐƯỜNG DẪN MP3 LOCAL & PHÁT LẦN LƯỢT) --- */
+    // Đã thay đường dẫn trỏ vào thư mục local mp3/
     const playlist = [
-        { title: "Bài Hát Demo 1", artist: "Ca Sĩ A", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-        { title: "Bài Hát Demo 2", artist: "Ca Sĩ B", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-        { title: "Bài Hát Demo 3", artist: "Ca Sĩ C", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+        { title: "Bài Hát 1", artist: "Ca Sĩ A", src: "mp3/song1.mp3" },
+        { title: "Bài Hát 2", artist: "Ca Sĩ B", src: "mp3/song2.mp3" },
+        { title: "Bài Hát 3", artist: "Ca Sĩ C", src: "mp3/song3.mp3" }
     ];
 
     let currentSongIndex = 0;
@@ -43,6 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const playIcon = document.getElementById('playIcon');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeIcon = document.getElementById('volumeIcon');
+
+    // Thiết lập âm lượng mặc định ban đầu
+    audio.volume = volumeSlider ? volumeSlider.value : 0.8;
 
     function loadSong(index) {
         if (songTitle && songArtist) {
@@ -52,16 +58,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (playBtn && playIcon) {
+    function playSong() {
+        audio.play().then(() => {
+            isPlaying = true;
+            if (playIcon) playIcon.className = 'fa-solid fa-pause';
+        }).catch(err => {
+            console.log("Không thể phát nhạc tự động hoặc chưa có file nhạc trong mp3/: ", err);
+        });
+    }
+
+    function pauseSong() {
+        audio.pause();
+        isPlaying = false;
+        if (playIcon) playIcon.className = 'fa-solid fa-play';
+    }
+
+    if (playBtn) {
         playBtn.addEventListener('click', () => {
             if (isPlaying) {
-                audio.pause();
-                playIcon.className = 'fa-solid fa-play';
+                pauseSong();
             } else {
-                audio.play();
-                playIcon.className = 'fa-solid fa-pause';
+                playSong();
             }
-            isPlaying = !isPlaying;
         });
     }
 
@@ -69,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         prevBtn.addEventListener('click', () => {
             currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
             loadSong(currentSongIndex);
-            if (isPlaying) audio.play();
+            if (isPlaying) playSong();
         });
     }
 
@@ -77,10 +95,37 @@ document.addEventListener('DOMContentLoaded', () => {
         nextBtn.addEventListener('click', () => {
             currentSongIndex = (currentSongIndex + 1) % playlist.length;
             loadSong(currentSongIndex);
-            if (isPlaying) audio.play();
+            if (isPlaying) playSong();
         });
     }
 
+    /* --- PHÁT LẦN LƯỢT (KHI HẾT BÀI TỰ SANG BÀI MỚI) --- */
+    audio.addEventListener('ended', () => {
+        currentSongIndex = (currentSongIndex + 1) % playlist.length;
+        loadSong(currentSongIndex);
+        playSong();
+    });
+
+    /* --- TĂNG / GIẢM ÂM LƯỢNG --- */
+    if (volumeSlider) {
+        volumeSlider.addEventListener('input', (e) => {
+            const volValue = e.target.value;
+            audio.volume = volValue;
+
+            // Cập nhật biểu tượng loa theo mức âm lượng
+            if (volumeIcon) {
+                if (volValue == 0) {
+                    volumeIcon.className = 'fa-solid fa-volume-xmark';
+                } else if (volValue < 0.5) {
+                    volumeIcon.className = 'fa-solid fa-volume-low';
+                } else {
+                    volumeIcon.className = 'fa-solid fa-volume-high';
+                }
+            }
+        });
+    }
+
+    // Tải thông tin bài hát đầu tiên
     loadSong(currentSongIndex);
 
     /* --- 4. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
