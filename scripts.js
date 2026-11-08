@@ -57,9 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* --- 3. XỬ LÝ PLAYLIST NHẠC (3 BÀI HÁT MỚI) --- */
     const playlist = [
-        { title: "Sao Em Vô Tình", artist: "Vinh", src: "mp3/Sao Em Vô Tình.mp3" },
-        { title: "Về Bên Anh", artist: "Vinh", src: "mp3/Về Bên Anh.mp3" },
-        { title: "Đom Đóm", artist: "Vinh", src: "mp3/Đom Đóm.mp3" }
+        { title: "Sao Em Vô Tình", artist: "Jack-J97", src: "mp3/Sao Em Vô Tình.mp3" },
+        { title: "Về Bên Anh", artist: "Jack-J97", src: "mp3/Về Bên Anh.mp3" },
+        { title: "Đom Đóm", artist: "Jack-J97", src: "mp3/Đom Đóm.mp3" }
     ];
 
     let currentSongIndex = 0;
