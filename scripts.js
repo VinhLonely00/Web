@@ -1,16 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     /* --- CẤU HÌNH MẶC ĐỊNH KHI VÀO TRANG --- */
     const sidebar = document.getElementById('sidebar');
-    const themeToggleBtn = document.getElementById('themeToggle');
-    const themeIcon = themeToggleBtn ? themeToggleBtn.querySelector('i') : null;
 
-    // 1. Mặc định bật Dark Mode ngay khi tải trang
-    document.body.setAttribute('data-theme', 'dark');
-    if (themeIcon) {
-        themeIcon.className = 'fa-solid fa-sun';
-    }
-
-    // 2. Mặc định Thu gọn Menu Sidebar ngay khi tải trang
+    // Mặc định Thu gọn Menu Sidebar ngay khi tải trang
     if (sidebar) {
         sidebar.classList.add('collapsed');
     }
@@ -18,22 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --- 0. HIỆU ỨNG ĐÁNH MÁY (CHỈ XÓA ĐẾN KÝ TỰ '@') --- */
     const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
     let charIndex = textToType.length;
-    let isDeleting = true; // Bắt đầu bằng trạng thái xóa bớt để tạo vòng lặp mượt mà
+    let isDeleting = true;
 
     function typeEffect() {
         if (!isDeleting) {
-            // Đang gõ chữ tiến lên
             document.title = textToType.substring(0, charIndex + 1);
             charIndex++;
             if (charIndex === textToType.length) {
-                // Gõ đầy đủ thì dừng lại 1.5 giây rồi chuyển sang xóa
                 setTimeout(() => { isDeleting = true; }, 1500);
             }
         } else {
-            // Đang xóa lùi lại, nhưng dừng lại ngay khi đến vị trí của chữ '@' (index = 1)
             document.title = textToType.substring(0, charIndex);
             charIndex--;
-            if (charIndex === 0) { // Chạm đến ký tự '@' thì dừng xóa, chuyển sang viết lại
+            if (charIndex === 0) {
                 isDeleting = false;
             }
         }
@@ -44,6 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     typeEffect();
 
+    /* --- BẬT / TẮT CHẾ ĐỘ VIDEO NỀN MP4 --- */
+    const videoBgToggle = document.getElementById('videoBgToggle');
+    const bgVideo = document.getElementById('bgVideo');
+
+    if (videoBgToggle && bgVideo) {
+        videoBgToggle.addEventListener('click', () => {
+            if (bgVideo.style.display === 'block') {
+                bgVideo.style.display = 'none';
+                bgVideo.pause();
+            } else {
+                bgVideo.style.display = 'block';
+                bgVideo.play().catch(e => console.log("Không thể phát video tự động:", e));
+            }
+        });
+    }
+
     /* --- 1. SỰ KIỆN NÚT THU GỌN / MỞ RỘNG SIDEBAR MENU --- */
     const toggleSidebarBtn = document.getElementById('toggleSidebar');
 
@@ -53,21 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* --- 2. SỰ KIỆN NÚT CHUYỂN ĐỔI DARK / LIGHT MODE --- */
-    if (themeToggleBtn && themeIcon) {
-        themeToggleBtn.addEventListener('click', () => {
-            const currentTheme = document.body.getAttribute('data-theme');
-            if (currentTheme === 'dark') {
-                document.body.removeAttribute('data-theme');
-                themeIcon.className = 'fa-solid fa-moon';
-            } else {
-                document.body.setAttribute('data-theme', 'dark');
-                themeIcon.className = 'fa-solid fa-sun';
-            }
-        });
-    }
-
-    /* --- 3. XỬ LÝ PLAYLIST NHẠC (3 BÀI HÁT IN MP3/) --- */
+    /* --- 2. XỬ LÝ PLAYLIST NHẠC (3 BÀI HÁT TRONG MP3/) --- */
     const playlist = [
         { title: "Sao Em Vô Tình", artist: "Jack-J97", src: "mp3/Sao Em Vô Tình.mp3" },
         { title: "Về Bên Anh", artist: "Jack-J97", src: "mp3/Về Bên Anh.mp3" },
@@ -144,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadSong(currentSongIndex);
 
-    /* --- 4. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
+    /* --- 3. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
     const roleModal = document.getElementById('roleModal');
     const passwordModal = document.getElementById('passwordModal');
     const secretMenuLi = document.getElementById('secretMenuLi');
