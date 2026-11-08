@@ -1,21 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     /* --- 0. HIỆU ỨNG ĐÁNH MÁY & XÓA TIÊU ĐỀ TRANG --- */
     const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
-    const typedTitleElement = document.getElementById('typed-title');
     let charIndex = 0;
     let isDeleting = false;
 
     function typeEffect() {
-        if (!typedTitleElement) return;
-
         if (!isDeleting) {
-            typedTitleElement.innerText = textToType.substring(0, charIndex + 1);
+            document.title = textToType.substring(0, charIndex + 1);
             charIndex++;
             if (charIndex === textToType.length) {
                 setTimeout(() => { isDeleting = true; }, 1500);
             }
         } else {
-            typedTitleElement.innerText = textToType.substring(0, charIndex - 1);
+            document.title = textToType.substring(0, charIndex - 1);
             charIndex--;
             if (charIndex === 0) {
                 isDeleting = false;
