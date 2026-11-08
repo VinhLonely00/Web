@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
+    /* --- CẤU HÌNH MẶC ĐỊNH KHI VÀO TRANG --- */
+    const sidebar = document.getElementById('sidebar');
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const themeIcon = themeToggleBtn ? themeToggleBtn.querySelector('i') : null;
+
+    // 1. Mặc định bật Dark Mode ngay khi tải trang
+    document.body.setAttribute('data-theme', 'dark');
+    if (themeIcon) {
+        themeIcon.className = 'fa-solid fa-sun'; // Đổi icon sang mặt trời để chuẩn bị cho lượt bấm chuyển về Light Mode
+    }
+
+    // 2. Mặc định Thu gọn Menu Sidebar ngay khi tải trang
+    if (sidebar) {
+        sidebar.classList.add('collapsed');
+    }
+
     /* --- 0. HIỆU ỨNG ĐÁNH MÁY & XÓA TIÊU ĐỀ TRANG --- */
     const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
     let charIndex = 0;
@@ -25,8 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     typeEffect();
 
-    /* --- 1. THU GỌN / MỞ RỘNG SIDEBAR MENU --- */
-    const sidebar = document.getElementById('sidebar');
+    /* --- 1. SỰ KIỆN NÚT THU GỌN / MỞ RỘNG SIDEBAR MENU --- */
     const toggleSidebarBtn = document.getElementById('toggleSidebar');
 
     if (toggleSidebarBtn && sidebar) {
@@ -35,10 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* --- 2. XỬ LÝ DARK / LIGHT MODE --- */
-    const themeToggleBtn = document.getElementById('themeToggle');
-    const themeIcon = themeToggleBtn ? themeToggleBtn.querySelector('i') : null;
-
+    /* --- 2. SỰ KIỆN NÚT CHUYỂN ĐỔI DARK / LIGHT MODE --- */
     if (themeToggleBtn && themeIcon) {
         themeToggleBtn.addEventListener('click', () => {
             const currentTheme = document.body.getAttribute('data-theme');
@@ -52,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* --- 3. XỬ LÝ PLAYLIST NHẠC (3 BÀI HÁT MỚI) --- */
+    /* --- 3. XỬ LÝ PLAYLIST NHẠC (3 BÀI HÁT IN MP3/) --- */
     const playlist = [
         { title: "Sao Em Vô Tình", artist: "Jack-J97", src: "mp3/Sao Em Vô Tình.mp3" },
         { title: "Về Bên Anh", artist: "Jack-J97", src: "mp3/Về Bên Anh.mp3" },
@@ -84,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             isPlaying = true;
             if (playIcon) playIcon.className = 'fa-solid fa-pause';
         }).catch(err => {
-            console.log("Không thể phát nhạc tự động hoặc chưa có file nhạc trong thư mục mp3/: ", err);
+            console.log("Chưa thể tự động phát nhạc hoặc chưa có file trong mp3/: ", err);
         });
     }
 
@@ -120,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* --- PHÁT LẦN LƯỢT (KHI HẾT BÀI TỰ SANG BÀI MỚI) --- */
+    /* Tự động phát bài tiếp theo khi kết thúc */
     audio.addEventListener('ended', () => {
         currentSongIndex = (currentSongIndex + 1) % playlist.length;
         loadSong(currentSongIndex);
