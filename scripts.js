@@ -28,9 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* --- 3. XỬ LÝ PLAYLIST NHẠC (ĐƯỜNG DẪN MP3 LOCAL & PHÁT LẦN LƯỢT) --- */
     const playlist = [
-        { title: "Bài Hát 1", artist: "Ca Sĩ A", src: "mp3/song1.mp3" },
-        { title: "Bài Hát 2", artist: "Ca Sĩ B", src: "mp3/song2.mp3" },
-        { title: "Bài Hát 3", artist: "Ca Sĩ C", src: "mp3/song3.mp3" }
+        { title: "Về Bên Anh", artist: "Jack-J97", src: "mp3/Về Bên Anh.mp3" },
+        { title: "Sao Em Vô Tình", artist: "Jack-J97", src: "mp3/Sao Em Vô Tình.mp3" },
+        { title: "Đom Đóm", artist: "Jack-J97", src: "mp3/Đom Đóm.mp3" }
     ];
 
     let currentSongIndex = 0;
