@@ -14,7 +14,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 html {
@@ -31,7 +31,7 @@ body {
     position: relative;
 }
 
-/* --- LỚP NỀN VIDEO MP4 CHUẨN 1920x1080 --- */
+/* --- LỚP NỀN VIDEO MP4 (GALAXY) LUÔN BẬT --- */
 .background-video {
     position: fixed;
     top: 50%;
@@ -44,55 +44,22 @@ body {
     z-index: -1;
     object-fit: cover;
     pointer-events: none;
-    display: none;
+    display: block; /* Luôn hiển thị video galaxy */
 }
 
-/* --- NÚT CON MẮT --- */
-.toggle-content-btn {
-    position: fixed;
-    top: 25px;
-    right: 25px;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background-color: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    z-index: 1000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+/* --- HIỆU ỨNG MỜ DẦN & TÀNG HÌNH NỘI DUNG SAU 10S KHÔNG DI CHUYỂN CHUỘT --- */
+.navbar-wrapper,
+main-content {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 1s ease, visibility 1s ease; /* Hiệu ứng mờ dần trong 1 giây */
 }
 
-.toggle-content-btn:hover {
-    transform: scale(1.1);
-    background-color: var(--primary-color);
-}
-
-body.video-bg-active {
-    background-color: rgba(15, 23, 42, 0.2);
-}
-
-body.video-bg-active .card,
-body.video-bg-active .pill-navbar,
-body.video-bg-active .modal {
-    background-color: rgba(30, 41, 59, 0.6) !important;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-}
-
-body.video-bg-active .toggle-content-btn {
-    display: flex;
-}
-
-body.content-hidden .navbar-wrapper,
-body.content-hidden main-content {
+body.idle-mode .navbar-wrapper,
+body.idle-mode main-content {
     opacity: 0;
-    pointer-events: none;
+    visibility: hidden;
+    pointer-events: none; /* Khóa tương tác khi tàng hình */
 }
 
 /* --- FLOATING PILL NAVBAR --- */
@@ -109,10 +76,10 @@ body.content-hidden main-content {
     align-items: center;
     gap: 1rem;
     padding: 0.4rem 0.6rem;
-    background-color: rgba(15, 23, 42, 0.7);
-    border: 1px solid var(--border-color);
+    background-color: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 50px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
@@ -137,24 +104,6 @@ body.content-hidden main-content {
 .nav-menu li.active a {
     background-color: var(--primary-color);
     color: white;
-}
-
-.theme-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: var(--text-color);
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-}
-
-.theme-btn:hover {
-    background-color: var(--primary-color);
 }
 
 /* --- MAIN CONTENT LAYOUT --- */
@@ -185,6 +134,7 @@ main-content {
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     margin-bottom: 2rem;
+    backdrop-filter: blur(12px);
 }
 
 .profile {
@@ -265,6 +215,7 @@ main-content {
     text-align: center;
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
 }
 
 .modal-btns {
