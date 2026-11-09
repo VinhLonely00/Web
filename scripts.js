@@ -1,11 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    /* --- CẤU HÌNH MẶC ĐỊNH KHI VÀO TRANG --- */
-    const sidebar = document.getElementById('sidebar');
-
-    // Mặc định Thu gọn Menu Sidebar ngay khi tải trang
-    if (sidebar) {
-        sidebar.classList.add('collapsed');
-    }
 
     /* --- 0. HIỆU ỨNG ĐÁNH MÁY (CHỈ XÓA ĐẾN KÝ TỰ '@') --- */
     const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
@@ -45,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 bgVideo.style.display = 'none';
                 bgVideo.pause();
                 document.body.classList.remove('video-bg-active');
-                document.body.classList.remove('content-hidden'); // Hiện lại nội dung nếu đang ẩn
+                document.body.classList.remove('content-hidden');
                 if (eyeIcon) eyeIcon.className = 'fa-solid fa-eye';
             } else {
                 bgVideo.style.display = 'block';
@@ -60,25 +53,16 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleContentBtn.addEventListener('click', () => {
             document.body.classList.toggle('content-hidden');
             if (document.body.classList.contains('content-hidden')) {
-                eyeIcon.className = 'fa-solid fa-eye-slash'; // Đổi icon thành mắt gạch chéo
+                eyeIcon.className = 'fa-solid fa-eye-slash';
                 toggleContentBtn.title = "Hiện lại nội dung";
             } else {
-                eyeIcon.className = 'fa-solid fa-eye'; // Đổi icon về mắt bình thường
+                eyeIcon.className = 'fa-solid fa-eye';
                 toggleContentBtn.title = "Ẩn nội dung";
             }
         });
     }
 
-    /* --- 1. SỰ KIỆN NÚT THU GỌN / MỞ RỘNG SIDEBAR MENU --- */
-    const toggleSidebarBtn = document.getElementById('toggleSidebar');
-
-    if (toggleSidebarBtn && sidebar) {
-        toggleSidebarBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-        });
-    }
-
-    /* --- 2. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
+    /* --- 1. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
     const roleModal = document.getElementById('roleModal');
     const passwordModal = document.getElementById('passwordModal');
     const secretMenuLi = document.getElementById('secretMenuLi');
@@ -111,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const enteredPass = passInput.value;
         if (enteredPass === 'Vinh23456f@@') {
             if (passwordModal) passwordModal.style.display = 'none';
-            if (secretMenuLi) secretMenuLi.style.display = 'block';
+            if (secretMenuLi) secretMenuLi.style.display = 'inline-block';
             if (secretSection) secretSection.style.display = 'block';
             if (passError) passError.style.display = 'none';
         } else {
