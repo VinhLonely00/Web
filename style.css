@@ -1,11 +1,11 @@
 :root {
-    --bg-color: rgba(15, 23, 42, 0.88);
-    --card-bg: rgba(30, 41, 59, 0.85);
+    --bg-color: #0f172a;
+    --card-bg: rgba(30, 41, 59, 0.75); /* Độ trong suốt vừa phải (75%) cho card khi bình thường */
     --text-color: #f8fafc;
     --text-secondary: #94a3b8;
     --primary-color: #6366f1;
     --primary-hover: #818cf8;
-    --border-color: rgba(51, 65, 85, 0.6);
+    --border-color: rgba(99, 102, 241, 0.4); /* Viền sáng màu hiện đại */
     --sidebar-width: 260px;
     --sidebar-collapsed: 70px;
     --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
@@ -39,7 +39,20 @@ body {
     z-index: -1;
     object-fit: cover;
     pointer-events: none;
-    display: none; /* Mặc định ẩn, bật khi bấm nút */
+    display: none; /* Mặc định ẩn, chỉ hiện khi bật chế độ video nền */
+}
+
+/* --- Khi video nền được bật, ta tăng độ trong suốt của card lên một chút nhưng vẫn giữ nguyên viền --- */
+body.video-bg-active {
+    background-color: rgba(15, 23, 42, 0.4); /* Làm nền tối mờ để làm nổi bật video bên dưới */
+}
+
+body.video-bg-active .card,
+body.video-bg-active sidebar,
+body.video-bg-active .modal {
+    background-color: rgba(30, 41, 59, 0.6) !important; /* Độ trong suốt vừa phải, thấy mờ ảo nền video phía sau */
+    backdrop-filter: blur(12px); /* Hiệu ứng kính mờ sang trọng */
+    border: 1px solid rgba(255, 255, 255, 0.25) !important; /* Đảm bảo luôn giữ đường viền rõ nét */
 }
 
 /* --- Sidebar Menu Dọc --- */
@@ -55,7 +68,6 @@ sidebar {
     left: 0;
     z-index: 100;
     overflow-x: hidden;
-    backdrop-filter: blur(10px);
 }
 
 sidebar.collapsed {
@@ -196,7 +208,6 @@ sidebar.collapsed ~ main-content {
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     margin-bottom: 2rem;
-    backdrop-filter: blur(8px);
 }
 
 /* --- Thẻ Cá Nhân --- */
@@ -330,7 +341,7 @@ sidebar.collapsed ~ main-content {
     width: 90%;
     text-align: center;
     box-shadow: var(--shadow);
-    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
 }
 
 .modal-btns {
