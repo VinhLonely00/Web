@@ -26,41 +26,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     typeEffect();
 
-    /* --- BẬT / TẮT CHẾ ĐỘ VIDEO NỀN MP4 & NÚT CON MẮT --- */
-    const videoBgToggle = document.getElementById('videoBgToggle');
-    const bgVideo = document.getElementById('bgVideo');
-    const toggleContentBtn = document.getElementById('toggleContentBtn');
-    const eyeIcon = document.getElementById('eyeIcon');
+    /* --- TỰ ĐỘNG MỜ DẦN & TÀNG HÌNH SAU 10 GIÂY KHÔNG DI CHUYỂN CHUỘT --- */
+    let idleTimer;
+    const IDLE_TIMEOUT = 10000; // 10 giây (tính bằng mili giây)
 
-    if (videoBgToggle && bgVideo) {
-        videoBgToggle.addEventListener('click', () => {
-            if (bgVideo.style.display === 'block') {
-                bgVideo.style.display = 'none';
-                bgVideo.pause();
-                document.body.classList.remove('video-bg-active');
-                document.body.classList.remove('content-hidden');
-                if (eyeIcon) eyeIcon.className = 'fa-solid fa-eye';
-            } else {
-                bgVideo.style.display = 'block';
-                bgVideo.play().catch(e => console.log("Không thể phát video tự động:", e));
-                document.body.classList.add('video-bg-active');
-            }
-        });
+    function resetIdleTimer() {
+        // Nếu nội dung đang bị ẩn mà có chuột di chuyển -> Hiện lại ngay lập tức
+        if (document.body.classList.contains('idle-mode')) {
+            document.body.classList.remove('idle-mode');
+        }
+
+        // Xóa bộ đếm cũ và tạo lại bộ đếm mới 10 giây
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            document.body.classList.add('idle-mode'); // Kích hoạt mờ dần và tàng hình thẻ
+        }, IDLE_TIMEOUT);
     }
 
-    // Sự kiện bấm nút con mắt để ẩn/hiện nội dung
-    if (toggleContentBtn && eyeIcon) {
-        toggleContentBtn.addEventListener('click', () => {
-            document.body.classList.toggle('content-hidden');
-            if (document.body.classList.contains('content-hidden')) {
-                eyeIcon.className = 'fa-solid fa-eye-slash';
-                toggleContentBtn.title = "Hiện lại nội dung";
-            } else {
-                eyeIcon.className = 'fa-solid fa-eye';
-                toggleContentBtn.title = "Ẩn nội dung";
-            }
-        });
-    }
+    // Lắng nghe các sự kiện chuyển động chuột hoặc tương tác
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('mousedown', resetIdleTimer);
+    window.addEventListener('keypress', resetIdleTimer);
+    window.addEventListener('scroll', resetIdleTimer);
+
+    // Khởi chạy bộ đếm lúc vừa vào trang
+    resetIdleTimer();
 
     /* --- 1. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
     const roleModal = document.getElementById('roleModal');
