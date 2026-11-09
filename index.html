@@ -11,11 +11,16 @@
 </head>
 <body>
 
-    <!-- LỚP NỀN VIDEO MP4 (Nằm ở tầng cuối cùng, chạy ẩn, không che nội dung) -->
+    <!-- LỚP NỀN VIDEO MP4 CHUẨN 1920x1080 -->
     <video autoplay muted loop id="bgVideo" class="background-video">
         <source src="mp3/background.mp4" type="video/mp4">
         Trình duyệt của bạn không hỗ trợ video nền.
     </video>
+
+    <!-- Nút con mắt ẩn/hiện nội dung (Chỉ hiển thị khi bật video nền) -->
+    <button id="toggleContentBtn" class="toggle-content-btn" title="Ẩn/Hiện nội dung">
+        <i class="fa-solid fa-eye" id="eyeIcon"></i>
+    </button>
 
     <!-- Menu Dọc Sidebar -->
     <sidebar id="sidebar">
@@ -31,7 +36,6 @@
             </li>
         </ul>
         <div class="sidebar-footer">
-            <!-- Nút bật/tắt chế độ nền Video MP4 -->
             <button class="theme-btn" id="videoBgToggle" title="Bật/Tắt Video Nền">
                 <i class="fa-solid fa-film"></i> <span>Video Nền</span>
             </button>
@@ -39,7 +43,7 @@
     </sidebar>
 
     <!-- Nội dung chính -->
-    <main-content>
+    <main-content id="mainContentArea">
         <div class="grid">
             <div>
                 <div class="card profile">
