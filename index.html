@@ -45,6 +45,7 @@
     <!-- Nội dung chính -->
     <main-content id="mainContentArea">
         <div class="grid">
+            <!-- CỘT BÊN TRÁI: Thông tin cá nhân & Các nội dung chính -->
             <div>
                 <div class="card profile">
                     <img src="mp3/avatar.jpg" alt="Avatar" class="avatar">
@@ -62,18 +63,6 @@
                     </div>
                 </div>
 
-                <!-- Trình Phát Nhạc Spotify -->
-                <div class="card spotify-card">
-                    <div class="player-title">
-                        <i class="fa-solid fa-music"></i> Spotify Artist
-                    </div>
-                    <div class="spotify-embed-container">
-                        <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/3KJopZ2uUclqEtLxQg0FNn?utm_source=generator&theme=0&si=c7bbc85e534945e6" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                    </div>
-                </div>
-            </div> <!-- ĐÃ THÊM THẺ ĐÓNG NÀY CHO CỘT BÊN TRÁI -->
-            
-            <div>
                 <div class="card" id="about">
                     <h2>Giới Thiệu</h2>
                     <p style="margin-top: 1rem; color: var(--text-secondary); line-height: 1.6;">
@@ -95,6 +84,18 @@
                     <p style="margin-top: 1rem; color: var(--text-secondary); line-height: 1.6;">
                         Chào mừng Vinh đã truy cập khu vực riêng tư dành cho Chủ nhân! Các thông tin bảo mật và ghi chú đặc biệt hiển thị ở đây.
                     </p>
+                </div>
+            </div>
+
+            <!-- CỘT BÊN PHẢI: Khung nhạc Spotify phong cách Daily Rotation -->
+            <div>
+                <div class="card spotify-card" style="position: sticky; top: 2.5rem;">
+                    <div class="player-title">
+                        <i class="fa-solid fa-music"></i> Daily Rotation & Spotify
+                    </div>
+                    <div class="spotify-embed-container" style="margin-top: 1rem;">
+                        <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/3KJopZ2uUclqEtLxQg0FNn?utm_source=generator&theme=0&si=c7bbc85e534945e6" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    </div>
                 </div>
             </div>
         </div>
