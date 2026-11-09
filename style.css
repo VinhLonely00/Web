@@ -1,14 +1,14 @@
 :root {
     --bg-color: #0f172a;
-    --card-bg: rgba(30, 41, 59, 0.75); /* Độ trong suốt vừa phải (75%) cho card khi bình thường */
+    --card-bg: rgba(30, 41, 59, 0.75);
     --text-color: #f8fafc;
     --text-secondary: #94a3b8;
     --primary-color: #6366f1;
     --primary-hover: #818cf8;
-    --border-color: rgba(99, 102, 241, 0.4); /* Viền sáng màu hiện đại */
+    --border-color: rgba(99, 102, 241, 0.4);
     --sidebar-width: 260px;
     --sidebar-collapsed: 70px;
-    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    --shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -25,34 +25,46 @@ body {
     min-height: 100vh;
     display: flex;
     position: relative;
+    justify-content: center; /* Canh giữa toàn bộ trang theo chuẩn màn hình lớn */
+    align-items: center;
 }
 
-/* --- LỚP NỀN VIDEO MP4 Ở TẦNG CUỐI CÙNG --- */
+/* --- LỚP NỀN VIDEO MP4 CHUẨN 1920x1080 (Trải kín màn hình không bị méo) --- */
 .background-video {
     position: fixed;
-    right: 0;
-    bottom: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     min-width: 100%;
     min-height: 100%;
-    width: auto;
-    height: auto;
+    width: 100vw;
+    height: 100vh;
     z-index: -1;
-    object-fit: cover;
+    object-fit: cover; /* Đảm bảo video giữ nguyên tỷ lệ 16:9 (1920x1080) và phủ đầy màn hình */
     pointer-events: none;
-    display: none; /* Mặc định ẩn, chỉ hiện khi bật chế độ video nền */
+    display: none; /* Mặc định ẩn, hiện lên khi bấm nút */
 }
 
-/* --- Khi video nền được bật, ta tăng độ trong suốt của card lên một chút nhưng vẫn giữ nguyên viền --- */
+/* --- Khi bật video nền, làm mờ nhẹ nền để nổi bật nội dung --- */
 body.video-bg-active {
-    background-color: rgba(15, 23, 42, 0.4); /* Làm nền tối mờ để làm nổi bật video bên dưới */
+    background-color: rgba(15, 23, 42, 0.3);
 }
 
 body.video-bg-active .card,
 body.video-bg-active sidebar,
 body.video-bg-active .modal {
-    background-color: rgba(30, 41, 59, 0.6) !important; /* Độ trong suốt vừa phải, thấy mờ ảo nền video phía sau */
-    backdrop-filter: blur(12px); /* Hiệu ứng kính mờ sang trọng */
-    border: 1px solid rgba(255, 255, 255, 0.25) !important; /* Đảm bảo luôn giữ đường viền rõ nét */
+    background-color: rgba(30, 41, 59, 0.6) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+/* --- Khung tổng thể giới hạn chuẩn cho màn hình lớn (1920x1080 container) --- */
+.page-container {
+    display: flex;
+    width: 100%;
+    max-width: 1600px; /* Giới hạn độ rộng tối đa để website không bị bè ra quá mức trên màn hình 1920px */
+    min-height: 100vh;
+    position: relative;
 }
 
 /* --- Sidebar Menu Dọc --- */
@@ -164,8 +176,8 @@ sidebar.collapsed .theme-btn span {
 main-content {
     margin-left: var(--sidebar-width);
     flex: 1;
-    padding: 2rem;
-    max-width: 1000px;
+    padding: 2.5rem;
+    max-width: 1200px;
     width: calc(100% - var(--sidebar-width));
     z-index: 10;
 }
@@ -195,7 +207,7 @@ sidebar.collapsed ~ main-content {
     gap: 2rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .grid {
         grid-template-columns: 1fr;
     }
@@ -204,7 +216,7 @@ sidebar.collapsed ~ main-content {
 .card {
     background-color: var(--card-bg);
     border-radius: 16px;
-    padding: 1.8rem;
+    padding: 2rem;
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     margin-bottom: 2rem;
