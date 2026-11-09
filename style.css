@@ -5,9 +5,7 @@
     --text-secondary: #94a3b8;
     --primary-color: #6366f1;
     --primary-hover: #818cf8;
-    --border-color: rgba(99, 102, 241, 0.4);
-    --sidebar-width: 260px;
-    --sidebar-collapsed: 70px;
+    --border-color: rgba(99, 102, 241, 0.3);
     --shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
 }
 
@@ -16,7 +14,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease, width 0.3s ease, opacity 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 html {
@@ -28,9 +26,9 @@ body {
     color: var(--text-color);
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     position: relative;
-    justify-content: flex-start; /* Canh nội dung lệch sang bên trái */
-    align-items: flex-start;
 }
 
 /* --- LỚP NỀN VIDEO MP4 CHUẨN 1920x1080 --- */
@@ -49,11 +47,11 @@ body {
     display: none;
 }
 
-/* --- NÚT CON MẮT (Mặc định ẩn, chỉ hiện khi bật chế độ video nền) --- */
+/* --- NÚT CON MẮT --- */
 .toggle-content-btn {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 25px;
+    right: 25px;
     width: 45px;
     height: 45px;
     border-radius: 50%;
@@ -63,12 +61,11 @@ body {
     font-size: 1.2rem;
     cursor: pointer;
     z-index: 1000;
-    display: none; /* Ẩn mặc định */
+    display: none;
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(8px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    transition: transform 0.2s, background-color 0.2s;
 }
 
 .toggle-content-btn:hover {
@@ -76,13 +73,12 @@ body {
     background-color: var(--primary-color);
 }
 
-/* --- Khi bật video nền --- */
 body.video-bg-active {
     background-color: rgba(15, 23, 42, 0.2);
 }
 
 body.video-bg-active .card,
-body.video-bg-active sidebar,
+body.video-bg-active .pill-navbar,
 body.video-bg-active .modal {
     background-color: rgba(30, 41, 59, 0.6) !important;
     backdrop-filter: blur(12px);
@@ -90,157 +86,93 @@ body.video-bg-active .modal {
 }
 
 body.video-bg-active .toggle-content-btn {
-    display: flex; /* Hiện nút con mắt khi bật video nền */
+    display: flex;
 }
 
-/* --- Trạng thái ẩn nội dung (Chỉ hiển thị background) --- */
-body.content-hidden sidebar,
+body.content-hidden .navbar-wrapper,
 body.content-hidden main-content {
     opacity: 0;
-    pointer-events: none; /* Khóa không cho bấm vào nội dung khi đã ẩn */
+    pointer-events: none;
 }
 
-/* --- Sidebar Menu Dọc --- */
-sidebar {
-    width: var(--sidebar-width);
-    background-color: var(--card-bg);
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
+/* --- FLOATING PILL NAVBAR --- */
+.navbar-wrapper {
     position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 100;
-    overflow-x: hidden;
 }
 
-sidebar.collapsed {
-    width: var(--sidebar-collapsed);
-}
-
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.2rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.logo {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    white-space: nowrap;
-}
-
-sidebar.collapsed .logo {
-    display: none;
-}
-
-.toggle-btn {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 5px;
-}
-
-.sidebar-menu {
-    list-style: none;
-    padding: 1rem 0;
-    flex: 1;
-}
-
-.sidebar-menu li a {
+.pill-navbar {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 0.9rem 1.2rem;
+    padding: 0.4rem 0.6rem;
+    background-color: rgba(15, 23, 42, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.nav-menu li a {
+    display: block;
+    padding: 0.6rem 1.4rem;
     color: var(--text-color);
     text-decoration: none;
     font-weight: 600;
-    white-space: nowrap;
+    font-size: 0.95rem;
+    border-radius: 30px;
 }
 
-.sidebar-menu li a:hover {
-    background-color: var(--border-color);
-    color: var(--primary-color);
-}
-
-.sidebar-menu li a i {
-    font-size: 1.2rem;
-    min-width: 24px;
-    text-align: center;
-}
-
-sidebar.collapsed .sidebar-menu span {
-    display: none;
-}
-
-.sidebar-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+.nav-menu li a:hover,
+.nav-menu li.active a {
+    background-color: var(--primary-color);
+    color: white;
 }
 
 .theme-btn {
-    background: none;
+    background: rgba(255, 255, 255, 0.1);
     border: none;
     color: var(--text-color);
-    font-size: 1.1rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    width: 100%;
-    font-weight: 600;
-    padding: 0.5rem 0;
+    justify-content: center;
+    font-size: 1rem;
 }
 
-sidebar.collapsed .theme-btn span {
-    display: none;
+.theme-btn:hover {
+    background-color: var(--primary-color);
 }
 
-/* --- Main Content Layout --- */
+/* --- MAIN CONTENT LAYOUT --- */
 main-content {
-    margin-left: var(--sidebar-width);
-    flex: 1;
-    padding: 2.5rem;
+    margin-top: 90px;
+    padding: 2rem;
     max-width: 1200px;
-    width: calc(100% - var(--sidebar-width));
+    width: 100%;
     z-index: 10;
-}
-
-sidebar.collapsed ~ main-content {
-    margin-left: var(--sidebar-collapsed);
-    width: calc(100% - var(--sidebar-collapsed));
-}
-
-@media (max-width: 768px) {
-    sidebar {
-        width: var(--sidebar-collapsed);
-    }
-    sidebar .logo, sidebar .sidebar-menu span, sidebar .theme-btn span {
-        display: none;
-    }
-    main-content {
-        margin-left: var(--sidebar-collapsed) !important;
-        width: calc(100% - var(--sidebar-collapsed)) !important;
-        padding: 1rem;
-    }
 }
 
 .grid {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 1fr;
     gap: 2rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
     .grid {
         grid-template-columns: 1fr;
     }
@@ -255,7 +187,6 @@ sidebar.collapsed ~ main-content {
     margin-bottom: 2rem;
 }
 
-/* --- Thẻ Cá Nhân --- */
 .profile {
     text-align: center;
 }
@@ -297,7 +228,6 @@ sidebar.collapsed ~ main-content {
     justify-content: center;
     text-decoration: none;
     font-size: 1.2rem;
-    transition: transform 0.2s, background-color 0.2s;
     border: 1px solid var(--border-color);
 }
 
@@ -307,67 +237,15 @@ sidebar.collapsed ~ main-content {
     color: white;
 }
 
-/* --- Trình Phát Nhạc --- */
-.player-title {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.spotify-card {
+    padding: 1.2rem !important;
 }
 
-.song-info {
-    margin-bottom: 1rem;
-}
-
-.song-title {
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-.song-artist {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-}
-
-.player-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-}
-
-.player-btn {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    font-size: 1.4rem;
-    cursor: pointer;
-}
-
-.player-btn.play-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
-#secret-section {
+#secret-section, .secret-menu-item {
     display: none;
 }
 
-.secret-menu-item {
-    display: none;
-    background-color: rgba(239, 68, 68, 0.1);
-    color: #ef4444 !important;
-}
-
-/* --- Cửa Sổ Bật Lên (Modal) --- */
+/* --- MODAL --- */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
