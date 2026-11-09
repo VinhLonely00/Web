@@ -33,20 +33,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     typeEffect();
 
-    /* --- BẬT / TẮT CHẾ ĐỘ VIDEO NỀN MP4 --- */
+    /* --- BẬT / TẮT CHẾ ĐỘ VIDEO NỀN MP4 & NÚT CON MẮT --- */
     const videoBgToggle = document.getElementById('videoBgToggle');
     const bgVideo = document.getElementById('bgVideo');
+    const toggleContentBtn = document.getElementById('toggleContentBtn');
+    const eyeIcon = document.getElementById('eyeIcon');
 
     if (videoBgToggle && bgVideo) {
         videoBgToggle.addEventListener('click', () => {
             if (bgVideo.style.display === 'block') {
                 bgVideo.style.display = 'none';
                 bgVideo.pause();
-                document.body.classList.remove('video-bg-active'); // Tắt chế độ kính mờ
+                document.body.classList.remove('video-bg-active');
+                document.body.classList.remove('content-hidden'); // Hiện lại nội dung nếu đang ẩn
+                if (eyeIcon) eyeIcon.className = 'fa-solid fa-eye';
             } else {
                 bgVideo.style.display = 'block';
                 bgVideo.play().catch(e => console.log("Không thể phát video tự động:", e));
-                document.body.classList.add('video-bg-active'); // Bật chế độ kính mờ cho các thẻ
+                document.body.classList.add('video-bg-active');
+            }
+        });
+    }
+
+    // Sự kiện bấm nút con mắt để ẩn/hiện nội dung
+    if (toggleContentBtn && eyeIcon) {
+        toggleContentBtn.addEventListener('click', () => {
+            document.body.classList.toggle('content-hidden');
+            if (document.body.classList.contains('content-hidden')) {
+                eyeIcon.className = 'fa-solid fa-eye-slash'; // Đổi icon thành mắt gạch chéo
+                toggleContentBtn.title = "Hiện lại nội dung";
+            } else {
+                eyeIcon.className = 'fa-solid fa-eye'; // Đổi icon về mắt bình thường
+                toggleContentBtn.title = "Ẩn nội dung";
             }
         });
     }
