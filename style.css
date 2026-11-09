@@ -16,11 +16,11 @@
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease, width 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, width 0.3s ease, opacity 0.3s ease;
 }
 
 html {
-    zoom: 0.5; /* Mặc định thu nhỏ toàn bộ trang web về 50% khi vừa truy cập */
+    zoom: 0.5; /* Mặc định 50% */
 }
 
 body {
@@ -33,7 +33,7 @@ body {
     align-items: center;
 }
 
-/* --- LỚP NỀN VIDEO MP4 CHUẨN 1920x1080 (Trải kín màn hình không bị méo) --- */
+/* --- LỚP NỀN VIDEO MP4 CHUẨN 1920x1080 --- */
 .background-video {
     position: fixed;
     top: 50%;
@@ -44,14 +44,41 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: -1;
-    object-fit: cover; /* Đảm bảo video giữ nguyên tỷ lệ 16:9 (1920x1080) và phủ đầy màn hình */
+    object-fit: cover;
     pointer-events: none;
-    display: none; /* Mặc định ẩn, hiện lên khi bấm nút */
+    display: none;
 }
 
-/* --- Khi bật video nền, làm mờ nhẹ nền để nổi bật nội dung --- */
+/* --- NÚT CON MẮT (Mặc định ẩn, chỉ hiện khi bật chế độ video nền) --- */
+.toggle-content-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 1000;
+    display: none; /* Ẩn mặc định */
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.toggle-content-btn:hover {
+    transform: scale(1.1);
+    background-color: var(--primary-color);
+}
+
+/* --- Khi bật video nền --- */
 body.video-bg-active {
-    background-color: rgba(15, 23, 42, 0.3);
+    background-color: rgba(15, 23, 42, 0.2);
 }
 
 body.video-bg-active .card,
@@ -62,13 +89,15 @@ body.video-bg-active .modal {
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
 }
 
-/* --- Khung tổng thể giới hạn chuẩn cho màn hình lớn (1920x1080 container) --- */
-.page-container {
-    display: flex;
-    width: 100%;
-    max-width: 1600px; /* Giới hạn độ rộng tối đa để website không bị bè ra quá mức trên màn hình 1920px */
-    min-height: 100vh;
-    position: relative;
+body.video-bg-active .toggle-content-btn {
+    display: flex; /* Hiện nút con mắt khi bật video nền */
+}
+
+/* --- Trạng thái ẩn nội dung (Chỉ hiển thị background) --- */
+body.content-hidden sidebar,
+body.content-hidden main-content {
+    opacity: 0;
+    pointer-events: none; /* Khóa không cho bấm vào nội dung khi đã ẩn */
 }
 
 /* --- Sidebar Menu Dọc --- */
