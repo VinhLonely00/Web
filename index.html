@@ -22,25 +22,21 @@
         <i class="fa-solid fa-eye" id="eyeIcon"></i>
     </button>
 
-    <!-- Menu Dọc Sidebar -->
-    <sidebar id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">MyPortfolio</div>
-            <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="#about"><i class="fa-solid fa-user"></i> <span>Giới thiệu</span></a></li>
-            <li><a href="#projects"><i class="fa-solid fa-code"></i> <span>Dự án</span></a></li>
-            <li id="secretMenuLi" class="secret-menu-item">
-                <a href="#secret-section"><i class="fa-solid fa-lock-open"></i> <span>Bí Mật</span></a>
-            </li>
-        </ul>
-        <div class="sidebar-footer">
+    <!-- TOP NAVBAR VIÊN THUỐC (FLOATING PILL NAVBAR) -->
+    <header class="navbar-wrapper">
+        <nav class="pill-navbar">
+            <ul class="nav-menu">
+                <li class="active"><a href="#about"><span>Giới thiệu</span></a></li>
+                <li><a href="#projects"><span>Dự án</span></a></li>
+                <li id="secretMenuLi" class="secret-menu-item">
+                    <a href="#secret-section"><span>Bí Mật</span></a>
+                </li>
+            </ul>
             <button class="theme-btn" id="videoBgToggle" title="Bật/Tắt Video Nền">
-                <i class="fa-solid fa-film"></i> <span>Video Nền</span>
+                <i class="fa-solid fa-film"></i>
             </button>
-        </div>
-    </sidebar>
+        </nav>
+    </header>
 
     <!-- Nội dung chính -->
     <main-content id="mainContentArea">
@@ -52,13 +48,9 @@
                     <h2>VinhLonely</h2>
                     <p>Developer & Content Creator</p>
                     <div class="social-links">
-                        <!-- Facebook -->
                         <a href="https://web.facebook.com/vinhlonely00/" target="_blank" class="social-icon" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                        <!-- TikTok -->
                         <a href="https://www.tiktok.com/@iam_domdom2611" target="_blank" class="social-icon" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-                        <!-- Discord -->
                         <a href="https://discord.gg/MYBPKaWa" target="_blank" class="social-icon" title="Discord"><i class="fa-brands fa-discord"></i></a>
-                        <!-- GitHub -->
                         <a href="https://github.com/VinhLonely00" target="_blank" class="social-icon" title="GitHub"><i class="fa-brands fa-github"></i></a>
                     </div>
                 </div>
@@ -87,9 +79,9 @@
                 </div>
             </div>
 
-            <!-- CỘT BÊN PHẢI: Khung nhạc Spotify phong cách Daily Rotation -->
+            <!-- CỘT BÊN PHẢI: Khung nhạc Spotify -->
             <div>
-                <div class="card spotify-card" style="position: sticky; top: 2.5rem;">
+                <div class="card spotify-card" style="position: sticky; top: 6rem;">
                     <div class="player-title">
                         <i class="fa-solid fa-music"></i> Daily Rotation & Spotify
                     </div>
