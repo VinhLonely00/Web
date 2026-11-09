@@ -430,3 +430,11 @@ sidebar.collapsed ~ main-content {
     margin-top: 0.5rem;
     display: none;
 }
+.spotify-card {
+    padding: 1.2rem !important;
+}
+
+.spotify-embed-container iframe {
+    background: transparent;
+    border: none;
+}
