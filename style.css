@@ -29,8 +29,8 @@ body {
     min-height: 100vh;
     display: flex;
     position: relative;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start; /* Canh nội dung lệch sang bên trái */
+    align-items: flex-start;
 }
 
 /* --- LỚP NỀN VIDEO MP4 CHUẨN 1920x1080 --- */
