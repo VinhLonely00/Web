@@ -42,9 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (bgVideo.style.display === 'block') {
                 bgVideo.style.display = 'none';
                 bgVideo.pause();
+                document.body.classList.remove('video-bg-active'); // Tắt chế độ kính mờ
             } else {
                 bgVideo.style.display = 'block';
                 bgVideo.play().catch(e => console.log("Không thể phát video tự động:", e));
+                document.body.classList.add('video-bg-active'); // Bật chế độ kính mờ cho các thẻ
             }
         });
     }
