@@ -19,13 +19,17 @@
     transition: background-color 0.3s ease, color 0.3s ease, width 0.3s ease;
 }
 
+html {
+    zoom: 0.5; /* Mặc định thu nhỏ toàn bộ trang web về 50% khi vừa truy cập */
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
     min-height: 100vh;
     display: flex;
     position: relative;
-    justify-content: center; /* Canh giữa toàn bộ trang theo chuẩn màn hình lớn */
+    justify-content: center;
     align-items: center;
 }
 
