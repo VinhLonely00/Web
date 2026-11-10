@@ -27,11 +27,12 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Canh nội dung lệch sang bên trái */
     position: relative;
+    padding-left: 3rem;
 }
 
-/* --- LỚP NỀN VIDEO MP4 (GALAXY) LUÔN BẬT --- */
+/* --- LỚP NỀN VIDEO MP4 (BACKGROUND.MP4) --- */
 .background-video {
     position: fixed;
     top: 50%;
@@ -44,7 +45,19 @@ body {
     z-index: -1;
     object-fit: cover;
     pointer-events: none;
-    display: block; /* Luôn hiển thị video galaxy */
+    display: none; /* Mặc định ẩn, bật lên khi bấm nút Video Nền */
+}
+
+body.video-bg-active {
+    background-color: rgba(15, 23, 42, 0.2);
+}
+
+body.video-bg-active .card,
+body.video-bg-active .pill-navbar,
+body.video-bg-active .modal {
+    background-color: rgba(30, 41, 59, 0.6) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
 }
 
 /* --- HIỆU ỨNG MỜ DẦN & TÀNG HÌNH NỘI DUNG SAU 10S KHÔNG DI CHUYỂN CHUỘT --- */
@@ -52,17 +65,17 @@ body {
 main-content {
     opacity: 1;
     visibility: visible;
-    transition: opacity 1s ease, visibility 1s ease; /* Hiệu ứng mờ dần trong 1 giây */
+    transition: opacity 1s ease, visibility 1s ease;
 }
 
 body.idle-mode .navbar-wrapper,
 body.idle-mode main-content {
     opacity: 0;
     visibility: hidden;
-    pointer-events: none; /* Khóa tương tác khi tàng hình */
+    pointer-events: none;
 }
 
-/* --- FLOATING PILL NAVBAR --- */
+/* --- FLOATING PILL NAVBAR (GIỮ Ở GIỮA) --- */
 .navbar-wrapper {
     position: fixed;
     top: 20px;
@@ -76,10 +89,10 @@ body.idle-mode main-content {
     align-items: center;
     gap: 1rem;
     padding: 0.4rem 0.6rem;
-    background-color: rgba(30, 41, 59, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    background-color: rgba(30, 41, 59, 0.7);
+    border: 1px solid var(--border-color);
     border-radius: 50px;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(10px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
@@ -106,10 +119,28 @@ body.idle-mode main-content {
     color: white;
 }
 
-/* --- MAIN CONTENT LAYOUT --- */
+.theme-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-color);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.theme-btn:hover {
+    background-color: var(--primary-color);
+}
+
+/* --- MAIN CONTENT LAYOUT (CĂN TRÁI) --- */
 main-content {
     margin-top: 90px;
-    padding: 2rem;
+    padding: 2rem 0;
     max-width: 1200px;
     width: 100%;
     z-index: 10;
@@ -258,12 +289,4 @@ main-content {
     color: #ef4444;
     margin-top: 0.5rem;
     display: none;
-}
-.spotify-card {
-    padding: 1.2rem !important;
-}
-
-.spotify-embed-container iframe {
-    background: transparent;
-    border: none;
 }
