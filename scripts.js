@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* --- 0. HIỆU ỨNG ĐÁNH MÁY (CHỈ XÓA ĐẾN KÝ TỰ '@') --- */
+    /* --- 0. HIỆU ỨNG ĐÁNH MÁY --- */
     const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
     let charIndex = textToType.length;
     let isDeleting = true;
@@ -26,20 +26,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     typeEffect();
 
-    /* --- BẬT / TẮT CHẾ ĐỘ VIDEO NỀN BACKGROUND.MP4 --- */
-    const videoBgToggle = document.getElementById('videoBgToggle');
-    const bgVideo = document.getElementById('bgVideo');
+    /* --- CHUYỂN ĐỔI QUA LẠI GIỮA 2 BACKGROUND VIDEO --- */
+    const switchBgBtn = document.getElementById('switchBgBtn');
+    const bgVideo1 = document.getElementById('bgVideo1');
+    const bgVideo2 = document.getElementById('bgVideo2');
 
-    if (videoBgToggle && bgVideo) {
-        videoBgToggle.addEventListener('click', () => {
-            if (bgVideo.style.display === 'block') {
-                bgVideo.style.display = 'none';
-                bgVideo.pause();
-                document.body.classList.remove('video-bg-active');
+    if (switchBgBtn && bgVideo1 && bgVideo2) {
+        switchBgBtn.addEventListener('click', () => {
+            if (bgVideo1.classList.contains('active')) {
+                bgVideo1.classList.remove('active');
+                bgVideo1.pause();
+                bgVideo2.classList.add('active');
+                bgVideo2.play().catch(e => console.log(e));
             } else {
-                bgVideo.style.display = 'block';
-                bgVideo.play().catch(e => console.log("Không thể phát video tự động:", e));
-                document.body.classList.add('video-bg-active');
+                bgVideo2.classList.remove('active');
+                bgVideo2.pause();
+                bgVideo1.classList.add('active');
+                bgVideo1.play().catch(e => console.log(e));
             }
         });
     }
