@@ -26,30 +26,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     typeEffect();
 
+    /* --- BẬT / TẮT CHẾ ĐỘ VIDEO NỀN BACKGROUND.MP4 --- */
+    const videoBgToggle = document.getElementById('videoBgToggle');
+    const bgVideo = document.getElementById('bgVideo');
+
+    if (videoBgToggle && bgVideo) {
+        videoBgToggle.addEventListener('click', () => {
+            if (bgVideo.style.display === 'block') {
+                bgVideo.style.display = 'none';
+                bgVideo.pause();
+                document.body.classList.remove('video-bg-active');
+            } else {
+                bgVideo.style.display = 'block';
+                bgVideo.play().catch(e => console.log("Không thể phát video tự động:", e));
+                document.body.classList.add('video-bg-active');
+            }
+        });
+    }
+
     /* --- TỰ ĐỘNG MỜ DẦN & TÀNG HÌNH SAU 10 GIÂY KHÔNG DI CHUYỂN CHUỘT --- */
     let idleTimer;
-    const IDLE_TIMEOUT = 10000; // 10 giây (tính bằng mili giây)
+    const IDLE_TIMEOUT = 10000; // 10 giây
 
     function resetIdleTimer() {
-        // Nếu nội dung đang bị ẩn mà có chuột di chuyển -> Hiện lại ngay lập tức
         if (document.body.classList.contains('idle-mode')) {
             document.body.classList.remove('idle-mode');
         }
 
-        // Xóa bộ đếm cũ và tạo lại bộ đếm mới 10 giây
         clearTimeout(idleTimer);
         idleTimer = setTimeout(() => {
-            document.body.classList.add('idle-mode'); // Kích hoạt mờ dần và tàng hình thẻ
+            document.body.classList.add('idle-mode');
         }, IDLE_TIMEOUT);
     }
 
-    // Lắng nghe các sự kiện chuyển động chuột hoặc tương tác
     window.addEventListener('mousemove', resetIdleTimer);
     window.addEventListener('mousedown', resetIdleTimer);
     window.addEventListener('keypress', resetIdleTimer);
     window.addEventListener('scroll', resetIdleTimer);
 
-    // Khởi chạy bộ đếm lúc vừa vào trang
     resetIdleTimer();
 
     /* --- 1. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
