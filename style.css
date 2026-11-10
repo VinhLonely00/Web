@@ -1,6 +1,6 @@
 :root {
     --bg-color: #000000;
-    --card-bg: rgba(30, 41, 59, 0.6);
+    --card-bg: rgba(30, 41, 59, 0.7);
     --text-color: #f8fafc;
     --text-secondary: #94a3b8;
     --primary-color: #6366f1;
@@ -33,7 +33,7 @@ body {
     overflow-x: hidden;
 }
 
-/* --- LỚP NỀN VIDEO (QUẢN LÝ 2 BACKGROUND) --- */
+/* --- QUẢN LÝ 2 NỀN VIDEO --- */
 .background-video {
     position: fixed;
     top: 50%;
@@ -54,7 +54,7 @@ body {
     opacity: 1;
 }
 
-/* --- HIỆU ỨNG MỜ DẦN & TÀNG HÌNH NỘI DUNG SAU 10S KHÔNG DI CHUYỂN CHUỘT --- */
+/* --- HIỆU ỨNG TÀNG HÌNH SAU 10S KHÔNG DI CHUYỂN CHUỘT --- */
 .navbar-wrapper,
 main-content {
     opacity: 1;
@@ -83,7 +83,7 @@ body.idle-mode main-content {
     align-items: center;
     gap: 1rem;
     padding: 0.4rem 0.6rem;
-    background-color: rgba(30, 41, 59, 0.6);
+    background-color: rgba(30, 41, 59, 0.7);
     border: 1px solid var(--border-color);
     border-radius: 50px;
     backdrop-filter: blur(12px);
@@ -210,6 +210,132 @@ main-content {
     transform: translateY(-3px);
     background-color: var(--primary-color);
     color: white;
+}
+
+/* --- HIỆU ỨNG THẺ GIỚI THIỆU TÀ ĐẠO --- */
+.interactive-about-card {
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.5s ease;
+}
+
+.typing-title {
+    font-size: 1.4rem;
+    color: var(--text-color);
+    min-height: 2rem;
+}
+
+.about-expandable-content {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.8s ease, opacity 0.5s ease;
+    margin-top: 0;
+}
+
+.interactive-about-card:hover .about-expandable-content,
+.interactive-about-card.active-expand .about-expandable-content {
+    max-height: 450px;
+    opacity: 1;
+    margin-top: 1rem;
+}
+
+/* THANH KÉO CÁ MẬP */
+.shark-slider-container {
+    margin-bottom: 1rem;
+}
+
+.slider-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.custom-slider-track {
+    position: relative;
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.shark-range {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+    position: absolute;
+    z-index: 3;
+    cursor: pointer;
+}
+
+.shark-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 0px;
+    height: 0px;
+}
+
+.shark-thumb {
+    position: absolute;
+    left: 0%;
+    font-size: 1.4rem;
+    transform: translateX(-50%) translateY(-2px);
+    z-index: 2;
+    pointer-events: none;
+    transition: transform 0.1s ease;
+}
+
+/* MÁY BAY GIẤY & ĐƯỜNG DÂY */
+.flight-container {
+    position: relative;
+    height: 110px;
+    width: 100%;
+    margin-bottom: 1rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.paper-plane {
+    position: absolute;
+    left: -30px;
+    top: 45px;
+    font-size: 1.6rem;
+    transform: rotate(15deg);
+    opacity: 0;
+    transition: transform 0.2s ease;
+    z-index: 4;
+}
+
+.curved-path-svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.path-text {
+    fill: var(--primary-hover);
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.about-body-text {
+    opacity: 0.3;
+    transform: translateY(10px);
+    transition: all 0.5s ease;
+}
+
+.interactive-about-card:hover .about-body-text,
+.interactive-about-card.active-expand .about-body-text {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .spotify-card {
