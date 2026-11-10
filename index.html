@@ -11,13 +11,13 @@
 </head>
 <body>
 
-    <!-- LỚP NỀN VIDEO MP4 (GALAXY) -->
+    <!-- LỚP NỀN VIDEO MP4 (BACKGROUND.MP4) -->
     <video autoplay muted loop id="bgVideo" class="background-video">
-        <source src="mp3/galaxy.mp4" type="video/mp4">
+        <source src="mp3/background.mp4" type="video/mp4">
         Trình duyệt của bạn không hỗ trợ video nền.
     </video>
 
-    <!-- TOP NAVBAR VIÊN THUỐC (FLOATING PILL NAVBAR) -->
+    <!-- TOP NAVBAR VIÊN THUỐC (GIỮ Ở GIỮA) -->
     <header class="navbar-wrapper">
         <nav class="pill-navbar">
             <ul class="nav-menu">
@@ -27,10 +27,14 @@
                     <a href="#secret-section"><span>Bí Mật</span></a>
                 </li>
             </ul>
+            <!-- Nút bật/tắt video nền -->
+            <button class="theme-btn" id="videoBgToggle" title="Bật/Tắt Video Nền">
+                <i class="fa-solid fa-film"></i>
+            </button>
         </nav>
     </header>
 
-    <!-- Nội dung chính -->
+    <!-- Nội dung chính (Căn sang phía bên trái) -->
     <main-content id="mainContentArea">
         <div class="grid">
             <!-- CỘT BÊN TRÁI: Thông tin cá nhân & Các nội dung chính -->
