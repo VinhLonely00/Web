@@ -1,11 +1,11 @@
 :root {
-    --bg-color: #0f172a;
-    --card-bg: rgba(30, 41, 59, 0.75);
+    --bg-color: #000000;
+    --card-bg: rgba(30, 41, 59, 0.6);
     --text-color: #f8fafc;
     --text-secondary: #94a3b8;
     --primary-color: #6366f1;
     --primary-hover: #818cf8;
-    --border-color: rgba(99, 102, 241, 0.3);
+    --border-color: rgba(255, 255, 255, 0.25);
     --shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
 }
 
@@ -27,12 +27,13 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Canh nội dung lệch sang bên trái */
+    align-items: flex-start;
     position: relative;
     padding-left: 3rem;
+    overflow-x: hidden;
 }
 
-/* --- LỚP NỀN VIDEO MP4 (BACKGROUND.MP4) --- */
+/* --- LỚP NỀN VIDEO (QUẢN LÝ 2 BACKGROUND) --- */
 .background-video {
     position: fixed;
     top: 50%;
@@ -45,19 +46,12 @@ body {
     z-index: -1;
     object-fit: cover;
     pointer-events: none;
-    display: none; /* Mặc định ẩn, bật lên khi bấm nút Video Nền */
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
 }
 
-body.video-bg-active {
-    background-color: rgba(15, 23, 42, 0.2);
-}
-
-body.video-bg-active .card,
-body.video-bg-active .pill-navbar,
-body.video-bg-active .modal {
-    background-color: rgba(30, 41, 59, 0.6) !important;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+.background-video.active {
+    opacity: 1;
 }
 
 /* --- HIỆU ỨNG MỜ DẦN & TÀNG HÌNH NỘI DUNG SAU 10S KHÔNG DI CHUYỂN CHUỘT --- */
@@ -89,10 +83,10 @@ body.idle-mode main-content {
     align-items: center;
     gap: 1rem;
     padding: 0.4rem 0.6rem;
-    background-color: rgba(30, 41, 59, 0.7);
+    background-color: rgba(30, 41, 59, 0.6);
     border: 1px solid var(--border-color);
     border-radius: 50px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
