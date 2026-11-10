@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* --- 0. HIỆU ỨNG ĐÁNH MÁY --- */
+    /* --- 0. HIỆU ỨNG ĐÁNH MÁY TIÊU ĐỀ TRANG --- */
     const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
     let charIndex = textToType.length;
     let isDeleting = true;
@@ -25,6 +25,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     typeEffect();
+
+    /* --- HIỆU ỨNG ĐÁNH MÁY CHẬM RÃI CHO "About Me ..." --- */
+    const titleElement = document.getElementById('typingAboutTitle');
+    const textToTypeAbout = "About Me ...";
+    let indexAbout = 0;
+
+    function typeAboutEffect() {
+        if (indexAbout < textToTypeAbout.length) {
+            titleElement.textContent += textToTypeAbout.charAt(indexAbout);
+            indexAbout++;
+            setTimeout(typeAboutEffect, 150);
+        }
+    }
+    setTimeout(typeAboutEffect, 1000);
+
+    /* --- TƯƠNG TÁC KÉO THANH CÁ MẬP PHÓNG MÁY BAY GIẤY --- */
+    const sharkRange = document.getElementById('sharkRange');
+    const sharkThumb = document.getElementById('sharkThumb');
+    const paperPlane = document.getElementById('paperPlane');
+    const aboutCard = document.getElementById('about');
+
+    aboutCard.addEventListener('click', () => {
+        aboutCard.classList.toggle('active-expand');
+    });
+
+    if (sharkRange) {
+        sharkRange.addEventListener('input', (e) => {
+            const val = e.target.value; 
+            sharkThumb.style.left = val + '%';
+
+            const planeX = (val / 100) * 260; 
+            const planeY = -Math.sin((val / 100) * Math.PI) * 35; 
+            
+            if (val > 0) {
+                paperPlane.style.opacity = '1';
+                paperPlane.style.transform = `translate(${planeX}px, ${planeY}px) rotate(${15 - val * 0.15}deg)`;
+            } else {
+                paperPlane.style.opacity = '0';
+            }
+        });
+    }
 
     /* --- CHUYỂN ĐỔI QUA LẠI GIỮA 2 BACKGROUND VIDEO --- */
     const switchBgBtn = document.getElementById('switchBgBtn');
@@ -69,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetIdleTimer();
 
-    /* --- 1. CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
+    /* --- CHẾ ĐỘ KHÁCH / CHỦ VÀ XÁC THỰC MẬT KHẨU --- */
     const roleModal = document.getElementById('roleModal');
     const passwordModal = document.getElementById('passwordModal');
     const secretMenuLi = document.getElementById('secretMenuLi');
