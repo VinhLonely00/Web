@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetPlaneIcon = document.getElementById('targetPlaneIcon');
     const externalAboutContent = document.getElementById('externalAboutContent');
     const customSliderTrack = document.getElementById('sliderTrack');
-    const flightSvg = document.getElementById('flightSvg');
+    const airplaneOverlay = document.getElementById('airplaneOverlay');
 
     let pathLength = 0;
     const TRAIL_LENGTH = 125; // Chiều dài cố định của vệt đuôi nét đứt
@@ -45,53 +45,48 @@ document.addEventListener('DOMContentLoaded', () => {
         sharkThumb.style.left = thumbPos + 'px';
     }
 
-    // 1. HÀM GETPATHSTRING DÙNG SVG MATRIX CHUẨN XÁC TUYỆT ĐỐI
+    // 1. SỬA HÀM GETPATHSTRING VỚI HỆ SỐ SCALE KHẮC PHỤC ZOOM 0.5
     function getPathString() {
-        if (!flightSvg || !sharkThumb || !targetPlaneIcon) return '';
+        const overlay = document.getElementById('airplaneOverlay');
 
+        if (!overlay || !sharkThumb || !targetPlaneIcon) return '';
+
+        const overlayRect = overlay.getBoundingClientRect();
         const startRect = sharkThumb.getBoundingClientRect();
         const endRect = targetPlaneIcon.getBoundingClientRect();
 
-        // Chuyển tọa độ màn hình sang hệ tọa độ SVG
-        const matrix = flightSvg.getScreenCTM();
-        if (!matrix) return '';
+        // Chuyển tọa độ hiển thị sang tọa độ CSS thực tế
+        const scaleX = overlay.offsetWidth / overlayRect.width;
+        const scaleY = overlay.offsetHeight / overlayRect.height;
 
-        const inverseMatrix = matrix.inverse();
+        // Điểm xuất phát
+        const startX =
+            (startRect.left + startRect.width / 2 - overlayRect.left) * scaleX;
 
-        function convertPoint(x, y) {
-            const point = flightSvg.createSVGPoint();
-            point.x = x;
-            point.y = y;
-            return point.matrixTransform(inverseMatrix);
-        }
+        const startY =
+            (startRect.top + startRect.height / 2 - overlayRect.top) * scaleY;
 
-        // Tâm điểm xuất phát
-        const start = convertPoint(
-            startRect.left + startRect.width / 2,
-            startRect.top + startRect.height / 2
-        );
+        // Điểm đích: tâm icon About Me
+        const endX =
+            (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
 
-        // Tâm icon About Me
-        const end = convertPoint(
-            endRect.left + endRect.width / 2,
-            endRect.top + endRect.height / 2
-        );
+        const endY =
+            (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
 
-        const dx = end.x - start.x;
+        // Quỹ đạo cong
+        const dx = endX - startX;
+        const lift = overlay.offsetHeight * 0.25;
 
-        // Tạo quỹ đạo cong
-        const lift = flightSvg.clientHeight * 0.25;
+        const controlX1 = startX + dx * 0.3;
+        const controlY1 = startY - lift;
 
-        const cp1x = start.x + dx * 0.3;
-        const cp1y = start.y - lift;
+        const controlX2 = startX + dx * 0.7;
+        const controlY2 = endY - lift * 0.5;
 
-        const cp2x = start.x + dx * 0.7;
-        const cp2y = end.y - lift * 0.5;
-
-        return `M ${start.x} ${start.y}
-                C ${cp1x} ${cp1y},
-                  ${cp2x} ${cp2y},
-                  ${end.x} ${end.y}`;
+        return `M ${startX} ${startY}
+                C ${controlX1} ${controlY1},
+                  ${controlX2} ${controlY2},
+                  ${endX} ${endY}`;
     }
 
     // Khởi tạo quỹ đạo
@@ -164,10 +159,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (val > 0) {
                 paperPlane.style.opacity = '1';
                 
-                // Kiểm tra phần kết thúc animation (khi gần chạm 100%)
+                // 2. KIỂM TRA PHẦN KẾT THÚC ANIMATION (ĐẠT NGƯỠNG GẦN 100%)
                 if (val >= 99) {
                     sharkThumb.style.opacity = '0';
-                    paperPlane.style.opacity = '1'; // Giữ máy bay tại đích để kiểm tra trùng tâm
+                    // Giữ máy bay tại điểm đích để kiểm tra trùng tâm icon
+                    paperPlane.style.opacity = '1';
                 } else {
                     sharkThumb.style.opacity = '1';
                 }
