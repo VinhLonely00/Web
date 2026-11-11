@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY CẤT CÁNH ĐÚNG THEO HÌNH MẪU --- */
+    /* --- LOGIC ĐƯỜNG BAY CẤT CÁNH CHUẨN XÁC TỪ ĐẦU NÚT KÉO --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const paperPlane = document.getElementById('paperPlane');
@@ -39,20 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSvgPath() {
         if (!customSliderTrack || !flightPath || !animatedTrailPath || !sharkThumb) return;
 
-        // Tọa độ nút kéo trên slider ở card bên trái
+        // Lấy tọa độ động hiện tại của nút kéo máy bay trên thanh slider
         const thumbRect = sharkThumb.getBoundingClientRect();
         const startX = thumbRect.left + (thumbRect.width / 2);
         const startY = thumbRect.top + (thumbRect.height / 2);
 
-        // Tọa độ tiêu điểm chữ "about me" ở góc phải (phía trên 2 chú cún)
+        // Tọa độ đích đến là khu vực chữ "about me" ở góc trên bên phải
         const handwritingEl = document.getElementById('handwritingTitle');
         const hRect = handwritingEl.getBoundingClientRect();
-        const endX = hRect.left + 20;
+        const endX = hRect.left + 30;
         const endY = hRect.top + (hRect.height / 2);
 
-        // Đường uốn lượn chéo mượt mà
+        // Tạo đường cong Bezier nối từ điểm nút kéo đến góc phải
         const controlX1 = startX + (endX - startX) * 0.4;
-        const controlY1 = startY - 120;
+        const controlY1 = startY - 150;
         const controlX2 = startX + (endX - startX) * 0.75;
         const controlY2 = endY + 40;
 
@@ -63,22 +63,28 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
     }
 
+    // Cập nhật vị trí ban đầu
     updateSvgPath();
     window.addEventListener('resize', updateSvgPath);
 
     if (sharkRange) {
         sharkRange.addEventListener('input', (e) => {
-            if (isLaunched) return;
-
             const val = e.target.value; // 0 -> 100
-            sharkThumb.style.left = val + '%';
+            
+            // Cập nhật vị trí hiển thị của nút kéo trên track theo %
+            const trackRect = customSliderTrack.getBoundingClientRect();
+            const thumbWidth = sharkThumb.offsetWidth;
+            const availableWidth = trackRect.width - thumbWidth;
+            const currentLeft = (val / 100) * availableWidth + (thumbWidth / 2);
+            
+            sharkThumb.style.left = currentLeft + 'px';
 
+            // Cập nhật lại đường bay theo vị trí thực tế mới của nút kéo
             updateSvgPath();
 
-            // Khi kéo đủ 100% -> Kích hoạt cất cánh
             if (val >= 99 && !isLaunched) {
                 isLaunched = true;
-                sharkThumb.style.opacity = '0';
+                sharkThumb.style.opacity = '0'; // Ẩn nút máy bay trên slider khi bắt đầu bay
                 startFlightAnimation();
             }
         });
@@ -86,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startFlightAnimation() {
         let currentDist = 0;
-        const flightDuration = 2000;
+        const flightDuration = 2200;
         const startTime = performance.now();
 
         paperPlane.style.opacity = '1';
@@ -98,23 +104,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const easeProgress = 1 - (1 - progress) * (1 - progress);
             currentDist = easeProgress * pathLength;
 
-            // 1. Tọa độ di chuyển
+            // 1. Tọa độ hiện tại của máy bay theo đường dẫn
             const currentPoint = flightPath.getPointAtLength(currentDist);
             paperPlane.style.left = currentPoint.x + 'px';
             paperPlane.style.top = currentPoint.y + 'px';
 
-            // 2. Góc xoay hướng mũi máy bay đúng hướng bay
+            // 2. Góc xoay hướng mũi máy bay chuẩn theo hướng di chuyển
             const nextPoint = flightPath.getPointAtLength(Math.min(currentDist + 2, pathLength));
             const angle = Math.atan2(nextPoint.y - currentPoint.y, nextPoint.x - currentPoint.x) * (180 / Math.PI);
             paperPlane.style.transform = `translate(-50%, -50%) rotate(${angle + 45}deg)`;
 
-            // 3. Dải nét đứt vẽ nối từ slider tới vị trí máy bay
+            // 3. Dải nét đứt bám theo đuôi máy bay
             animatedTrailPath.style.strokeDasharray = `${currentDist} ${pathLength}`;
 
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
-                // Ẩn máy bay di chuyển, hiển thị chữ viết tay + icon máy bay cố định
+                // Khi máy bay bay đến đích: ẩn máy bay lớn, hiện chữ viết tay và nội dung giới thiệu
                 paperPlane.style.opacity = '0';
                 handwritingTitle.classList.add('show');
                 externalAboutContent.classList.add('show');
