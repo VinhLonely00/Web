@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* --- 0. HIỆU ỨNG ĐÁNH MÁY TIÊU ĐỀ TRANG --- */
+    /* --- 0. HIỆU ỨNG ĐÁNH MÁY TIÊU ĐỀ TRANG TAB --- */
     const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
     let charIndex = textToType.length;
     let isDeleting = true;
@@ -32,35 +32,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let indexAbout = 0;
 
     function typeAboutEffect() {
-        if (indexAbout < textToTypeAbout.length) {
+        if (indexAbout < textToTypeAbout.length && titleElement) {
             titleElement.textContent += textToTypeAbout.charAt(indexAbout);
             indexAbout++;
-            setTimeout(typeAboutEffect, 150);
+            setTimeout(typeAboutEffect, 150); // Đánh máy chậm 150ms mỗi ký tự
         }
     }
-    setTimeout(typeAboutEffect, 1000);
+    setTimeout(typeAboutEffect, 500);
 
-    /* --- TƯƠNG TÁC KÉO THANH CÁ MẬP PHÓNG MÁY BAY GIẤY --- */
+    /* --- TƯƠNG TÁC KÉO CÁ MẬP & PHÓNG MÁY BAY GIẤY --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const paperPlane = document.getElementById('paperPlane');
     const aboutCard = document.getElementById('about');
 
-    aboutCard.addEventListener('click', () => {
-        aboutCard.classList.toggle('active-expand');
-    });
+    if (aboutCard) {
+        aboutCard.addEventListener('click', () => {
+            aboutCard.classList.toggle('active-expand');
+        });
+    }
 
-    if (sharkRange) {
+    if (sharkRange && sharkThumb && paperPlane) {
         sharkRange.addEventListener('input', (e) => {
-            const val = e.target.value; 
+            const val = e.target.value; // Giá trị từ 0 -> 100
+            
+            // 1. Di chuyển đầu cá mập há miệng
             sharkThumb.style.left = val + '%';
+            sharkThumb.style.transform = `translateX(-50%) translateY(-2px) scaleX(-1) scale(${1 + val * 0.002})`;
 
-            const planeX = (val / 100) * 260; 
-            const planeY = -Math.sin((val / 100) * Math.PI) * 35; 
+            // 2. Phóng máy bay giấy bay theo đường cong uốn lượn
+            const planeX = (val / 100) * 320; 
+            const planeY = -Math.sin((val / 100) * Math.PI) * 45; // Quỹ đạo cong uốn lượn
             
             if (val > 0) {
                 paperPlane.style.opacity = '1';
-                paperPlane.style.transform = `translate(${planeX}px, ${planeY}px) rotate(${15 - val * 0.15}deg)`;
+                paperPlane.style.transform = `translate(${planeX}px, ${planeY}px) rotate(${15 - val * 0.25}deg)`;
             } else {
                 paperPlane.style.opacity = '0';
             }
