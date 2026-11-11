@@ -39,19 +39,22 @@
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" id="flightSvg">
             <path id="flightPath" fill="none" stroke="transparent" />
-            <!-- Mặc định ẩn hoàn toàn nét đứt -->
-            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="2.5" stroke-dasharray="0, 99999" />
+            <!-- Đường nét đứt uốn cong bám theo quỹ đạo máy bay -->
+            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.85)" stroke-width="2.5" stroke-dasharray="6,6" />
         </svg>
 
-        <!-- Máy bay cất cánh bay từ slider đến góc phải -->
+        <!-- Máy bay cất cánh từ slider -->
         <div id="paperPlane" class="paper-plane">
             <i class="fa-solid fa-paper-plane"></i>
         </div>
 
-        <!-- Cụm nội dung khoảng trời bên phải (vị trí chuẩn trên cửa sổ, phía trên 2 chú cún) -->
+        <!-- CỤM "ABOUT ME" GÓC PHẢI GIỐNG HỆT ẢNH MẪU -->
         <div class="right-sky-container" id="rightSkyContainer">
-            <div id="handwritingTitle" class="handwriting-title">
-                about me <i class="fa-solid fa-paper-plane plane-icon"></i>
+            <div class="about-me-header">
+                <span id="handwritingTitle" class="handwriting-title">about me</span>
+                <div class="plane-icon-wrapper" id="targetPlaneIcon">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
             </div>
 
             <div id="externalAboutContent" class="external-about-content">
