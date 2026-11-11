@@ -271,13 +271,14 @@ main-content {
     position: absolute;
     font-size: 2.2rem;
     color: #ffffff;
-    opacity: 0;
+    opacity: 0; /* Mặc định ẩn, chỉ hiện khi cất cánh */
     transform: translate(-50%, -50%);
     filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
     pointer-events: none;
+    z-index: 20;
 }
 
-/* CONTAINER PHÍA BÊN PHẢI BẦU TRỜI (KHÔNG BỊ ĐÈ NÓT NẰM NGOÀI CỬA SỔ) */
+/* CONTAINER PHÍA BÊN PHẢI BẦU TRỜI (TRÊN 2 CHÚ CÚN) */
 .right-sky-container {
     position: fixed;
     top: 120px;
