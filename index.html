@@ -38,13 +38,12 @@
     <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY -->
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" id="flightSvg">
-            <!-- Quỹ đạo bay ẩn -->
             <path id="flightPath" fill="none" stroke="transparent" />
-            <!-- Nét đứt bám đuôi (Mặc định ẩn hoàn toàn với dasharray 0) -->
+            <!-- Mặc định dasharray = 0 để tuyệt đối không hiển thị nét gạch chéo khi chưa cất cánh -->
             <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="2.5" stroke-dasharray="0, 99999" />
         </svg>
 
-        <!-- Máy bay cất cánh bay liên tục từ đầu đến đích -->
+        <!-- Máy bay cất cánh bay từ slider đến góc phải -->
         <div id="paperPlane" class="paper-plane">
             <i class="fa-solid fa-paper-plane"></i>
         </div>
