@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY CẤT CÁNH CHUẨN XÁC --- */
+    /* --- LOGIC ĐƯỜNG BAY CẤT CÁNH CHUẨN XÁC NHAU VỚI MẪU --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const paperPlane = document.getElementById('paperPlane');
@@ -36,7 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let pathLength = 0;
     let isLaunched = false;
-    const ZOOM_FACTOR = 0.5;
+
+    // Lấy zoom factor thực tế từ html
+    function getZoomFactor() {
+        const htmlZoom = parseFloat(window.getComputedStyle(document.documentElement).zoom);
+        return htmlZoom || 0.5;
+    }
 
     function updateSliderThumbPosition(val) {
         if (!customSliderTrack || !sharkThumb) return;
@@ -48,21 +53,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function getPathString() {
         if (!customSliderTrack || !sharkThumb || !targetPlaneIcon) return "";
 
+        const zoom = getZoomFactor();
         const thumbRect = sharkThumb.getBoundingClientRect();
-        // Lấy tọa độ tâm của nút kéo trên slider
-        const startX = (thumbRect.left + thumbRect.width / 2) / ZOOM_FACTOR;
-        const startY = (thumbRect.top + thumbRect.height / 2) / ZOOM_FACTOR;
+        
+        // Tọa độ tâm nút slider
+        const startX = (thumbRect.left + thumbRect.width / 2) / zoom;
+        const startY = (thumbRect.top + thumbRect.height / 2) / zoom;
 
+        // Tọa độ icon máy bay đích ở góc phải
         const pRect = targetPlaneIcon.getBoundingClientRect();
-        // Lấy tọa độ tâm của icon máy bay đích ở góc phải
-        const endX = (pRect.left + pRect.width / 2) / ZOOM_FACTOR;
-        const endY = (pRect.top + pRect.height / 2) / ZOOM_FACTOR;
+        const endX = (pRect.left + pRect.width / 2) / zoom;
+        const endY = (pRect.top + pRect.height / 2) / zoom;
 
-        // Tinh chỉnh điểm điều khiển (control points) để đường cong uốn lượn đẹp mắt lên phía trên
-        const controlX1 = startX + (endX - startX) * 0.4;
-        const controlY1 = Math.min(startY, endY) - 150;
-        const controlX2 = startX + (endX - startX) * 0.7;
-        const controlY2 = endY + 50;
+        // Điểm điều khiển Bezier giúp đường cong uốn lượn nhẹ qua không trung giống mẫu
+        const controlX1 = startX + (endX - startX) * 0.45;
+        const controlY1 = startY - (startY - endY) * 0.6;
+        const controlX2 = startX + (endX - startX) * 0.8;
+        const controlY2 = endY + 30;
 
         return `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
     }
@@ -73,11 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sharkRange.addEventListener('input', (e) => {
             if (isLaunched) return;
 
-            const val = e.target.value; // 0 -> 100
+            const val = e.target.value;
             updateSliderThumbPosition(val);
 
-            // Khi kéo max 100% -> Chốt đường bay từ đúng tâm nút kéo lên góc phải
-            if (val >= 99 && !isLaunched) {
+            // Khi kéo đến max (>= 98%)
+            if (val >= 98 && !isLaunched) {
                 isLaunched = true;
                 
                 const finalD = getPathString();
@@ -85,16 +92,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 animatedTrailPath.setAttribute('d', finalD);
                 pathLength = flightPath.getTotalLength();
 
-                sharkThumb.style.opacity = '0'; // Ẩn nút kéo
+                sharkThumb.style.opacity = '0'; // Ẩn nút kéo slider
                 startFlightAnimation();
             }
         });
     }
 
     function startFlightAnimation() {
-        let currentDist = 0;
-        const flightDuration = 2200; // 2.2 giây bay
+        const flightDuration = 2000; // Thời gian bay 2 giây
         const startTime = performance.now();
+        const zoom = getZoomFactor();
 
         paperPlane.style.opacity = '1';
 
@@ -102,30 +109,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / flightDuration, 1);
 
-            const easeProgress = 1 - (1 - progress) * (1 - progress);
-            currentDist = easeProgress * pathLength;
+            // Hiệu ứng gia tốc mượt
+            const easeProgress = 1 - Math.pow(1 - progress, 2);
+            const currentDist = easeProgress * pathLength;
 
-            // 1. Tọa độ máy bay cất cánh theo đường cong
+            // 1. Tọa độ di chuyển máy bay
             const currentPoint = flightPath.getPointAtLength(currentDist);
-            paperPlane.style.left = (currentPoint.x * ZOOM_FACTOR) + 'px';
-            paperPlane.style.top = (currentPoint.y * ZOOM_FACTOR) + 'px';
+            paperPlane.style.left = (currentPoint.x * zoom) + 'px';
+            paperPlane.style.top = (currentPoint.y * zoom) + 'px';
 
-            // 2. Góc xoay mũi máy bay hướng theo quỹ đạo
+            // 2. Góc xoay của máy bay theo tiếp tuyến đường cong
             const nextPoint = flightPath.getPointAtLength(Math.min(currentDist + 2, pathLength));
             const angle = Math.atan2(nextPoint.y - currentPoint.y, nextPoint.x - currentPoint.x) * (180 / Math.PI);
             paperPlane.style.transform = `translate(-50%, -50%) rotate(${angle + 45}deg)`;
 
-            // 3. Nét đứt bám theo đuôi máy bay
+            // 3. Đường nét đứt vẽ dài dần theo đuôi máy bay
             animatedTrailPath.style.strokeDasharray = `${currentDist}, ${pathLength}`;
 
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
-                // Khi bay đến đích: Ẩn máy bay cất cánh, hiện chữ viết tay và nội dung bên dưới
+                // Đã đến đích: Ẩn máy bay cất cánh, hiện chữ "about me" và nội dung
                 paperPlane.style.opacity = '0';
-                handwritingTitle.classList.add('show');
-                targetPlaneIcon.classList.add('show');
-                externalAboutContent.classList.add('show');
+                if (handwritingTitle) handwritingTitle.classList.add('show');
+                if (targetPlaneIcon) targetPlaneIcon.classList.add('show');
+                if (externalAboutContent) externalAboutContent.classList.add('show');
             }
         }
 
