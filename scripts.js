@@ -33,10 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetPlaneIcon = document.getElementById('targetPlaneIcon');
     const externalAboutContent = document.getElementById('externalAboutContent');
     const customSliderTrack = document.getElementById('sliderTrack');
-    const flightSvg = document.getElementById('flightSvg');
 
     let pathLength = 0;
-    const ZOOM_FACTOR = 0.5;
 
     function updateSliderThumbPosition(val) {
         if (!customSliderTrack || !sharkThumb) return;
@@ -45,29 +43,44 @@ document.addEventListener('DOMContentLoaded', () => {
         sharkThumb.style.left = thumbPos + 'px';
     }
 
-    // Tính toán quỹ đạo chuẩn xác khớp tuyệt đối với điểm cuối ở góc phải
+    // Thiết lập quỹ đạo đường cong Bezier chuẩn xác theo tỷ lệ màn hình
     function getPathString() {
-        if (!customSliderTrack || !sharkThumb || !targetPlaneIcon || !flightSvg) return "";
+        const W = window.innerWidth;
+        const H = window.innerHeight;
 
-        const svgRect = flightSvg.getBoundingClientRect();
-        const thumbRect = sharkThumb.getBoundingClientRect();
-        const targetRect = targetPlaneIcon.getBoundingClientRect();
+        // Điểm xuất phát chuẩn tại thanh trượt About Me (Cột bên trái)
+        const startX = W * 0.175;
+        const startY = H * 0.44;
 
-        const startX = ((thumbRect.left + thumbRect.width / 2) - svgRect.left) / ZOOM_FACTOR;
-        const startY = ((thumbRect.top + thumbRect.height / 2) - svgRect.top) / ZOOM_FACTOR;
+        // Điểm kết thúc trùng khớp hoàn hảo tại icon máy bay góc phải
+        const endX = W * 0.765;
+        const endY = H * 0.175;
 
-        // Điểm đích bám chính xác vào tâm icon máy bay góc phải
-        const endX = ((targetRect.left + targetRect.width / 2) - svgRect.left) / ZOOM_FACTOR;
-        const endY = ((targetRect.top + targetRect.height / 2) - svgRect.top) / ZOOM_FACTOR;
-
+        // Điểm điều khiển tạo cung lượn sóng mềm mại phía trên khung cảnh
         const controlX1 = startX + (endX - startX) * 0.35;
-        const controlY1 = Math.min(startY, endY) - 200;
+        const controlY1 = H * 0.08;
         const controlX2 = startX + (endX - startX) * 0.65;
-        const controlY2 = endY + 40;
+        const controlY2 = H * 0.12;
 
         return `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
     }
 
+    function initPath() {
+        if (!flightPath) return;
+        const d = getPathString();
+        flightPath.setAttribute('d', d);
+        if (animatedTrailPath) {
+            animatedTrailPath.setAttribute('d', d);
+        }
+        pathLength = flightPath.getTotalLength();
+        if (animatedTrailPath) {
+            animatedTrailPath.style.strokeDasharray = `${pathLength}`;
+            animatedTrailPath.style.strokeDashoffset = pathLength;
+        }
+    }
+
+    initPath();
+    window.addEventListener('resize', initPath);
     updateSliderThumbPosition(0);
 
     if (sharkRange) {
@@ -75,36 +88,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const val = parseFloat(e.target.value); // Giá trị từ 0 đến 100
             updateSliderThumbPosition(val);
 
-            // Cập nhật đường dẫn đường bay theo thời gian thực để khớp nếu kích thước thay đổi
-            const finalD = getPathString();
-            flightPath.setAttribute('d', finalD);
-            if (animatedTrailPath) animatedTrailPath.setAttribute('d', finalD);
-            pathLength = flightPath.getTotalLength();
+            if (!pathLength) {
+                initPath();
+            }
+
+            const currentDist = (val / 100) * pathLength;
 
             if (val > 0) {
                 paperPlane.style.opacity = '1';
-                sharkThumb.style.opacity = val >= 99 ? '0' : '1'; // Ẩn nút kéo khi chạm max
+                // Ẩn nút kéo khi gần đạt 100%, hiện lại khi kéo ngược về
+                sharkThumb.style.opacity = val >= 99 ? '0' : '1';
 
-                // Tính quãng đường di chuyển dựa theo % thanh trượt (hỗ trợ cả kéo tiến và kéo ngược)
-                const currentDist = (val / 100) * pathLength;
-
-                // 1. Cập nhật vị trí máy bay
+                // 1. Cập nhật vị trí máy bay giấy
                 const currentPoint = flightPath.getPointAtLength(currentDist);
-                paperPlane.style.left = (currentPoint.x * ZOOM_FACTOR) + 'px';
-                paperPlane.style.top = (currentPoint.y * ZOOM_FACTOR) + 'px';
+                paperPlane.style.left = currentPoint.x + 'px';
+                paperPlane.style.top = currentPoint.y + 'px';
 
-                // 2. Góc xoay mũi máy bay
+                // 2. Góc xoay mũi máy bay hướng theo tiếp tuyến quỹ đạo
                 const nextPoint = flightPath.getPointAtLength(Math.min(currentDist + 2, pathLength));
                 const angle = Math.atan2(nextPoint.y - currentPoint.y, nextPoint.x - currentPoint.x) * (180 / Math.PI);
                 paperPlane.style.transform = `translate(-50%, -50%) rotate(${angle + 45}deg)`;
 
-                // 3. Nét đứt bám theo
+                // 3. Hiệu ứng nét đứt bám theo đuôi máy bay (hỗ trợ cả kéo tiến và kéo lùi)
                 if (animatedTrailPath) {
                     animatedTrailPath.style.strokeDasharray = `${pathLength}`;
                     animatedTrailPath.style.strokeDashoffset = pathLength - currentDist;
                 }
 
-                // Kiểm soát hiển thị nội dung góc phải khi kéo tới đích hoặc kéo ngược lại
+                // Hiển thị nội dung góc phải khi kéo đến gần cuối, ẩn đi khi kéo ngược về
                 if (val >= 98) {
                     if (handwritingTitle) handwritingTitle.classList.add('show');
                     if (targetPlaneIcon) targetPlaneIcon.classList.add('show');
@@ -115,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (externalAboutContent) externalAboutContent.classList.remove('show');
                 }
             } else {
-                // Nếu kéo về 0: Reset hoàn toàn trạng thái ban đầu
+                // Khi kéo về 0: Reset toàn bộ trạng thái ban đầu
                 paperPlane.style.opacity = '0';
                 sharkThumb.style.opacity = '1';
                 if (animatedTrailPath) {
