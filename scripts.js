@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSvgPath() {
         if (!customSliderTrack || !flightPath || !animatedTrailPath || !sharkThumb) return;
 
-        // Tọa độ nút kéo hiện tại trên slider
+        // Lấy tọa độ chính xác của nút kéo (thumb) trên thanh slider
         const thumbRect = sharkThumb.getBoundingClientRect();
         const startX = (thumbRect.left + thumbRect.width / 2) / ZOOM_FACTOR;
         const startY = (thumbRect.top + thumbRect.height / 2) / ZOOM_FACTOR;
@@ -63,14 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         pathLength = flightPath.getTotalLength();
         
-        // Nếu chưa cất cánh, ép hoàn toàn nét đứt ẩn đi (chiều dài = 0)
+        // Cố định ẩn nét đứt khi chưa cất cánh để không bị lỗi vạch chéo
         if (!isLaunched) {
             animatedTrailPath.style.strokeDasharray = `0, ${pathLength}`;
         }
     }
 
     // Khởi tạo tọa độ ban đầu
-    setTimeout(updateSvgPath, 100);
+    setTimeout(updateSvgPath, 150);
     window.addEventListener('resize', updateSvgPath);
 
     if (sharkRange) {
@@ -79,15 +79,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const val = e.target.value; // 0 -> 100
 
-            // Cập nhật vị trí nút kéo trên thanh slider
+            // Cập nhật vị trí hiển thị của nút kéo trên thanh track
             const trackWidth = customSliderTrack.offsetWidth;
             const thumbPos = (val / 100) * trackWidth;
             sharkThumb.style.left = thumbPos + 'px';
 
-            // Cập nhật tọa độ đường bay theo nút kéo
+            // Cập nhật tọa độ đường bay theo vị trí mới của nút kéo
             updateSvgPath();
 
-            // Khi người dùng kéo chạm mốc 99-100% -> Kích hoạt máy bay cất cánh
+            // Khi người dùng kéo chạm mốc 99-100% -> Kích hoạt cất cánh
             if (val >= 99 && !isLaunched) {
                 isLaunched = true;
                 sharkThumb.style.opacity = '0'; // Ẩn nút kéo trên slider
