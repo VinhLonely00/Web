@@ -4,7 +4,7 @@
     --text-color: #f8fafc;
     --text-secondary: #94a3b8;
     --primary-color: #6366f1;
-    --primary-hover: #818cf8;
+    --primary-hover: #a855f7;
     --border-color: rgba(255, 255, 255, 0.25);
     --shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
 }
@@ -53,7 +53,7 @@ body {
     opacity: 1;
 }
 
-/* TÀNG HÌNH SAU 10S KHÔNG THAO TÁC */
+/* TÀNG HÌNH SAU 10S KHÔNG TƯƠNG TÁC */
 .navbar-wrapper,
 main-content {
     opacity: 1;
@@ -125,7 +125,7 @@ body.idle-mode main-content {
     justify-content: center;
 }
 
-/* MAIN CONTENT LAYOUT */
+/* MAIN LAYOUT */
 main-content {
     margin-top: 90px;
     padding: 2rem 0;
@@ -148,6 +148,8 @@ main-content {
     border: 1px solid var(--border-color);
     margin-bottom: 2rem;
     backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 10;
 }
 
 .profile {
@@ -183,65 +185,77 @@ main-content {
     border: 1px solid var(--border-color);
 }
 
-/* SLIDER THẺ ABOUT ME - MÁY BAY GIẤY */
+/* SLIDER ĐIỀU KHIỂN MÁY BAY GIẤY TRONG CARD */
 .shark-slider-container {
     margin-top: 1.5rem;
     position: relative;
-    z-index: 10;
+    z-index: 20;
 }
 
 .custom-slider-track {
     position: relative;
     width: 100%;
-    height: 14px;
+    height: 16px;
     background: rgba(255, 255, 255, 0.15);
     border-radius: 10px;
     display: flex;
     align-items: center;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    overflow: visible;
 }
 
 .shark-range {
     -webkit-appearance: none;
+    appearance: none;
     width: 100%;
     height: 100%;
     background: transparent;
     position: absolute;
-    z-index: 10;
-    cursor: pointer;
+    top: 0;
+    left: 0;
+    z-index: 30;
+    cursor: grab;
+    pointer-events: auto !important;
+}
+
+.shark-range:active {
+    cursor: grabbing;
 }
 
 .shark-range::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 0px;
-    height: 0px;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    cursor: grab;
+    background: transparent;
 }
 
 .shark-thumb {
     position: absolute;
     left: 0%;
-    font-size: 1.6rem;
-    transform: translateX(-50%) translateY(-3px) rotate(45deg);
-    z-index: 5;
+    font-size: 1.3rem;
+    color: #a855f7;
+    transform: translateX(-50%) rotate(45deg);
+    z-index: 25;
     pointer-events: none;
-    transition: left 0.05s linear;
+    transition: left 0.05s linear, opacity 0.2s ease;
 }
 
-/* OVERLAY MÁY BAY VÀ NỘI DUNG NGOÀI CARD */
+/* OVERLAY LỚP BAY & PHỦ MÀN HÌNH */
 .airplane-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none; /* GIÚP CLICK XUYÊN QUA XỬ LÝ LỖI KHÔNG KÉO ĐƯỢC SLIDER */
-    z-index: 50;
+    pointer-events: none; /* Cho phép click xuyên qua */
+    z-index: 15;
 }
 
 .flight-svg {
     width: 100%;
     height: 100%;
+    pointer-events: none;
 }
 
 .paper-plane {
@@ -250,39 +264,42 @@ main-content {
     color: #ffffff;
     opacity: 0;
     transform: translate(-50%, -50%);
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
+    filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.9));
     transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
 /* CHỮ VIẾT TAY "about me" */
 .handwriting-title {
     position: absolute;
-    top: 100px;
-    right: 220px;
+    top: 15%;
+    right: 22%;
     font-family: 'Dancing Script', cursive;
     font-size: 3.5rem;
     color: #ffffff;
-    text-shadow: 0 0 12px rgba(168, 85, 247, 0.8), 0 0 20px rgba(255, 255, 255, 0.6);
+    text-shadow: 0 0 12px rgba(168, 85, 247, 0.9), 0 0 20px rgba(255, 255, 255, 0.8);
     opacity: 0;
-    transform: translateY(10px) rotate(-5deg);
+    transform: translateY(10px) rotate(-6deg);
     transition: opacity 0.8s ease, transform 0.8s ease;
+    pointer-events: none;
 }
 
 .handwriting-title.show {
     opacity: 1;
-    transform: translateY(0) rotate(-5deg);
+    transform: translateY(0) rotate(-6deg);
 }
 
-/* NỘI DUNG GIỚI THIỆU PHÓNG NGOÀI BACKGROUND */
+/* NỘI DUNG GIỚI THIỆU PHÓNG RA KHÔNG GIAN BACKGROUND */
 .external-about-content {
     position: absolute;
-    top: 200px;
-    right: 80px;
+    top: 28%;
+    right: 10%;
     max-width: 420px;
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 1s ease 0.3s, transform 1s ease 0.3s;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    transition: opacity 1s ease 0.2s, transform 1s ease 0.2s;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+    pointer-events: none;
 }
 
 .external-about-content.show {
@@ -291,7 +308,7 @@ main-content {
 }
 
 .external-about-content .intro-text {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: #f3e8ff;
     margin-bottom: 0.5rem;
@@ -311,8 +328,8 @@ main-content {
 }
 
 .external-about-content .tags span {
-    background: rgba(168, 85, 247, 0.3);
-    border: 1px solid rgba(168, 85, 247, 0.5);
+    background: rgba(168, 85, 247, 0.35);
+    border: 1px solid rgba(168, 85, 247, 0.6);
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -324,7 +341,7 @@ main-content {
     display: none;
 }
 
-/* MODAL */
+/* MODAL STYLES */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
