@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ</title>
-    <!-- FontAwesome & Google Fonts (Dancing Script cho chữ viết tay) -->
+    <!-- FontAwesome & Google Fonts (Dancing Script cho chữ viết tay "about me") -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -37,20 +37,20 @@
         </nav>
     </header>
 
-    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY (PHỦ TOÀN MÀN HÌNH) -->
+    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY (PHỦ TOÀN MÀN HÌNH - KHÔNG CHẶN MOUSE CLICK) -->
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" viewBox="0 0 1000 600" preserveAspectRatio="none">
             <!-- Quỹ đạo uốn lượn từ slider lên góc trên bên phải -->
             <path id="flightPath" d="M 220 380 C 350 350, 450 320, 580 260 C 700 210, 780 180, 880 120" 
-                  fill="none" stroke="rgba(255, 255, 255, 0.8)" stroke-width="3.5" stroke-dasharray="10,8" />
+                  fill="none" stroke="rgba(255, 255, 255, 0.85)" stroke-width="3" stroke-dasharray="10,8" />
         </svg>
 
-        <!-- Máy bay giấy -->
+        <!-- Máy bay giấy lớn bay theo quỹ đạo -->
         <div id="paperPlane" class="paper-plane">
             <i class="fa-solid fa-paper-plane"></i>
         </div>
 
-        <!-- Chữ "about me" viết tay hiển thị trên đường nét đứt -->
+        <!-- Chữ "about me" viết tay hiển thị phía trên đường nét đứt -->
         <div id="handwritingTitle" class="handwriting-title">about me</div>
 
         <!-- Nội dung giới thiệu nằm ngoài Card (Phóng ra khoảng trống background) -->
@@ -83,7 +83,7 @@
                     </div>
                 </div>
 
-                <!-- CARD ABOUT ME VỚI SLIDER CÁ MẬP -->
+                <!-- CARD ABOUT ME VỚI SLIDER MÁY BAY GIẤY -->
                 <div class="card" id="aboutCard">
                     <div class="card-header-flex">
                         <h2><i class="fa-solid fa-star" style="color: #a855f7;"></i> About Me</h2>
@@ -92,7 +92,8 @@
                     <div class="shark-slider-container">
                         <div class="custom-slider-track">
                             <input type="range" min="0" max="100" value="0" class="shark-range" id="sharkRange">
-                            <div class="shark-thumb" id="sharkThumb">🦈</div>
+                            <!-- Đã đổi từ cá mập thành Máy bay giấy -->
+                            <div class="shark-thumb" id="sharkThumb">✈️</div>
                         </div>
                     </div>
                 </div>
