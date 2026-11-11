@@ -4,24 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ</title>
-    <!-- FontAwesome & Google Fonts (Dancing Script cho chữ viết tay "about me") -->
+    <!-- FontAwesome & Google Fonts (Dancing Script cho chữ viết tay) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- BACKGROUND 1 (GALAXY.MP4 - MẶC ĐỊNH) -->
+    <!-- BACKGROUND VIDEO 1 & 2 -->
     <video autoplay muted loop playsinline id="bgVideo1" class="background-video active">
         <source src="mp3/galaxy.mp4" type="video/mp4">
     </video>
-
-    <!-- BACKGROUND 2 (BACKGROUND.MP4) -->
     <video autoplay muted loop playsinline id="bgVideo2" class="background-video">
         <source src="mp3/background.mp4" type="video/mp4">
     </video>
 
-    <!-- TOP NAVBAR VIÊN THUỐC -->
+    <!-- FLOATING PILL NAVBAR -->
     <header class="navbar-wrapper">
         <nav class="pill-navbar">
             <ul class="nav-menu">
@@ -37,23 +35,24 @@
         </nav>
     </header>
 
-    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY (PHỦ TOÀN MÀN HÌNH - KHÔNG CHẶN MOUSE CLICK) -->
+    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY NGOÀI CARD -->
     <div id="airplaneOverlay" class="airplane-overlay">
-        <svg class="flight-svg" viewBox="0 0 1000 600" preserveAspectRatio="none">
-            <!-- Quỹ đạo uốn lượn từ slider lên góc trên bên phải -->
-            <path id="flightPath" d="M 220 380 C 350 350, 450 320, 580 260 C 700 210, 780 180, 880 120" 
-                  fill="none" stroke="rgba(255, 255, 255, 0.85)" stroke-width="3" stroke-dasharray="10,8" />
+        <svg class="flight-svg" id="flightSvg">
+            <!-- Đường path ẩn dùng để tính toán quỹ đạo uốn lượn -->
+            <path id="flightPath" fill="none" stroke="transparent" />
+            <!-- Đường path hiển thị dải nét đứt cố định chạy theo đuôi máy bay -->
+            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="3" stroke-dasharray="12,10" />
         </svg>
 
-        <!-- Máy bay giấy lớn bay theo quỹ đạo -->
+        <!-- Máy bay lớn bay trên màn hình -->
         <div id="paperPlane" class="paper-plane">
             <i class="fa-solid fa-paper-plane"></i>
         </div>
 
-        <!-- Chữ "about me" viết tay hiển thị phía trên đường nét đứt -->
+        <!-- Chữ "about me" phong cách viết tay -->
         <div id="handwritingTitle" class="handwriting-title">about me</div>
 
-        <!-- Nội dung giới thiệu nằm ngoài Card (Phóng ra khoảng trống background) -->
+        <!-- Nội dung giới thiệu hiển thị ngoài background -->
         <div id="externalAboutContent" class="external-about-content">
             <p class="intro-text">Xin chào! Mình là VinhLonely ♡</p>
             <p class="sub-text">Một người yêu công nghệ, thích sáng tạo nội dung, âm nhạc và những điều dễ thương ~</p>
@@ -66,7 +65,7 @@
         </div>
     </div>
 
-    <!-- Nội dung chính (Căn bên trái) -->
+    <!-- MAIN CONTENT -->
     <main-content id="mainContentArea">
         <div class="grid">
             <!-- CỘT BÊN TRÁI -->
@@ -90,10 +89,12 @@
                     </div>
                     
                     <div class="shark-slider-container">
-                        <div class="custom-slider-track">
+                        <div class="custom-slider-track" id="sliderTrack">
                             <input type="range" min="0" max="100" value="0" class="shark-range" id="sharkRange">
-                            <!-- Đã đổi từ cá mập thành Máy bay giấy -->
-                            <div class="shark-thumb" id="sharkThumb">✈️</div>
+                            <!-- Nút kéo hình máy bay giấy, sẽ ẩn đi khi kéo đầy 100% -->
+                            <div class="shark-thumb" id="sharkThumb">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -129,7 +130,7 @@
         </div>
     </main-content>
 
-    <!-- Modal chọn Khách / Chủ -->
+    <!-- MODALS -->
     <div class="modal-overlay" id="roleModal">
         <div class="modal">
             <h2>Chào Mừng Bạn!</h2>
@@ -141,7 +142,6 @@
         </div>
     </div>
 
-    <!-- Modal nhập mật khẩu -->
     <div class="modal-overlay" id="passwordModal" style="display: none;">
         <div class="modal">
             <h2>Xác Thực Mật Khẩu</h2>
