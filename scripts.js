@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetPlaneIcon = document.getElementById('targetPlaneIcon');
     const externalAboutContent = document.getElementById('externalAboutContent');
     const customSliderTrack = document.getElementById('sliderTrack');
+    const airplaneOverlay = document.getElementById('airplaneOverlay');
 
     let pathLength = 0;
 
@@ -43,24 +44,28 @@ document.addEventListener('DOMContentLoaded', () => {
         sharkThumb.style.left = thumbPos + 'px';
     }
 
-    // Thiết lập quỹ đạo đường cong Bezier chuẩn xác theo tỷ lệ màn hình
+    // Hàm lấy tọa độ quỹ đạo chuẩn xác dựa trên bounding rect của overlay và các phần tử
     function getPathString() {
-        const W = window.innerWidth;
-        const H = window.innerHeight;
+        if (!airplaneOverlay || !sharkThumb || !targetPlaneIcon) return '';
 
-        // Điểm xuất phát chuẩn tại thanh trượt About Me (Cột bên trái)
-        const startX = W * 0.175;
-        const startY = H * 0.44;
+        const overlayRect = airplaneOverlay.getBoundingClientRect();
+        const startRect = sharkThumb.getBoundingClientRect();
+        const endRect = targetPlaneIcon.getBoundingClientRect();
 
-        // Điểm kết thúc trùng khớp hoàn hảo tại icon máy bay góc phải
-        const endX = W * 0.765;
-        const endY = H * 0.175;
+        // Tọa độ tâm máy bay xuất phát quy về hệ quy chiếu overlay
+        const startX = startRect.left + startRect.width / 2 - overlayRect.left;
+        const startY = startRect.top + startRect.height / 2 - overlayRect.top;
 
-        // Điểm điều khiển tạo cung lượn sóng mềm mại phía trên khung cảnh
-        const controlX1 = startX + (endX - startX) * 0.35;
-        const controlY1 = H * 0.08;
-        const controlX2 = startX + (endX - startX) * 0.65;
-        const controlY2 = H * 0.12;
+        // Tọa độ tâm máy bay đích ở góc phải quy về hệ quy chiếu overlay
+        const endX = endRect.left + endRect.width / 2 - overlayRect.left;
+        const endY = endRect.top + endRect.height / 2 - overlayRect.top;
+
+        // Tạo đường cong bay mềm mại uốn lượn phía trên
+        const distanceX = endX - startX;
+        const controlX1 = startX + distanceX * 0.35;
+        const controlY1 = startY - overlayRect.height * 0.36;
+        const controlX2 = startX + distanceX * 0.65;
+        const controlY2 = endY - overlayRect.height * 0.25;
 
         return `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
     }
@@ -68,6 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function initPath() {
         if (!flightPath) return;
         const d = getPathString();
+        if (!d) return;
+
         flightPath.setAttribute('d', d);
         if (animatedTrailPath) {
             animatedTrailPath.setAttribute('d', d);
@@ -79,9 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    initPath();
-    window.addEventListener('resize', initPath);
-    updateSliderThumbPosition(0);
+    // Đợi DOM render hoàn tất rồi mới khởi tạo tọa độ tránh lệch DOM
+    requestAnimationFrame(() => {
+        initPath();
+        updateSliderThumbPosition(0);
+    });
+
+    window.addEventListener('resize', () => {
+        initPath();
+        const val = sharkRange ? parseFloat(sharkRange.value) : 0;
+        updateSliderThumbPosition(val);
+    });
 
     if (sharkRange) {
         sharkRange.addEventListener('input', (e) => {
@@ -96,10 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (val > 0) {
                 paperPlane.style.opacity = '1';
-                // Ẩn nút kéo khi gần đạt 100%, hiện lại khi kéo ngược về
+                // Ẩn nút kéo khi chạm đến gần cuối, hiện lại khi kéo ngược về
                 sharkThumb.style.opacity = val >= 99 ? '0' : '1';
 
-                // 1. Cập nhật vị trí máy bay giấy
+                // 1. Cập nhật vị trí máy bay giấy di chuyển theo thời gian thực (hỗ trợ cả tiến và lùi)
                 const currentPoint = flightPath.getPointAtLength(currentDist);
                 paperPlane.style.left = currentPoint.x + 'px';
                 paperPlane.style.top = currentPoint.y + 'px';
@@ -109,13 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const angle = Math.atan2(nextPoint.y - currentPoint.y, nextPoint.x - currentPoint.x) * (180 / Math.PI);
                 paperPlane.style.transform = `translate(-50%, -50%) rotate(${angle + 45}deg)`;
 
-                // 3. Hiệu ứng nét đứt bám theo đuôi máy bay (hỗ trợ cả kéo tiến và kéo lùi)
+                // 3. Hiệu ứng nét đứt bám theo sau đuôi máy bay
                 if (animatedTrailPath) {
                     animatedTrailPath.style.strokeDasharray = `${pathLength}`;
                     animatedTrailPath.style.strokeDashoffset = pathLength - currentDist;
                 }
 
-                // Hiển thị nội dung góc phải khi kéo đến gần cuối, ẩn đi khi kéo ngược về
+                // Hiển thị nội dung góc phải khi kéo tới gần đích, ẩn đi khi kéo ngược về
                 if (val >= 98) {
                     if (handwritingTitle) handwritingTitle.classList.add('show');
                     if (targetPlaneIcon) targetPlaneIcon.classList.add('show');
@@ -126,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (externalAboutContent) externalAboutContent.classList.remove('show');
                 }
             } else {
-                // Khi kéo về 0: Reset toàn bộ trạng thái ban đầu
+                // Khi kéo về 0: Reset hoàn toàn trạng thái ban đầu
                 paperPlane.style.opacity = '0';
                 sharkThumb.style.opacity = '1';
                 if (animatedTrailPath) {
