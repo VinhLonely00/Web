@@ -53,16 +53,18 @@ body {
     opacity: 1;
 }
 
-/* TÀNG HÌNH SAU 10S KHÔNG TƯƠNG TÁC */
+/* TÀNG HÌNH SAU 10S KHÔNG TƯƠNG TÁC (Đã bổ sung .right-sky-container vào đây) */
 .navbar-wrapper,
-main-content {
+main-content,
+.right-sky-container {
     opacity: 1;
     visibility: visible;
     transition: opacity 1s ease, visibility 1s ease;
 }
 
 body.idle-mode .navbar-wrapper,
-body.idle-mode main-content {
+body.idle-mode main-content,
+body.idle-mode .right-sky-container {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -278,42 +280,54 @@ main-content {
     z-index: 20;
 }
 
-/* CONTAINER PHÍA BÊN PHẢI BẦU TRỜI */
+/* CỤM GÓC PHẢI "ABOUT ME" */
 .right-sky-container {
     position: fixed;
-    top: 120px;
-    right: 280px;
-    width: 400px;
+    top: 140px;
+    right: 250px;
+    width: 420px;
     text-align: left;
     pointer-events: none;
     z-index: 16;
 }
 
-/* CHỮ VIẾT TAY "about me" VỚI MÁY BAY NHỎ BÊN CẠNH */
+.about-me-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+    position: relative;
+}
+
 .handwriting-title {
     font-family: 'Dancing Script', cursive;
-    font-size: 3.8rem;
+    font-size: 4rem;
     color: #ffffff;
     text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 25px rgba(255, 255, 255, 0.6);
     opacity: 0;
-    transform: rotate(-6deg);
+    transform: rotate(-5deg) translateY(10px);
     transition: opacity 0.8s ease, transform 0.8s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 0.8rem;
-}
-
-.handwriting-title .plane-icon {
-    font-size: 2.2rem;
-    transform: rotate(15deg);
 }
 
 .handwriting-title.show {
     opacity: 1;
+    transform: rotate(-5deg) translateY(0);
 }
 
-/* NỘI DUNG GIỚI THIỆU PHÍA DƯỚI CHỮ "about me" */
+.plane-icon-wrapper {
+    font-size: 2.2rem;
+    color: #ffffff;
+    transform: rotate(25deg);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.plane-icon-wrapper.show {
+    opacity: 1;
+}
+
+/* NỘI DUNG GIỚI THIỆU PHÍA DƯỚI */
 .external-about-content {
     opacity: 0;
     transform: translateY(15px);
@@ -349,7 +363,7 @@ main-content {
 .external-about-content .tags span {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.35);
-    padding: 0.3rem 0.9rem;
+    padding: 0.3rem 1rem;
     border-radius: 20px;
     font-size: 0.85rem;
     color: #ffffff;
