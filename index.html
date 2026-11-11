@@ -35,13 +35,13 @@
         </nav>
     </header>
 
-    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY BAY TỰ ĐỘNG -->
+    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY -->
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" id="flightSvg">
-            <!-- Đường path ẩn dùng để định nghĩa quỹ đạo dài bay đến góc gần phải màn hình -->
+            <!-- Đường path ẩn làm quỹ đạo bay -->
             <path id="flightPath" fill="none" stroke="transparent" />
-            <!-- Dải nét đứt bám đuôi di chuyển theo máy bay -->
-            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="3" stroke-dasharray="14,10" />
+            <!-- Dải nét đứt bám đuôi di chuyển -->
+            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="3" stroke-dasharray="12,8" />
         </svg>
 
         <!-- Máy bay lớn cất cánh -->
@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                <!-- CARD ABOUT ME VỚI SLIDER KÍCH HOẠT 100% -->
+                <!-- CARD ABOUT ME -->
                 <div class="card" id="aboutCard">
                     <div class="card-header-flex">
                         <h2><i class="fa-solid fa-star" style="color: #a855f7;"></i> About Me</h2>
@@ -91,7 +91,7 @@
                     <div class="shark-slider-container">
                         <div class="custom-slider-track" id="sliderTrack">
                             <input type="range" min="0" max="100" value="0" class="shark-range" id="sharkRange">
-                            <!-- Nút kéo hình máy bay giấy trên thanh slider, sẽ ẩn đi khi kéo đạt 100% -->
+                            <!-- Nút máy bay giấy màu trắng -->
                             <div class="shark-thumb" id="sharkThumb">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </div>
