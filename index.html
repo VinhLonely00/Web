@@ -21,7 +21,7 @@
         <source src="mp3/background.mp4" type="video/mp4">
     </video>
 
-    <!-- TOP NAVBAR VIÊN THUỐC (GIỮ Ở GIỮA) -->
+    <!-- TOP NAVBAR VIÊN THUỐC (FLOATING PILL NAVBAR GIỮ Ở GIỮA) -->
     <header class="navbar-wrapper">
         <nav class="pill-navbar">
             <ul class="nav-menu">
@@ -31,17 +31,17 @@
                     <a href="#secret-section"><span>Bí Mật</span></a>
                 </li>
             </ul>
-            <!-- Nút chuyển đổi giữa 2 Background -->
+            <!-- Nút chuyển đổi giữa 2 Background Video -->
             <button class="theme-btn" id="switchBgBtn" title="Chuyển Video Nền">
                 <i class="fa-solid fa-film"></i>
             </button>
         </nav>
     </header>
 
-    <!-- Nội dung chính (Căn sang phía bên trái) -->
+    <!-- Nội dung chính (Căn lệch sang bên trái) -->
     <main-content id="mainContentArea">
         <div class="grid">
-            <!-- CỘT BÊN TRÁI: Thông tin cá nhân & Giới thiệu tà đạo -->
+            <!-- CỘT BÊN TRÁI: Profile & Thẻ Giới Thiệu Tà Đạo -->
             <div>
                 <div class="card profile">
                     <img src="mp3/avatar.jpg" alt="Avatar" class="avatar">
@@ -55,32 +55,33 @@
                     </div>
                 </div>
 
-                <!-- PHẦN GIỚI THIỆU TÀ ĐẠO (CÁ M MẬP & MÁY BAY GIẤY) -->
+                <!-- THẺ GIỚI THIỆU TÀ ĐẠO (ABOUT ME) -->
                 <div class="card interactive-about-card" id="about">
+                    <!-- Tiêu đề đánh máy chậm -->
                     <h2 class="typing-title" id="typingAboutTitle"></h2>
                     
                     <div class="about-expandable-content">
-                        <!-- Thanh kéo cá mập -->
+                        <!-- Thanh kéo Cá Mập Há Miệng -->
                         <div class="shark-slider-container">
-                            <span class="slider-label">Kéo để khám phá:</span>
+                            <span class="slider-label">Kéo cá mập để phóng máy bay:</span>
                             <div class="custom-slider-track">
                                 <input type="range" min="0" max="100" value="0" class="shark-range" id="sharkRange">
                                 <div class="shark-thumb" id="sharkThumb">🦈</div>
                             </div>
                         </div>
 
-                        <!-- Khung máy bay giấy và đường dây uốn lượn -->
+                        <!-- Khu vực Máy bay giấy & Đường dây uốn lượn chữ "About Me" -->
                         <div class="flight-container" id="flightContainer">
                             <div class="paper-plane" id="paperPlane">✈️</div>
-                            <svg class="curved-path-svg" viewBox="0 0 400 150">
-                                <path id="curvePath" d="M 10 120 Q 150 10 380 90" fill="transparent" stroke="rgba(99, 102, 241, 0.6)" stroke-width="3" stroke-dasharray="6,6"/>
+                            <svg class="curved-path-svg" viewBox="0 0 400 120">
+                                <path id="curvePath" d="M 20 90 Q 200 10 380 70" fill="transparent" stroke="rgba(255, 255, 255, 0.4)" stroke-width="2" stroke-dasharray="5,5"/>
                                 <text class="path-text">
-                                    <textPath href="#curvePath" startOffset="30%">About Me</textPath>
+                                    <textPath href="#curvePath" startOffset="35%">About Me ~</textPath>
                                 </text>
                             </svg>
                         </div>
 
-                        <!-- Phần nội dung chi tiết -->
+                        <!-- Nội dung giới thiệu bên dưới -->
                         <div class="about-body-text" id="aboutBodyText">
                             <p style="color: var(--text-secondary); line-height: 1.6;">
                                 Xin chào! Đây là trang web cá nhân của tôi. Nơi tôi chia sẻ về bản thân, các dự án và sở thích cá nhân. Hãy khám phá giao diện và âm nhạc nhé!
