@@ -185,7 +185,7 @@ main-content {
     border: 1px solid var(--border-color);
 }
 
-/* SLIDER ĐIỀU KHIỂN MÁY BAY TRONG CARD */
+/* SLIDER ĐIỀU KHIỂN */
 .shark-slider-container {
     margin-top: 1.5rem;
     position: relative;
@@ -226,14 +226,16 @@ main-content {
     background: transparent;
 }
 
+/* NÚT MÁY BAY GIẤY - ĐÃ ĐỔI THÀNH MÀU TRẮNG TINH */
 .shark-thumb {
     position: absolute;
     left: 0%;
     font-size: 1.3rem;
-    color: #a855f7;
+    color: #ffffff; /* ĐỔI TỪ TÍM SANG TRẮNG */
     transform: translateX(-50%) rotate(45deg);
     z-index: 25;
     pointer-events: none;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8)); /* Đèn phát sáng màu trắng */
     transition: left 0.05s linear, opacity 0.3s ease;
 }
 
@@ -256,23 +258,23 @@ main-content {
 
 .paper-plane {
     position: absolute;
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     color: #ffffff;
     opacity: 0;
     transform: translate(-50%, -50%);
-    filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.9));
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
     pointer-events: none;
 }
 
-/* CHỮ VIẾT TAY "about me" */
+/* CHỮ VIẾT TAY "about me" KHỦNG THEO HÌNH MẪU */
 .handwriting-title {
     position: absolute;
-    top: 12%;
-    right: 18%;
+    top: 14%;
+    right: 20%;
     font-family: 'Dancing Script', cursive;
-    font-size: 3.5rem;
+    font-size: 3.8rem;
     color: #ffffff;
-    text-shadow: 0 0 12px rgba(168, 85, 247, 0.9), 0 0 20px rgba(255, 255, 255, 0.8);
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 25px rgba(255, 255, 255, 0.8);
     opacity: 0;
     transform: translateY(10px) rotate(-6deg);
     transition: opacity 0.8s ease, transform 0.8s ease;
@@ -284,12 +286,12 @@ main-content {
     transform: translateY(0) rotate(-6deg);
 }
 
-/* NỘI DUNG GIỚI THIỆU PHÓNG RA KHÔNG GIAN BACKGROUND */
+/* NỘI DUNG GIỚI THIỆU */
 .external-about-content {
     position: absolute;
-    top: 24%;
+    top: 26%;
     right: 8%;
-    max-width: 420px;
+    max-width: 440px;
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 1s ease 0.2s, transform 1s ease 0.2s;
@@ -305,13 +307,13 @@ main-content {
 .external-about-content .intro-text {
     font-size: 1.5rem;
     font-weight: 600;
-    color: #f3e8ff;
+    color: #ffffff;
     margin-bottom: 0.5rem;
 }
 
 .external-about-content .sub-text {
     font-size: 1rem;
-    color: #cbd5e1;
+    color: #e2e8f0;
     line-height: 1.6;
     margin-bottom: 1rem;
 }
@@ -323,12 +325,12 @@ main-content {
 }
 
 .external-about-content .tags span {
-    background: rgba(168, 85, 247, 0.35);
-    border: 1px solid rgba(168, 85, 247, 0.6);
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.85rem;
-    color: #e9d5ff;
+    color: #ffffff;
     backdrop-filter: blur(5px);
 }
 
