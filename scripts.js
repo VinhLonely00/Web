@@ -34,25 +34,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderTrack = document.getElementById('sliderTrack');
 
     let pathLength = 0;
-    const TAIL_LENGTH = 180; // Độ dài dải nét đứt bám đuôi cố định
+    const TAIL_LENGTH = 160; // Độ dài dải nét đứt bám đuôi cố định
     let isLaunched = false;
 
-    // Thiết lập đường cong SVG tự động kéo dài vươn tới góc gần phải màn hình
+    // Định nghĩa đường bay lượn từ đúng điểm slider cất cánh chéo sang góc trên bên phải bầu trời (theo ảnh mẫu)
     function updateSvgPath() {
         if (!sliderTrack || !flightPath || !animatedTrailPath) return;
 
         const trackRect = sliderTrack.getBoundingClientRect();
-        const startX = trackRect.left + 20;
+        // Điểm cất cánh tại cuối thanh slider
+        const startX = trackRect.right - 20;
         const startY = trackRect.top + (trackRect.height / 2);
 
-        // Đích đến vươn tới góc trên gần phải màn hình đúng yêu cầu
-        const endX = window.innerWidth * 0.76;
-        const endY = window.innerHeight * 0.16;
+        // Điểm đáp dừng máy bay ở khu vực bầu trời góc trên phải (giống ảnh 2 & 3)
+        const endX = window.innerWidth * 0.82;
+        const endY = window.innerHeight * 0.18;
 
-        const controlX1 = startX + (endX - startX) * 0.35;
-        const controlY1 = startY - 180;
-        const controlX2 = startX + (endX - startX) * 0.65;
-        const controlY2 = endY + 120;
+        // Điểm uốn lượn mềm mại
+        const controlX1 = startX + (endX - startX) * 0.4;
+        const controlY1 = startY - 100;
+        const controlX2 = startX + (endX - startX) * 0.7;
+        const controlY2 = endY + 60;
 
         const d = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
         flightPath.setAttribute('d', d);
@@ -65,49 +67,48 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', updateSvgPath);
 
     if (sharkRange) {
-        // Cho phép người dùng kéo slider bình thường để trượt icon máy bay trong card
         sharkRange.addEventListener('input', (e) => {
-            if (isLaunched) return; // Nếu đã cất cánh rồi thì khóa slider lại ở 100%
+            if (isLaunched) return;
 
             const val = e.target.value; // 0 -> 100
             sharkThumb.style.left = val + '%';
 
-            // Khi người dùng kéo chạm đích 100% -> KÍCH HOẠT MÁY BAY CẤT CÁNH TỰ ĐỘNG
+            // Khi người dùng kéo hết 100% -> Kích hoạt máy bay cất cánh
             if (val >= 99 && !isLaunched) {
                 isLaunched = true;
-                sharkThumb.style.opacity = '0'; // Ẩn máy bay trên thanh slider
+                sharkThumb.style.opacity = '0'; // Ẩn máy bay trên slider
                 startFlightAnimation();
             }
         });
     }
 
-    // Hàm chạy hiệu ứng máy bay cất cánh tự động bay và vệt nét đứt bám đuôi mượt mà
+    // Hàm chạy máy bay cất cánh tự động với vệt nét đứt chạy bám đuôi
     function startFlightAnimation() {
         let currentDist = 0;
-        const flightDuration = 2200; // Thời gian bay (miligiây)
+        const flightDuration = 2200; // Thời gian bay 2.2s
         const startTime = performance.now();
 
         paperPlane.style.opacity = '1';
 
         function animate(currentTime) {
             const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / flightDuration, 1); // 0.0 -> 1.0
+            const progress = Math.min(elapsed / flightDuration, 1);
 
-            // Hàm chuyển động mềm mại easeOutQuad
+            // Chuyển động mượt easeOutQuad
             const easeProgress = 1 - (1 - progress) * (1 - progress);
             currentDist = easeProgress * pathLength;
 
-            // 1. Tính toán vị trí tọa độ của máy bay trên quỹ đạo SVG
+            // 1. Tính tọa độ vị trí máy bay
             const currentPoint = flightPath.getPointAtLength(currentDist);
             paperPlane.style.left = currentPoint.x + 'px';
             paperPlane.style.top = currentPoint.y + 'px';
 
-            // 2. Tự động xoay hướng mũi máy bay chuẩn xác theo tiếp tuyến đường uốn lượn
+            // 2. Tự động xoay góc hướng mũi máy bay chuẩn theo quỹ đạo bay
             const nextPoint = flightPath.getPointAtLength(Math.min(currentDist + 2, pathLength));
             const angle = Math.atan2(nextPoint.y - currentPoint.y, nextPoint.x - currentPoint.x) * (180 / Math.PI);
             paperPlane.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
 
-            // 3. Xử lý dải nét đứt có độ dài cố định chạy bám theo đuôi máy bay
+            // 3. Dải nét đứt có độ dài cố định chạy theo đuôi máy bay
             const dashStart = Math.max(0, currentDist - TAIL_LENGTH);
             const visibleLength = currentDist - dashStart;
             animatedTrailPath.style.strokeDasharray = `${visibleLength} ${pathLength}`;
@@ -116,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
-                // Khi máy bay đến đích góc trên phải: Giữ nguyên vệt nét đứt cuối và hiện chữ + nội dung
+                // Khi chạm đích: Giữ nguyên vệt nét đứt và hiện chữ viết tay + nội dung
                 const finalDashStart = Math.max(0, pathLength - TAIL_LENGTH);
                 animatedTrailPath.style.strokeDasharray = `${TAIL_LENGTH} ${pathLength}`;
                 animatedTrailPath.style.strokeDashoffset = -finalDashStart;
