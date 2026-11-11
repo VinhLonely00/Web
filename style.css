@@ -53,7 +53,7 @@ body {
     opacity: 1;
 }
 
-/* TÀNG HÌNH SAU 10S */
+/* TÀNG HÌNH SAU 10S KHÔNG THAO TÁC */
 .navbar-wrapper,
 main-content {
     opacity: 1;
@@ -68,7 +68,7 @@ body.idle-mode main-content {
     pointer-events: none;
 }
 
-/* NAVBAR */
+/* FLOATING PILL NAVBAR */
 .navbar-wrapper {
     position: fixed;
     top: 20px;
@@ -183,9 +183,11 @@ main-content {
     border: 1px solid var(--border-color);
 }
 
-/* SLIDER CÁ MẬP HÁ MIỆNG */
+/* SLIDER THẺ ABOUT ME - MÁY BAY GIẤY */
 .shark-slider-container {
     margin-top: 1.5rem;
+    position: relative;
+    z-index: 10;
 }
 
 .custom-slider-track {
@@ -197,14 +199,16 @@ main-content {
     display: flex;
     align-items: center;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: visible;
 }
 
 .shark-range {
     -webkit-appearance: none;
     width: 100%;
+    height: 100%;
     background: transparent;
     position: absolute;
-    z-index: 3;
+    z-index: 10;
     cursor: pointer;
 }
 
@@ -217,11 +221,11 @@ main-content {
 .shark-thumb {
     position: absolute;
     left: 0%;
-    font-size: 1.8rem;
-    transform: translateX(-50%) translateY(-2px) scaleX(-1);
-    z-index: 2;
+    font-size: 1.6rem;
+    transform: translateX(-50%) translateY(-3px) rotate(45deg);
+    z-index: 5;
     pointer-events: none;
-    transition: transform 0.1s ease, left 0.05s linear;
+    transition: left 0.05s linear;
 }
 
 /* OVERLAY MÁY BAY VÀ NỘI DUNG NGOÀI CARD */
@@ -231,7 +235,7 @@ main-content {
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none;
+    pointer-events: none; /* GIÚP CLICK XUYÊN QUA XỬ LÝ LỖI KHÔNG KÉO ĐƯỢC SLIDER */
     z-index: 50;
 }
 
