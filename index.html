@@ -38,10 +38,10 @@
     <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY -->
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" id="flightSvg">
-            <!-- Đường path ẩn làm quỹ đạo bay -->
+            <!-- Quỹ đạo bay ẩn -->
             <path id="flightPath" fill="none" stroke="transparent" />
-            <!-- Dải nét đứt bám đuôi (mặc định ẩn hoàn toàn stroke-dasharray=0) -->
-            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="3" stroke-dasharray="0, 999999" />
+            <!-- Nét đứt bám đuôi (Mặc định ẩn hoàn toàn với dasharray 0) -->
+            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="2.5" stroke-dasharray="0, 99999" />
         </svg>
 
         <!-- Máy bay cất cánh bay liên tục từ đầu đến đích -->
@@ -49,7 +49,7 @@
             <i class="fa-solid fa-paper-plane"></i>
         </div>
 
-        <!-- Cụm nội dung khoảng trời bên phải (trên 2 chú cún) -->
+        <!-- Cụm nội dung khoảng trời bên phải (vị trí chuẩn trên cửa sổ) -->
         <div class="right-sky-container" id="rightSkyContainer">
             <div id="handwritingTitle" class="handwriting-title">
                 about me <i class="fa-solid fa-paper-plane plane-icon"></i>
