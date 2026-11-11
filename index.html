@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ</title>
-    <!-- FontAwesome & Google Fonts (Dancing Script cho chữ viết tay) -->
+    <!-- FontAwesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -35,16 +35,16 @@
         </nav>
     </header>
 
-    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY NGOÀI CARD -->
+    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY BAY TỰ ĐỘNG -->
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" id="flightSvg">
-            <!-- Đường path ẩn dùng để tính toán quỹ đạo uốn lượn -->
+            <!-- Đường path ẩn dùng để định nghĩa quỹ đạo dài bay đến góc gần phải màn hình -->
             <path id="flightPath" fill="none" stroke="transparent" />
-            <!-- Đường path hiển thị dải nét đứt cố định chạy theo đuôi máy bay -->
-            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="3" stroke-dasharray="12,10" />
+            <!-- Dải nét đứt bám đuôi di chuyển theo máy bay -->
+            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="3" stroke-dasharray="14,10" />
         </svg>
 
-        <!-- Máy bay lớn bay trên màn hình -->
+        <!-- Máy bay lớn cất cánh -->
         <div id="paperPlane" class="paper-plane">
             <i class="fa-solid fa-paper-plane"></i>
         </div>
@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                <!-- CARD ABOUT ME VỚI SLIDER MÁY BAY GIẤY -->
+                <!-- CARD ABOUT ME VỚI SLIDER KÍCH HOẠT 100% -->
                 <div class="card" id="aboutCard">
                     <div class="card-header-flex">
                         <h2><i class="fa-solid fa-star" style="color: #a855f7;"></i> About Me</h2>
@@ -91,7 +91,7 @@
                     <div class="shark-slider-container">
                         <div class="custom-slider-track" id="sliderTrack">
                             <input type="range" min="0" max="100" value="0" class="shark-range" id="sharkRange">
-                            <!-- Nút kéo hình máy bay giấy, sẽ ẩn đi khi kéo đầy 100% -->
+                            <!-- Nút kéo hình máy bay giấy trên thanh slider, sẽ ẩn đi khi kéo đạt 100% -->
                             <div class="shark-thumb" id="sharkThumb">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </div>
