@@ -185,7 +185,7 @@ main-content {
     border: 1px solid var(--border-color);
 }
 
-/* SLIDER ĐIỀU KHIỂN MÁY BAY GIẤY TRONG CARD */
+/* SLIDER ĐIỀU KHIỂN MÁY BAY TRONG CARD */
 .shark-slider-container {
     margin-top: 1.5rem;
     position: relative;
@@ -213,12 +213,8 @@ main-content {
     top: 0;
     left: 0;
     z-index: 30;
-    cursor: grab;
+    cursor: pointer;
     pointer-events: auto !important;
-}
-
-.shark-range:active {
-    cursor: grabbing;
 }
 
 .shark-range::-webkit-slider-thumb {
@@ -226,7 +222,7 @@ main-content {
     appearance: none;
     width: 30px;
     height: 30px;
-    cursor: grab;
+    cursor: pointer;
     background: transparent;
 }
 
@@ -238,7 +234,7 @@ main-content {
     transform: translateX(-50%) rotate(45deg);
     z-index: 25;
     pointer-events: none;
-    transition: left 0.05s linear, opacity 0.2s ease;
+    transition: left 0.05s linear, opacity 0.3s ease;
 }
 
 /* OVERLAY LỚP BAY & PHỦ MÀN HÌNH */
@@ -248,7 +244,7 @@ main-content {
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none; /* Cho phép click xuyên qua */
+    pointer-events: none;
     z-index: 15;
 }
 
@@ -265,15 +261,14 @@ main-content {
     opacity: 0;
     transform: translate(-50%, -50%);
     filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.9));
-    transition: opacity 0.3s ease;
     pointer-events: none;
 }
 
 /* CHỮ VIẾT TAY "about me" */
 .handwriting-title {
     position: absolute;
-    top: 15%;
-    right: 22%;
+    top: 12%;
+    right: 18%;
     font-family: 'Dancing Script', cursive;
     font-size: 3.5rem;
     color: #ffffff;
@@ -292,8 +287,8 @@ main-content {
 /* NỘI DUNG GIỚI THIỆU PHÓNG RA KHÔNG GIAN BACKGROUND */
 .external-about-content {
     position: absolute;
-    top: 28%;
-    right: 10%;
+    top: 24%;
+    right: 8%;
     max-width: 420px;
     opacity: 0;
     transform: translateY(20px);
