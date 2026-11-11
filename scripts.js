@@ -49,17 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!customSliderTrack || !sharkThumb || !targetPlaneIcon) return "";
 
         const thumbRect = sharkThumb.getBoundingClientRect();
+        // Lấy tọa độ tâm của nút kéo trên slider
         const startX = (thumbRect.left + thumbRect.width / 2) / ZOOM_FACTOR;
         const startY = (thumbRect.top + thumbRect.height / 2) / ZOOM_FACTOR;
 
         const pRect = targetPlaneIcon.getBoundingClientRect();
+        // Lấy tọa độ tâm của icon máy bay đích ở góc phải
         const endX = (pRect.left + pRect.width / 2) / ZOOM_FACTOR;
         const endY = (pRect.top + pRect.height / 2) / ZOOM_FACTOR;
 
-        const controlX1 = startX + (endX - startX) * 0.35;
-        const controlY1 = startY - 200;
+        // Tinh chỉnh điểm điều khiển (control points) để đường cong uốn lượn đẹp mắt lên phía trên
+        const controlX1 = startX + (endX - startX) * 0.4;
+        const controlY1 = Math.min(startY, endY) - 150;
         const controlX2 = startX + (endX - startX) * 0.7;
-        const controlY2 = endY + 40;
+        const controlY2 = endY + 50;
 
         return `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
     }
