@@ -37,59 +37,52 @@ document.addEventListener('DOMContentLoaded', () => {
     let isLaunched = false;
     const ZOOM_FACTOR = 0.5;
 
-    function updateSvgPath() {
-        if (!customSliderTrack || !flightPath || !animatedTrailPath || !sharkThumb) return;
+    function updateSliderThumbPosition(val) {
+        if (!customSliderTrack || !sharkThumb) return;
+        const trackWidth = customSliderTrack.offsetWidth;
+        const thumbPos = (val / 100) * trackWidth;
+        sharkThumb.style.left = thumbPos + 'px';
+    }
 
-        // Lấy tọa độ chính xác của nút kéo (thumb) trên thanh slider
+    function getPathString() {
+        if (!customSliderTrack || !sharkThumb || !handwritingTitle) return "";
+
         const thumbRect = sharkThumb.getBoundingClientRect();
         const startX = (thumbRect.left + thumbRect.width / 2) / ZOOM_FACTOR;
         const startY = (thumbRect.top + thumbRect.height / 2) / ZOOM_FACTOR;
 
-        // Tọa độ đích đến (Chữ "about me" ở góc phải)
-        const handwritingEl = document.getElementById('handwritingTitle');
-        const hRect = handwritingEl.getBoundingClientRect();
+        const hRect = handwritingTitle.getBoundingClientRect();
         const endX = (hRect.left + 40) / ZOOM_FACTOR;
         const endY = (hRect.top + hRect.height / 2) / ZOOM_FACTOR;
 
-        // Quỹ đạo uốn lượn hình cánh cung bay lên bầu trời
         const controlX1 = startX + (endX - startX) * 0.35;
         const controlY1 = startY - 220;
         const controlX2 = startX + (endX - startX) * 0.75;
         const controlY2 = endY + 60;
 
-        const d = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
-        flightPath.setAttribute('d', d);
-        animatedTrailPath.setAttribute('d', d);
-
-        pathLength = flightPath.getTotalLength();
-        
-        // Cố định ẩn nét đứt khi chưa cất cánh để không bị lỗi vạch chéo
-        if (!isLaunched) {
-            animatedTrailPath.style.strokeDasharray = `0, ${pathLength}`;
-        }
+        return `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
     }
 
-    // Khởi tạo tọa độ ban đầu
-    setTimeout(updateSvgPath, 150);
-    window.addEventListener('resize', updateSvgPath);
+    // Khởi tạo vị trí slider ban đầu
+    updateSliderThumbPosition(0);
 
     if (sharkRange) {
         sharkRange.addEventListener('input', (e) => {
             if (isLaunched) return;
 
             const val = e.target.value; // 0 -> 100
+            updateSliderThumbPosition(val);
 
-            // Cập nhật vị trí hiển thị của nút kéo trên thanh track
-            const trackWidth = customSliderTrack.offsetWidth;
-            const thumbPos = (val / 100) * trackWidth;
-            sharkThumb.style.left = thumbPos + 'px';
-
-            // Cập nhật tọa độ đường bay theo vị trí mới của nút kéo
-            updateSvgPath();
-
-            // Khi người dùng kéo chạm mốc 99-100% -> Kích hoạt cất cánh
+            // Khi kéo đến 100% -> Chốt đường bay và kích hoạt cất cánh ngay từ tâm nút kéo hiện tại
             if (val >= 99 && !isLaunched) {
                 isLaunched = true;
+                
+                // Cố định đường path xuất phát từ đúng vị trí nút kéo lúc chạm đích
+                const finalD = getPathString();
+                flightPath.setAttribute('d', finalD);
+                animatedTrailPath.setAttribute('d', finalD);
+                pathLength = flightPath.getTotalLength();
+
                 sharkThumb.style.opacity = '0'; // Ẩn nút kéo trên slider
                 startFlightAnimation();
             }
