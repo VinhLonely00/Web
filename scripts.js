@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         pathLength = flightPath.getTotalLength();
         
-        // Mặc định ẩn hoàn toàn nét đứt trước khi cất cánh
+        // Nếu chưa cất cánh, ép hoàn toàn nét đứt ẩn đi (chiều dài = 0)
         if (!isLaunched) {
             animatedTrailPath.style.strokeDasharray = `0, ${pathLength}`;
         }
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (sharkRange) {
         sharkRange.addEventListener('input', (e) => {
-            if (isLaunched) return; // Nếu đã cất cánh thì không nhận sự kiện kéo nữa
+            if (isLaunched) return;
 
             const val = e.target.value; // 0 -> 100
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const flightDuration = 2200; // Thời gian bay (2.2 giây)
         const startTime = performance.now();
 
-        paperPlane.style.opacity = '1'; // Hiển thị máy bay cất cánh
+        paperPlane.style.opacity = '1'; // Hiện máy bay cất cánh
 
         function animate(currentTime) {
             const elapsed = currentTime - startTime;
