@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sharkThumb.style.left = thumbPos + 'px';
     }
 
-    // Lấy tọa độ thực tế của hai đầu đường bay theo hệ quy chiếu Overlay
+    // 1. SỬA HÀM GETPATHSTRING VỚI HỆ SỐ SCALE KHẮC PHỤC ZOOM 0.5
     function getPathString() {
         const overlay = document.getElementById('airplaneOverlay');
 
@@ -55,30 +55,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const startRect = sharkThumb.getBoundingClientRect();
         const endRect = targetPlaneIcon.getBoundingClientRect();
 
-        // Điểm xuất phát: tâm máy bay trên slider
-        const startX = startRect.left + startRect.width / 2 - overlayRect.left;
-        const startY = startRect.top + startRect.height / 2 - overlayRect.top;
+        // Chuyển tọa độ hiển thị sang tọa độ CSS thực tế
+        const scaleX = overlay.offsetWidth / overlayRect.width;
+        const scaleY = overlay.offsetHeight / overlayRect.height;
 
-        // Điểm kết thúc: tâm icon máy bay góc phải
-        const endX = endRect.left + endRect.width / 2 - overlayRect.left;
-        const endY = endRect.top + endRect.height / 2 - overlayRect.top;
+        // Điểm xuất phát
+        const startX =
+            (startRect.left + startRect.width / 2 - overlayRect.left) * scaleX;
 
+        const startY =
+            (startRect.top + startRect.height / 2 - overlayRect.top) * scaleY;
+
+        // Điểm đích: tâm icon About Me
+        const endX =
+            (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
+
+        const endY =
+            (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
+
+        // Quỹ đạo cong
         const dx = endX - startX;
-        const lift = Math.max(45, overlayRect.height * 0.25);
+        const lift = overlay.offsetHeight * 0.25;
 
-        // Quỹ đạo cong mềm mại, có hai nhịp uốn
-        const midX = startX + dx * 0.52;
-        const midY = Math.min(startY, endY) - lift * 0.8;
+        const controlX1 = startX + dx * 0.3;
+        const controlY1 = startY - lift;
 
-        return `
-            M ${startX} ${startY}
-            C ${startX + dx * 0.22} ${startY - lift},
-              ${startX + dx * 0.30} ${midY - lift * 0.25},
-              ${midX} ${midY}
-            C ${startX + dx * 0.72} ${midY + lift * 0.25},
-              ${startX + dx * 0.82} ${endY - lift * 0.5},
-              ${endX} ${endY}
-        `;
+        const controlX2 = startX + dx * 0.7;
+        const controlY2 = endY - lift * 0.5;
+
+        return `M ${startX} ${startY}
+                C ${controlX1} ${controlY1},
+                  ${controlX2} ${controlY2},
+                  ${endX} ${endY}`;
     }
 
     // Khởi tạo quỹ đạo
@@ -150,7 +158,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (val > 0) {
                 paperPlane.style.opacity = '1';
-                sharkThumb.style.opacity = val >= 99 ? '0' : '1';
+                
+                // 2. KIỂM TRA PHẦN KẾT THÚC ANIMATION (ĐẠT NGƯỠNG GẦN 100%)
+                if (val >= 99) {
+                    sharkThumb.style.opacity = '0';
+                    // Giữ máy bay tại điểm đích để kiểm tra trùng tâm icon
+                    paperPlane.style.opacity = '1';
+                } else {
+                    sharkThumb.style.opacity = '1';
+                }
 
                 // 1. Cập nhật vị trí máy bay
                 const currentPoint = flightPath.getPointAtLength(currentDistance);
@@ -173,12 +189,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Hiển thị nội dung góc phải khi kéo đến gần cuối, ẩn đi khi kéo ngược về
                 if (val >= 98) {
-                    if (handwritingTitle) handwritingTitle.classList.add('show');
                     if (targetPlaneIcon) targetPlaneIcon.classList.add('show');
+                    if (handwritingTitle) handwritingTitle.classList.add('show');
                     if (externalAboutContent) externalAboutContent.classList.add('show');
                 } else {
-                    if (handwritingTitle) handwritingTitle.classList.remove('show');
                     if (targetPlaneIcon) targetPlaneIcon.classList.remove('show');
+                    if (handwritingTitle) handwritingTitle.classList.remove('show');
                     if (externalAboutContent) externalAboutContent.classList.remove('show');
                 }
             } else {
@@ -186,8 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 paperPlane.style.opacity = '0';
                 sharkThumb.style.opacity = '1';
                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
-                if (handwritingTitle) handwritingTitle.classList.remove('show');
                 if (targetPlaneIcon) targetPlaneIcon.classList.remove('show');
+                if (handwritingTitle) handwritingTitle.classList.remove('show');
                 if (externalAboutContent) externalAboutContent.classList.remove('show');
             }
         });
