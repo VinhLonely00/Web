@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY CẤT CÁNH CHUẨN XÁC TỪ ĐẦU NÚT KÉO --- */
+    /* --- LOGIC XỬ LÝ TỌA ĐỘ ĐƯỜNG BAY CHUẨN XÁC --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const paperPlane = document.getElementById('paperPlane');
@@ -36,25 +36,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let pathLength = 0;
     let isLaunched = false;
 
+    // Tỷ lệ zoom của trang (0.5)
+    const ZOOM_FACTOR = 0.5;
+
     function updateSvgPath() {
         if (!customSliderTrack || !flightPath || !animatedTrailPath || !sharkThumb) return;
 
-        // Lấy tọa độ động hiện tại của nút kéo máy bay trên thanh slider
+        // Tính tọa độ nút kéo chuẩn xác dựa theo zoom 0.5
         const thumbRect = sharkThumb.getBoundingClientRect();
-        const startX = thumbRect.left + (thumbRect.width / 2);
-        const startY = thumbRect.top + (thumbRect.height / 2);
+        const startX = (thumbRect.left + thumbRect.width / 2) / ZOOM_FACTOR;
+        const startY = (thumbRect.top + thumbRect.height / 2) / ZOOM_FACTOR;
 
-        // Tọa độ đích đến là khu vực chữ "about me" ở góc trên bên phải
+        // Tính tọa độ tiêu điểm đích (Chữ "about me" ở bầu trời bên phải)
         const handwritingEl = document.getElementById('handwritingTitle');
         const hRect = handwritingEl.getBoundingClientRect();
-        const endX = hRect.left + 30;
-        const endY = hRect.top + (hRect.height / 2);
+        const endX = (hRect.left + 40) / ZOOM_FACTOR;
+        const endY = (hRect.top + hRect.height / 2) / ZOOM_FACTOR;
 
-        // Tạo đường cong Bezier nối từ điểm nút kéo đến góc phải
-        const controlX1 = startX + (endX - startX) * 0.4;
-        const controlY1 = startY - 150;
+        // Quỹ đạo uốn lượn hình cánh cung
+        const controlX1 = startX + (endX - startX) * 0.35;
+        const controlY1 = startY - 220;
         const controlX2 = startX + (endX - startX) * 0.75;
-        const controlY2 = endY + 40;
+        const controlY2 = endY + 60;
 
         const d = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
         flightPath.setAttribute('d', d);
@@ -63,28 +66,26 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
     }
 
-    // Cập nhật vị trí ban đầu
-    updateSvgPath();
+    // Khởi tạo tọa độ
+    setTimeout(updateSvgPath, 100);
     window.addEventListener('resize', updateSvgPath);
 
     if (sharkRange) {
         sharkRange.addEventListener('input', (e) => {
             const val = e.target.value; // 0 -> 100
-            
-            // Cập nhật vị trí hiển thị của nút kéo trên track theo %
-            const trackRect = customSliderTrack.getBoundingClientRect();
-            const thumbWidth = sharkThumb.offsetWidth;
-            const availableWidth = trackRect.width - thumbWidth;
-            const currentLeft = (val / 100) * availableWidth + (thumbWidth / 2);
-            
-            sharkThumb.style.left = currentLeft + 'px';
 
-            // Cập nhật lại đường bay theo vị trí thực tế mới của nút kéo
+            // Cập nhật vị trí nút kéo trên thanh slider
+            const trackWidth = customSliderTrack.offsetWidth;
+            const thumbPos = (val / 100) * trackWidth;
+            sharkThumb.style.left = thumbPos + 'px';
+
+            // Cập nhật lại tọa độ gốc đường bay theo từng điểm kéo
             updateSvgPath();
 
+            // Khi kéo chạm 100% -> Kích hoạt cất cánh
             if (val >= 99 && !isLaunched) {
                 isLaunched = true;
-                sharkThumb.style.opacity = '0'; // Ẩn nút máy bay trên slider khi bắt đầu bay
+                sharkThumb.style.opacity = '0'; // Ẩn nút máy bay nhỏ
                 startFlightAnimation();
             }
         });
@@ -92,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startFlightAnimation() {
         let currentDist = 0;
-        const flightDuration = 2200;
+        const flightDuration = 2000;
         const startTime = performance.now();
 
         paperPlane.style.opacity = '1';
@@ -104,23 +105,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const easeProgress = 1 - (1 - progress) * (1 - progress);
             currentDist = easeProgress * pathLength;
 
-            // 1. Tọa độ hiện tại của máy bay theo đường dẫn
+            // 1. Lấy vị trí theo đường cong Bezier
             const currentPoint = flightPath.getPointAtLength(currentDist);
-            paperPlane.style.left = currentPoint.x + 'px';
-            paperPlane.style.top = currentPoint.y + 'px';
+            paperPlane.style.left = (currentPoint.x * ZOOM_FACTOR) + 'px';
+            paperPlane.style.top = (currentPoint.y * ZOOM_FACTOR) + 'px';
 
-            // 2. Góc xoay hướng mũi máy bay chuẩn theo hướng di chuyển
+            // 2. Góc xoay mũi máy bay chính xác theo hướng bay
             const nextPoint = flightPath.getPointAtLength(Math.min(currentDist + 2, pathLength));
             const angle = Math.atan2(nextPoint.y - currentPoint.y, nextPoint.x - currentPoint.x) * (180 / Math.PI);
             paperPlane.style.transform = `translate(-50%, -50%) rotate(${angle + 45}deg)`;
 
-            // 3. Dải nét đứt bám theo đuôi máy bay
+            // 3. Dải nét đứt nối đuôi
             animatedTrailPath.style.strokeDasharray = `${currentDist} ${pathLength}`;
 
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
-                // Khi máy bay bay đến đích: ẩn máy bay lớn, hiện chữ viết tay và nội dung giới thiệu
+                // Đã đến đích: Ẩn máy bay cất cánh, hiển thị chữ viết tay + nội dung
                 paperPlane.style.opacity = '0';
                 handwritingTitle.classList.add('show');
                 externalAboutContent.classList.add('show');
