@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY VÒNG & MÁY BAY TRONG SVG --- */
+    /* --- LOGIC ĐƯỜNG BAY QUÁ CẢNH & MÁY BAY GIẤY SVG --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const startX = (trackRect.right - overlayRect.left) * scaleX;
         const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * scaleY;
 
-        // Điểm dừng trung tâm (góc "about me")
+        // Điểm dừng trung tâm (khu vực "about me")
         const endRect = targetPlaneAnchor.getBoundingClientRect();
         const midX = (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
         const midY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
@@ -66,13 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const screenW = overlay.offsetWidth;
         const screenH = overlay.offsetHeight;
 
-        // Quỹ đạo: Bay lên góc "about me" rồi lượn một vòng qua màn hình đáp cánh trở lại slider ban đầu
+        // Quỹ đạo quá cảnh: Bay từ slider -> lướt qua khu vực about me -> vút bay quá cảnh ra góc phải màn hình, 
+        // bám theo mép khung viền phía trên vòng sang trái rồi lao thẳng xuống đáp đúng vào điểm 100% của thanh kéo slider!
         return `M ${startX} ${startY}
                 C ${startX + (midX - startX) * 0.45} ${startY - screenH * 0.15},
                   ${midX - 320} ${midY + 75},
                   ${midX} ${midY}
-                C ${screenW + 100} ${midY - 100},
-                  ${screenW * 0.5} ${screenH + 150},
+                C ${screenW + 50} ${midY - 150},
+                  ${screenW + 50} -50,
+                  ${screenW * 0.5} -50
+                C 100 -50,
+                  -50 100,
                   ${startX} ${startY}`;
     }
 
@@ -175,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 2 & 3. Thả tay ở 100% -> Cất cánh bay vòng
+        // 2 & 3. Thả tay ở 100% -> Cất cánh bay quá cảnh
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -188,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     svgPlane.style.opacity = '1';
 
                     let currentDist = 0;
-                    const flightDuration = 2400; // Tăng thời gian bay cho trọn vẹn vòng lượn
+                    const flightDuration = 3200; // Tăng thời gian bay để máy bay thực hiện trọn vẹn hành trình quá cảnh mượt mà
                     const startTime = performance.now();
 
                     function animateFlight(currentTime) {
@@ -201,8 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay vừa bay qua mốc chạm khu vực about me (khoảng 35% tiến trình đường bay), kích hoạt hiện chữ
-                        if (progress >= 0.35) {
+                        // Khi máy bay lướt qua khu vực about me (khoảng 20% tiến trình), kích hoạt hiện chữ và nội dung
+                        if (progress >= 0.20) {
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
@@ -210,9 +214,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (progress < 1) {
                             requestAnimationFrame(animateFlight);
                         } else {
-                            // 4. Khi bay trọn vòng và đáp cánh về chỗ cũ
+                            // 4. Khi bay quá cảnh vòng quanh màn hình và đáp cánh chính xác về chỗ cuối nút kéo
                             svgPlane.style.opacity = '0'; 
                             if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
+                            if (sharkRange) {
+                                sharkRange.value = 0;
+                                sharkRange.disabled = false;
+                                updateSliderThumbPosition(0);
+                                if (sharkThumb) sharkThumb.style.opacity = '1';
+                            }
+                            isFlying = false;
                         }
                     }
 
