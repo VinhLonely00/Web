@@ -69,9 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /*
      * CHẶNG 1:
-     * - Từ mũi máy bay giấy khi kéo 100%, bay chếch lên góc phải, uốn một vòng lượn mềm mại ở khoảng giữa
-     * - Sau khi lướt qua cụm "about me" góc trên phải, mở rộng tối đa vòng cung sang sát biên phải và vút lên trên
-     * - Tạo vòm cung cầu vồng rộng lớn, khuất nửa đỉnh ở mép trên và sải cánh rộng lượn xuống thoát ra viền trái
+     * - Từ mũi máy bay giấy khi kéo 100%, bay chếch lên góc phải, uốn vòng lượn mềm mại ở khoảng giữa
+     * - Mở rộng tối đa vòm cung sát biên phải và lượn rộng thoáng qua phía trên thẻ hồ sơ sang góc trái
      */
     function getOutboundPathString() {
         const c = getCoordinates();
@@ -80,9 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const loopX = c.startX + (c.midX - c.startX) * 0.46;
         const loopY = c.startY + (c.midY - c.startY) * 0.50;
 
-        // Mở rộng tối đa khoảng không gian vòng cung ở hai góc trên phải & trái
-        const rightArcPeakX = c.screenW + 60;
-        const topHiddenPeakY = -210;
+        const rightArcPeakX = c.screenW + 140;
+        const topHiddenPeakY = -190;
 
         return `M ${c.startX} ${c.startY}
                 C ${loopX - 45} ${c.startY - 25},
@@ -94,18 +92,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 C ${loopX + 28} ${loopY + 120},
                   ${c.midX - 190} ${c.midY + 65},
                   ${c.midX} ${c.midY}
-                C ${c.midX + 220} ${c.midY - 35},
-                  ${rightArcPeakX} ${c.midY - 220},
-                  ${c.screenW * 0.52} ${topHiddenPeakY}
-                C ${c.screenW * 0.08} ${topHiddenPeakY - 20},
-                  -120 20,
-                  -360 360`;
+                C ${c.midX + 240} ${c.midY - 25},
+                  ${rightArcPeakX} ${c.midY - 240},
+                  ${c.screenW * 0.50} ${topHiddenPeakY}
+                C ${c.screenW * 0.12} ${topHiddenPeakY},
+                  20 120,
+                  -360 440`;
     }
 
     /*
      * CHẶNG 2:
-     * - Xuất hiện từ viền màn hình bên trái, thẳng hàng và song song với thanh slider
-     * - Bay thành 1 đường thẳng tắp về đúng vị trí 100%
+     * - Xuất hiện từ viền màn hình bên trái, song song với thanh slider và bay thẳng tắp về đích 100%
      */
     function getInboundPathString() {
         const c = getCoordinates();
@@ -217,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setActivePath(getOutboundPathString());
                     svgPlane.style.opacity = '1';
 
-                    const outboundDuration = 8200; // Chậm hơn để đường lượn thật êm và mềm mại
+                    const outboundDuration = 8200; // Tốc độ chậm rãi, mượt mà
                     const startTime1 = performance.now();
                     let textShown = false;
 
@@ -246,14 +243,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             svgPlane.style.opacity = '0';
                             if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
-                            // Rút ngắn thời gian chờ xuống 700ms để nhịp quay về liền mạch hơn
+                            // Thời gian chờ nhanh hơn (700ms) trước khi máy bay vòng về
                             setTimeout(() => {
                                 // --- CHẶNG 2 ---
                                 setActivePath(getInboundPathString());
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
 
-                                const inboundDuration = 3300; // Bay thẳng vào chậm rãi, mượt mà
+                                const inboundDuration = 3300; // Bay thẳng vào mượt mà
                                 const startTime2 = performance.now();
 
                                 function animateInbound(time2) {
