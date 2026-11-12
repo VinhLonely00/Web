@@ -35,12 +35,12 @@
         </nav>
     </header>
 
-    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY THẬT TRONG SVG -->
+    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY 3D -->
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" id="flightSvg">
             <defs>
                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                     <feMerge>
                         <feMergeNode in="coloredBlur"/>
                         <feMergeNode in="SourceGraphic"/>
@@ -48,16 +48,22 @@
                 </filter>
             </defs>
 
-            <!-- Quỹ đạo bay -->
+            <!-- Quỹ đạo bay ẩn -->
             <path id="flightPath" fill="none" stroke="transparent" />
 
             <!-- Vệt nét đứt bám theo sau máy bay -->
-            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="2.5" stroke-dasharray="6,6" stroke-linecap="round" />
+            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.88)" stroke-width="2.5" stroke-dasharray="6,6" stroke-linecap="round" />
 
-            <!-- MÁY BAY GIẤY THẬT (SVG PATH) -->
+            <!-- MÁY BAY GIẤY THẬT (CÓ NẾP GẤP & BÓNG ĐỔ 3D NHƯ ICON NÚT KÉO) -->
             <g id="svgPlane" style="opacity: 0;" filter="url(#glow)">
-                <path d="M 0,0 L -10,-18 L 38,0 L -10,18 L -4,0 Z" fill="#ffffff" />
-                <path d="M -4,0 L 38,0 L -10,18 Z" fill="#cbd5e1" opacity="0.6" />
+                <!-- Cánh trên sáng -->
+                <polygon points="-14,-15 26,0 -8,-2" fill="#ffffff" />
+                <!-- Nếp gấp thân giữa tạo chiều sâu -->
+                <polygon points="-8,-2 26,0 -11,4" fill="#cbd5e1" />
+                <!-- Phần gầm gấp bên dưới -->
+                <polygon points="-11,4 -5,12 -2,3" fill="#94a3b8" />
+                <!-- Cánh dưới -->
+                <polygon points="-8,2 26,0 -14,15" fill="#f1f5f9" />
             </g>
         </svg>
 
