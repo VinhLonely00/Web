@@ -35,11 +35,10 @@
         </nav>
     </header>
 
-    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY TÍCH HỢP CHUNG TRONG SVG -->
+    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY THẬT TRONG SVG -->
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" id="flightSvg">
             <defs>
-                <!-- Hiệu ứng phát sáng cho máy bay & đường kẻ -->
                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
                     <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
                     <feMerge>
@@ -49,16 +48,16 @@
                 </filter>
             </defs>
 
-            <!-- Quỹ đạo ẩn để tính toán -->
+            <!-- Quỹ đạo bay -->
             <path id="flightPath" fill="none" stroke="transparent" />
 
-            <!-- Đường nét đứt vệt đuôi -->
+            <!-- Vệt nét đứt bám theo sau máy bay -->
             <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="2.5" stroke-dasharray="6,6" stroke-linecap="round" />
 
-            <!-- MÁY BAY NẰM TRỰC TIẾP TRONG SVG -->
+            <!-- MÁY BAY GIẤY THẬT (SVG PATH) -->
             <g id="svgPlane" style="opacity: 0;" filter="url(#glow)">
-                <path d="M 0,0 L -8,-14 L 34,0 L -8,14 L -3,0 Z" fill="#ffffff" />
-                <path d="M -3,0 L 34,0 L -8,14 Z" fill="#cbd5e1" opacity="0.6" />
+                <path d="M 0,0 L -10,-18 L 38,0 L -10,18 L -4,0 Z" fill="#ffffff" />
+                <path d="M -4,0 L 38,0 L -10,18 Z" fill="#cbd5e1" opacity="0.6" />
             </g>
         </svg>
 
