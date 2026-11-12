@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY & MÁY BAY TÍCH HỢP CHUNG TRONG SVG --- */
+    /* --- LOGIC ĐƯỜNG BAY VÒNG & MÁY BAY TRONG SVG --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customSliderTrack = document.getElementById('sliderTrack');
 
     let pathLength = 0;
-    const TRAIL_LENGTH = 330; // Chiều dài cố định của vệt nét đứt phía sau đuôi máy bay
+    const TRAIL_LENGTH = 330; 
     let isFlying = false;
 
     function updateSliderThumbPosition(val) {
@@ -58,22 +58,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const startX = (trackRect.right - overlayRect.left) * scaleX;
         const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * scaleY;
 
-        // Điểm kết thúc: Tâm điểm neo đích ở góc phải
+        // Điểm dừng trung tâm (góc "about me")
         const endRect = targetPlaneAnchor.getBoundingClientRect();
-        const endX = (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
-        const endY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
+        const midX = (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
+        const midY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
 
-        // Quỹ đạo cong uốn nhẹ bên dưới chữ "about me" tới đúng đuôi máy bay
-        const dx = endX - startX;
-        const controlX1 = startX + dx * 0.45;
-        const controlY1 = startY - overlay.offsetHeight * 0.15;
-        const controlX2 = endX - 320;
-        const controlY2 = endY + 75;
+        const screenW = overlay.offsetWidth;
+        const screenH = overlay.offsetHeight;
 
+        // Quỹ đạo: Bay lên góc "about me" rồi lượn một vòng qua màn hình đáp cánh trở lại slider ban đầu
         return `M ${startX} ${startY}
-                C ${controlX1} ${controlY1},
-                  ${controlX2} ${controlY2},
-                  ${endX} ${endY}`;
+                C ${startX + (midX - startX) * 0.45} ${startY - screenH * 0.15},
+                  ${midX - 320} ${midY + 75},
+                  ${midX} ${midY}
+                C ${screenW + 100} ${midY - 100},
+                  ${screenW * 0.5} ${screenH + 150},
+                  ${startX} ${startY}`;
     }
 
     function initPath() {
@@ -113,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
         animatedTrailPath.setAttribute('d', d);
     }
 
-    // Đặt vị trí máy bay SVG theo tọa độ và góc tiếp tuyến của đường cong
     function positionSvgPlaneAt(distance) {
         if (!svgPlane || !flightPath) return;
         const point = flightPath.getPointAtLength(distance);
@@ -127,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ? Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI)
             : Math.atan2(point.y - prevPoint.y, point.x - prevPoint.x) * (180 / Math.PI);
 
-        // Vì tâm (0,0) của hình vẽ máy bay SVG nằm ở ngay đuôi nhọn nên nó dính chặt 100% vào điểm cuối đường kẻ
         svgPlane.setAttribute('transform', `translate(${point.x}, ${point.y}) rotate(${angle})`);
     }
 
@@ -149,10 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isFlying) {
             const val = sharkRange ? Number(sharkRange.value) : 0;
             updateSliderThumbPosition(val);
-        } else {
-            // Nếu đã bay xong và resize màn hình, tự động cập nhật lại cả vệt đuôi và máy bay ở đích
-            updateMovingTrail(pathLength);
-            positionSvgPlaneAt(pathLength);
         }
     });
 
@@ -173,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (svgPlane) svgPlane.style.opacity = '0';
                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
             } else {
-                // Đạt 100%: Ẩn thumb slider, hiện máy bay SVG tại đúng vạch xuất phát
                 sharkThumb.style.opacity = '0';
                 if (svgPlane) {
                     svgPlane.style.opacity = '1';
@@ -182,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 2 & 3. Thả tay ở 100% -> Cất cánh bay tự động
+        // 2 & 3. Thả tay ở 100% -> Cất cánh bay vòng
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -195,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     svgPlane.style.opacity = '1';
 
                     let currentDist = 0;
-                    const flightDuration = 1600;
+                    const flightDuration = 2400; // Tăng thời gian bay cho trọn vẹn vòng lượn
                     const startTime = performance.now();
 
                     function animateFlight(currentTime) {
@@ -205,18 +198,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         const easeProgress = 1 - Math.pow(1 - progress, 3);
                         currentDist = easeProgress * pathLength;
 
-                        // Cập nhật máy bay và vệt đuôi đồng bộ trong cùng 1 hệ tọa độ SVG
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
+
+                        // Khi máy bay vừa bay qua mốc chạm khu vực about me (khoảng 35% tiến trình đường bay), kích hoạt hiện chữ
+                        if (progress >= 0.35) {
+                            if (handwritingTitle) handwritingTitle.classList.add('show');
+                            if (externalAboutContent) externalAboutContent.classList.add('show');
+                        }
 
                         if (progress < 1) {
                             requestAnimationFrame(animateFlight);
                         } else {
-                            // 4. Khi đến đích: Máy bay dừng lại tại điểm cuối đường nét đứt, chữ và nội dung hiện ra
-                            positionSvgPlaneAt(pathLength);
-                            updateMovingTrail(pathLength);
-                            if (handwritingTitle) handwritingTitle.classList.add('show');
-                            if (externalAboutContent) externalAboutContent.classList.add('show');
+                            // 4. Khi bay trọn vòng và đáp cánh về chỗ cũ
+                            svgPlane.style.opacity = '0'; 
+                            if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
                         }
                     }
 
