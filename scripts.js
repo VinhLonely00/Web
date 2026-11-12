@@ -118,7 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
     }
 
-    function updateMovingTrail(currentDistance) {
+    /*
+     * Xử lý vệt nét đứt: Khi máy bay bay qua khu vực about me (progress > 0.6), 
+     * vệt nét đứt được giữ neo cố định lại dưới about me, máy bay tiếp tục bay một mình.
+     */
+    function updateMovingTrail(currentDistance, progress) {
         if (!animatedTrailPath || !flightPath) return;
 
         if (currentDistance <= 0) {
@@ -126,7 +130,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
+        let startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
+        
+        if (progress > 0.6) {
+            const fixedAnchorDist = flightPath.getTotalLength() * 0.45;
+            startDistance = Math.min(startDistance, fixedAnchorDist);
+        }
+
         const actualLength = currentDistance - startDistance;
 
         if (actualLength <= 0) {
@@ -192,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (svgPlane) svgPlane.style.opacity = '0';
                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
-                // Tự động ẩn nội dung "about me" khi kéo lùi về 0%
+                // Tự động mờ dần ẩn nội dung "about me" khi kéo lùi về 0%
                 if (handwritingTitle) handwritingTitle.classList.remove('show');
                 if (externalAboutContent) externalAboutContent.classList.remove('show');
             } else {
@@ -234,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const currentDist = smoothProgress * pathLength;
 
                         positionSvgPlaneAt(currentDist);
-                        updateMovingTrail(currentDist);
+                        updateMovingTrail(currentDist, smoothProgress);
 
                         if (!textShown && smoothProgress >= 0.45) {
                             textShown = true;
@@ -265,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     const currentDist2 = easeOut * pathLength;
 
                                     positionSvgPlaneAt(currentDist2);
-                                    updateMovingTrail(currentDist2);
+                                    updateMovingTrail(currentDist2, progress2);
 
                                     if (progress2 < 1) {
                                         requestAnimationFrame(animateInbound);
@@ -275,109 +285,3 @@ document.addEventListener('DOMContentLoaded', () => {
                                         
                                         if (sharkRange) {
                                             sharkRange.value = 100;
-                                            updateSliderThumbPosition(100);
-                                            sharkRange.disabled = false;
-                                        }
-                                        if (sharkThumb) {
-                                            sharkThumb.style.opacity = '1';
-                                        }
-                                        isFlying = false;
-                                    }
-                                }
-
-                                requestAnimationFrame(animateInbound);
-                            }, 700);
-                        }
-                    }
-
-                    requestAnimationFrame(animateOutbound);
-                }
-            });
-        });
-    }
-
-    /* --- CHUYỂN ĐỔI BACKGROUND VIDEO --- */
-    const switchBgBtn = document.getElementById('switchBgBtn');
-    const bgVideo1 = document.getElementById('bgVideo1');
-    const bgVideo2 = document.getElementById('bgVideo2');
-
-    if (switchBgBtn && bgVideo1 && bgVideo2) {
-        switchBgBtn.addEventListener('click', () => {
-            if (bgVideo1.classList.contains('active')) {
-                bgVideo1.classList.remove('active');
-                bgVideo1.pause();
-                bgVideo2.classList.add('active');
-                bgVideo2.play().catch(e => console.log(e));
-            } else {
-                bgVideo2.classList.remove('active');
-                bgVideo2.pause();
-                bgVideo1.classList.add('active');
-                bgVideo1.play().catch(e => console.log(e));
-            }
-        });
-    }
-
-    /* --- TỰ ĐỘNG MỜ DẦN SAU 10 GIÂY KHÔNG TƯƠNG TÁC --- */
-    let idleTimer;
-    function resetIdleTimer() {
-        if (document.body.classList.contains('idle-mode')) {
-            document.body.classList.remove('idle-mode');
-        }
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => {
-            document.body.classList.add('idle-mode');
-        }, 10000);
-    }
-
-    window.addEventListener('mousemove', resetIdleTimer);
-    window.addEventListener('mousedown', resetIdleTimer);
-    window.addEventListener('keypress', resetIdleTimer);
-    window.addEventListener('scroll', resetIdleTimer);
-    resetIdleTimer();
-
-    /* --- CHẾ ĐỘ KHÁCH / CHỦ VÀ MẬT KHẨU --- */
-    const roleModal = document.getElementById('roleModal');
-    const passwordModal = document.getElementById('passwordModal');
-    const secretMenuLi = document.getElementById('secretMenuLi');
-    const secretSection = document.getElementById('secret-section');
-    const passInput = document.getElementById('passInput');
-    const passError = document.getElementById('passError');
-
-    window.selectRole = function(role) {
-        if (roleModal) roleModal.style.display = 'none';
-        if (role === 'guest') {
-            if (secretMenuLi) secretMenuLi.style.display = 'none';
-            if (secretSection) secretSection.style.display = 'none';
-        } else if (role === 'owner') {
-            if (passwordModal) {
-                passwordModal.style.display = 'flex';
-                if (passInput) passInput.focus();
-            }
-        }
-    };
-
-    window.backToRoleModal = function() {
-        if (passwordModal) passwordModal.style.display = 'none';
-        if (roleModal) roleModal.style.display = 'flex';
-        if (passError) passError.style.display = 'none';
-        if (passInput) passInput.value = '';
-    };
-
-    window.verifyPassword = function() {
-        if (!passInput) return;
-        if (passInput.value === 'Vinh23456f@@') {
-            if (passwordModal) passwordModal.style.display = 'none';
-            if (secretMenuLi) secretMenuLi.style.display = 'inline-block';
-            if (secretSection) secretSection.style.display = 'block';
-            if (passError) passError.style.display = 'none';
-        } else {
-            if (passError) passError.style.display = 'block';
-        }
-    };
-
-    window.checkEnterKey = function(event) {
-        if (event.key === 'Enter') {
-            window.verifyPassword();
-        }
-    };
-});
