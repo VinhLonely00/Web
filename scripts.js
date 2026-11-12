@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY & VỆT ĐUÔI ĐỘNG (2 CHIỀU) --- */
+    /* --- LOGIC ĐƯỜNG BAY & VỆT ĐUÔI NGẮN --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const paperPlane = document.getElementById('paperPlane');
@@ -33,10 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetPlaneIcon = document.getElementById('targetPlaneIcon');
     const externalAboutContent = document.getElementById('externalAboutContent');
     const customSliderTrack = document.getElementById('sliderTrack');
-    const airplaneOverlay = document.getElementById('airplaneOverlay');
 
     let pathLength = 0;
-    const TRAIL_LENGTH = 125; // Chiều dài cố định của vệt đuôi nét đứt
+    const TRAIL_LENGTH = 260; // Chiều dài đoạn vệt nét đứt uốn cong dưới chữ "about me" giống ảnh mẫu
+    let isFlying = false;
 
     function updateSliderThumbPosition(val) {
         if (!customSliderTrack || !sharkThumb) return;
@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sharkThumb.style.left = thumbPos + 'px';
     }
 
-    // Hàm getPathString với hệ số scale khắc phục zoom
     function getPathString() {
         const overlay = document.getElementById('airplaneOverlay');
         if (!overlay || !sharkThumb || !targetPlaneIcon) return '';
@@ -60,16 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const startX = (startRect.left + startRect.width / 2 - overlayRect.left) * scaleX;
         const startY = (startRect.top + startRect.height / 2 - overlayRect.top) * scaleY;
 
+        // Điểm kết thúc chính là vị trí của máy bay ở góc trên bên phải
         const endX = (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
         const endY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
 
+        // Tạo đường cong mềm mại uốn từ dưới lên và đi ngang dưới chữ "about me"
         const dx = endX - startX;
-        const lift = overlay.offsetHeight * 0.25;
-
-        const controlX1 = startX + dx * 0.3;
-        const controlY1 = startY - lift;
-        const controlX2 = startX + dx * 0.7;
-        const controlY2 = endY - lift * 0.5;
+        const controlX1 = startX + dx * 0.45;
+        const controlY1 = startY - overlay.offsetHeight * 0.15;
+        const controlX2 = endX - 280;
+        const controlY2 = endY + 45;
 
         return `M ${startX} ${startY}
                 C ${controlX1} ${controlY1},
@@ -86,26 +85,29 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
     }
 
-    function updateMovingTrail(distance) {
-        if (!animatedTrailPath || !flightPath || distance <= 0) {
-            if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
+    // Vẽ đoạn vệt đuôi ngắn bám theo sau đuôi máy bay
+    function updateMovingTrail(currentDistance) {
+        if (!animatedTrailPath || !flightPath) return;
+
+        if (currentDistance <= 0) {
+            animatedTrailPath.setAttribute('d', '');
             return;
         }
 
-        const startDistance = Math.max(0, distance - TRAIL_LENGTH);
-        const actualLength = distance - startDistance;
+        const startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
+        const actualLength = currentDistance - startDistance;
 
         if (actualLength <= 0) {
             animatedTrailPath.setAttribute('d', '');
             return;
         }
 
-        const segments = Math.max(12, Math.ceil(actualLength / 5));
+        const segments = Math.max(15, Math.ceil(actualLength / 4));
         let d = '';
 
         for (let i = 0; i <= segments; i++) {
-            const sampleDistance = startDistance + (actualLength * i / segments);
-            const point = flightPath.getPointAtLength(sampleDistance);
+            const sampleDist = startDistance + (actualLength * (i / segments));
+            const point = flightPath.getPointAtLength(sampleDist);
             d += `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y} `;
         }
 
@@ -122,81 +124,99 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener('resize', () => {
-        initPath();
-        const val = sharkRange ? Number(sharkRange.value) : 0;
-        updateSliderThumbPosition(val);
+        if (!isFlying) {
+            initPath();
+            const val = sharkRange ? Number(sharkRange.value) : 0;
+            updateSliderThumbPosition(val);
+        }
     });
 
-    // Lắng nghe sự kiện kéo slider
+    // 1. Kéo slider lấy đà
     if (sharkRange) {
         sharkRange.addEventListener('input', (e) => {
-            const val = Number(e.target.value); // 0 -> 100
+            if (isFlying) return;
+
+            const val = Number(e.target.value);
             updateSliderThumbPosition(val);
 
             if (!pathLength) {
                 initPath();
             }
 
-            const currentDistance = (val / 100) * pathLength;
-
-            if (val > 0) {
-                paperPlane.style.opacity = '1';
-                
-                // Khi kéo đạt 100% (hoặc >= 99) -> Tách khỏi slider và cất cánh bay vút lên góc phải
-                if (val >= 99) {
-                    sharkThumb.style.opacity = '0';
-                    
-                    // Tính góc tiếp tuyến hiện tại để máy bay cất cánh mượt mà không bị khựng hướng
-                    const currentPoint = flightPath.getPointAtLength(currentDistance);
-                    const prevPoint = flightPath.getPointAtLength(Math.max(0, currentDistance - 2));
-                    const angle = Math.atan2(currentPoint.y - prevPoint.y, currentPoint.x - prevPoint.x) * (180 / Math.PI) + 45;
-                    
-                    paperPlane.style.setProperty('--start-angle', `${angle}deg`);
-                    paperPlane.classList.add('fly-away');
-
-                    // Hiển thị nội dung góc phải
-                    if (targetPlaneIcon) targetPlaneIcon.classList.add('show');
-                    if (handwritingTitle) handwritingTitle.classList.add('show');
-                    if (externalAboutContent) externalAboutContent.classList.add('show');
-                    return;
-                } else {
-                    sharkThumb.style.opacity = '1';
-                    paperPlane.classList.remove('fly-away');
-                }
-
-                // Cập nhật vị trí máy bay bám theo slider
-                const currentPoint = flightPath.getPointAtLength(currentDistance);
-                paperPlane.style.left = currentPoint.x + 'px';
-                paperPlane.style.top = currentPoint.y + 'px';
-
-                // Xác định góc xoay mũi máy bay hướng theo tiếp tuyến quỹ đạo
-                const nextDistance = Math.min(currentDistance + 2, pathLength);
-                const nextPoint = flightPath.getPointAtLength(nextDistance);
-                const previousPoint = flightPath.getPointAtLength(Math.max(0, currentDistance - 2));
-
-                const angle = currentDistance < pathLength
-                    ? Math.atan2(nextPoint.y - currentPoint.y, nextPoint.x - currentPoint.x) * (180 / Math.PI)
-                    : Math.atan2(currentPoint.y - previousPoint.y, currentPoint.x - previousPoint.x) * (180 / Math.PI);
-
-                paperPlane.style.transform = `translate(-50%, -50%) rotate(${angle + 45}deg)`;
-
-                // Cập nhật dải nét đứt bám theo sau đuôi máy bay
-                updateMovingTrail(currentDistance);
-
-                // Ẩn nội dung khi kéo ngược về
-                if (targetPlaneIcon) targetPlaneIcon.classList.remove('show');
-                if (handwritingTitle) handwritingTitle.classList.remove('show');
-                if (externalAboutContent) externalAboutContent.classList.remove('show');
-            } else {
-                // Reset hoàn toàn về mốc 0
-                paperPlane.style.opacity = '0';
+            if (val < 99) {
                 sharkThumb.style.opacity = '1';
-                paperPlane.classList.remove('fly-away');
+                paperPlane.style.opacity = '0';
                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
-                if (targetPlaneIcon) targetPlaneIcon.classList.remove('show');
-                if (handwritingTitle) handwritingTitle.classList.remove('show');
-                if (externalAboutContent) externalAboutContent.classList.remove('show');
+            } else {
+                // Giữ máy bay ngay tại điểm cuối của slider trước khi thả tay
+                sharkThumb.style.opacity = '0';
+                paperPlane.style.opacity = '1';
+                const startPoint = flightPath.getPointAtLength(0);
+                paperPlane.style.left = startPoint.x + 'px';
+                paperPlane.style.top = startPoint.y + 'px';
+                paperPlane.style.transform = `translate(-50%, -50%) rotate(45deg)`;
             }
+        });
+
+        // 2 & 3. Thả tay ở 100% -> Máy bay cất cánh tự động và dừng lại ở đích
+        ['mouseup', 'touchend', 'change'].forEach(eventType => {
+            sharkRange.addEventListener(eventType, () => {
+                if (isFlying) return;
+                const val = Number(sharkRange.value);
+
+                if (val >= 99 && !isFlying) {
+                    isFlying = true;
+                    sharkRange.disabled = true;
+                    sharkThumb.style.opacity = '0';
+                    paperPlane.style.opacity = '1';
+
+                    let currentDist = 0;
+                    const flightDuration = 1600; // Thời gian bay tự động (ms)
+                    const startTime = performance.now();
+
+                    function animateFlight(currentTime) {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / flightDuration, 1);
+                        
+                        // Chuyển động mượt mà (easeOutCubic)
+                        const easeProgress = 1 - Math.pow(1 - progress, 3);
+                        currentDist = easeProgress * pathLength;
+
+                        // Cập nhật tọa độ máy bay
+                        const point = flightPath.getPointAtLength(currentDist);
+                        paperPlane.style.left = point.x + 'px';
+                        paperPlane.style.top = point.y + 'px';
+
+                        // Xoay nhẹ mũi máy bay theo tiếp tuyến đường cong
+                        const nextDist = Math.min(currentDist + 2, pathLength);
+                        const nextPoint = flightPath.getPointAtLength(nextDist);
+                        const prevPoint = flightPath.getPointAtLength(Math.max(0, currentDist - 2));
+                        
+                        const angle = currentDist < pathLength
+                            ? Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI)
+                            : Math.atan2(point.y - prevPoint.y, point.x - prevPoint.x) * (180 / Math.PI);
+
+                        paperPlane.style.transform = `translate(-50%, -50%) rotate(${angle + 45}deg)`;
+
+                        // Cập nhật đoạn vệt đuôi nét đứt bám phía sau
+                        updateMovingTrail(currentDist);
+
+                        if (progress < 1) {
+                            requestAnimationFrame(animateFlight);
+                        } else {
+                            // 4. ĐẾN ĐÍCH:
+                            // - Giữ nguyên đoạn đường nét đứt cuối cùng dưới chữ "about me"
+                            // - Giữ máy bay dừng lại ở đích (hoặc chuyển sang icon đích phát sáng)
+                            paperPlane.style.opacity = '0';
+                            if (targetPlaneIcon) targetPlaneIcon.classList.add('show');
+                            if (handwritingTitle) handwritingTitle.classList.add('show');
+                            if (externalAboutContent) externalAboutContent.classList.add('show');
+                        }
+                    }
+
+                    requestAnimationFrame(animateFlight);
+                }
+            });
         });
     }
 
