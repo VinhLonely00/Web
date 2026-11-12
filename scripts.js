@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY CHUẨN THEO HÌNH VẼ --- */
+    /* --- LOGIC ĐƯỜNG BAY CHUẨN THEO BẢN VẼ --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -67,33 +67,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startX, startY, midX, midY, screenW, screenH };
     }
 
-    // Quỹ đạo chuẩn khớp với hình vẽ:
-    // 1. Cất cánh từ slider -> bay qua "about me" (góc phải)
-    // 2. Nhào lộn một vòng tròn (loop) trên không trung
-    // 3. Bay thẳng tắp một đường ngang từ phải về trái để hạ cánh chính xác vào slider
+    // Quỹ đạo mô phỏng chính xác nét vẽ của bạn:
+    // 1. Slider -> Lên sát viền trên -> Sang phải -> "About me"
+    // 2. Từ "About me" bay ngược về giữa -> Tạo vòng lượn (Loop) tại khung cửa sổ
+    // 3. Bay thẳng ngang từ phải về trái để hạ cánh vào slider
     function getFlightPathString() {
         const c = getCoordinates();
         if (!c) return '';
 
-        // Tọa độ tâm vòng lượn (loop) nằm ở khoảng giữa màn hình
-        const loopCenterX = c.screenW * 0.52;
-        const loopCenterY = c.midY - 40;
-        const loopRadius = 45; // Bán kính vòng lượn
+        const topY = 35; // Sát viền trên màn hình
+        const loopX = c.screenW * 0.48; // Tâm vòng lượn ở giữa khung cửa sổ
+        const loopY = c.midY - 10;
+        const loopR = 40; // Bán kính vòng lượn
 
         return `M ${c.startX} ${c.startY}
-                C ${c.startX + (c.midX - c.startX) * 0.45} ${c.startY - c.screenH * 0.15},
-                  ${c.midX - 250} ${c.midY + 50},
-                  ${c.midX} ${c.midY}
-                C ${c.midX + 100} ${c.midY - 150},
-                  ${loopCenterX + loopRadius * 2} ${loopCenterY - loopRadius * 1.5},
-                  ${loopCenterX} ${loopCenterY - loopRadius}
-                C ${loopCenterX - loopRadius * 2} ${loopCenterY - loopRadius},
-                  ${loopCenterX - loopRadius * 2} ${loopCenterY + loopRadius},
-                  ${loopCenterX} ${loopCenterY + loopRadius}
-                C ${loopCenterX + loopRadius * 1.5} ${loopCenterY + loopRadius},
-                  ${loopCenterX + 100} ${c.startY - 30},
-                  ${c.screenW - 50} ${c.startY - 30}
-                L ${c.startX} ${c.startY}`;
+                C ${c.startX} ${topY}, ${c.screenW * 0.3} ${topY}, ${c.screenW * 0.6} ${topY}
+                C ${c.screenW * 0.88} ${topY}, ${c.midX + 40} ${c.midY - 60}, ${c.midX} ${c.midY}
+                C ${c.midX - 120} ${c.midY + 60}, ${loopX + 90} ${loopY}, ${loopX} ${loopY}
+                C ${loopX - loopR * 2.2} ${loopY - loopR * 1.5}, ${loopX - loopR * 2.2} ${loopY + loopR * 1.5}, ${loopX} ${loopY + loopR}
+                C ${loopX + 120} ${loopY + 70}, ${c.startX + 200} ${c.startY}, ${c.startX} ${c.startY}`;
     }
 
     function setActivePath(pathString) {
@@ -184,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 2. Thả tay ở 100% -> Cất cánh bay đúng quỹ đạo vòng lượn -> Hạ cánh -> Đợi 3s lặp lại
+        // 2. Thả tay ở 100% -> Bay theo quỹ đạo bản vẽ -> Hạ cánh -> Chờ 3s reset
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -198,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setActivePath(getFlightPathString());
                     svgPlane.style.opacity = '1';
 
-                    const flightDuration = 4000; // Thời gian trọn vẹn cho cả cú lượn vòng và bay về
+                    const flightDuration = 4500; // Thời gian cho toàn bộ hành trình bay mượt mà
                     const startTime = performance.now();
 
                     function animateFlight(currentTime) {
@@ -211,8 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi bay đến khu vực about me (khoảng 20% tiến trình), hiện chữ và nội dung
-                        if (progress >= 0.20) {
+                        // Khi máy bay bay qua khu vực "about me" (khoảng 25% tiến trình), hiện chữ và nội dung
+                        if (progress >= 0.25) {
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
