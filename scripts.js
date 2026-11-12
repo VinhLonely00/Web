@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customSliderTrack = document.getElementById('sliderTrack');
 
     let pathLength = 0;
-    const TRAIL_LENGTH = 340;
+    const TRAIL_LENGTH = 360;
     let isFlying = false;
 
     function updateSliderThumbPosition(val) {
@@ -69,47 +69,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /*
      * CHẶNG 1:
-     * - Bắt đầu từ mũi máy bay giấy khi kéo 100% (startX, startY)
-     * - Bay hướng về góc trên phải (midX, midY), tại khoảng giữa uốn một vòng lượn (loop) mềm mại tự nhiên
-     * - Sau khi đi qua góc trên phải ("about me"), tạo vòng cung ngược lên trên cùng màn hình
-     * - Bay theo kiểu cầu vồng khuất nửa đỉnh ở mép trên cùng rồi hạ xuống ra ngoài viền trái màn hình (-250px)
+     * - Từ mũi máy bay giấy khi kéo 100%, bay chếch lên góc phải, uốn một vòng lượn mềm mại ở khoảng giữa
+     * - Sau khi lướt qua cụm "about me" góc trên phải, mở rộng vòng cung thoáng sang sát biên phải và vút lên trên
+     * - Tạo vòm cung cầu vồng rộng lớn, khuất nửa đỉnh ở mép trên và sải cánh rộng lượn xuống thoát ra viền trái
      */
     function getOutboundPathString() {
         const c = getCoordinates();
         if (!c) return '';
 
-        // Tâm vòng lượn mềm mại ở khoảng giữa đường bay lên góc trên phải
-        const loopX = c.startX + (c.midX - c.startX) * 0.48;
-        const loopY = c.startY + (c.midY - c.startY) * 0.52;
+        const loopX = c.startX + (c.midX - c.startX) * 0.46;
+        const loopY = c.startY + (c.midY - c.startY) * 0.50;
+
+        // Mở rộng khoảng không gian vòng cung ở hai góc trên
+        const rightArcPeakX = Math.min(c.screenW - 25, c.midX + 260);
+        const topHiddenPeakY = -175;
 
         return `M ${c.startX} ${c.startY}
-                C ${loopX - 40} ${c.startY - 20},
-                  ${loopX + 120} ${loopY + 75},
-                  ${loopX + 75} ${loopY - 35}
-                C ${loopX + 35} ${loopY - 125},
-                  ${loopX - 85} ${loopY - 75},
-                  ${loopX - 35} ${loopY + 25}
-                C ${loopX + 25} ${loopY + 115},
-                  ${c.midX - 180} ${c.midY + 65},
+                C ${loopX - 45} ${c.startY - 25},
+                  ${loopX + 130} ${loopY + 80},
+                  ${loopX + 80} ${loopY - 38}
+                C ${loopX + 38} ${loopY - 135},
+                  ${loopX - 90} ${loopY - 80},
+                  ${loopX - 38} ${loopY + 28}
+                C ${loopX + 28} ${loopY + 120},
+                  ${c.midX - 190} ${c.midY + 65},
                   ${c.midX} ${c.midY}
-                C ${c.midX + 170} ${c.midY - 60},
-                  ${c.midX + 130} -150,
-                  ${c.screenW * 0.52} -145
-                C ${c.screenW * 0.14} -140,
-                  -40 40,
-                  -280 280`;
+                C ${c.midX + 180} ${c.midY - 45},
+                  ${rightArcPeakX} ${c.midY - 190},
+                  ${c.screenW * 0.54} ${topHiddenPeakY}
+                C ${c.screenW * 0.16} ${topHiddenPeakY - 10},
+                  -10 35,
+                  -320 340`;
     }
 
     /*
      * CHẶNG 2:
      * - Xuất hiện từ viền màn hình bên trái, thẳng hàng và song song với thanh slider
-     * - Bay thành 1 đường thẳng tắp về đúng vị trí 100% lúc nãy
+     * - Bay thành 1 đường thẳng tắp về đúng vị trí 100%
      */
     function getInboundPathString() {
         const c = getCoordinates();
         if (!c) return '';
 
-        return `M -280 ${c.startY} L ${c.startX} ${c.startY}`;
+        return `M -320 ${c.startY} L ${c.startX} ${c.startY}`;
     }
 
     function setActivePath(pathString) {
@@ -134,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const segments = Math.max(20, Math.ceil(actualLength / 4));
+        const segments = Math.max(24, Math.ceil(actualLength / 4));
         let d = '';
 
         for (let i = 0; i <= segments; i++) {
@@ -200,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Thả tay ở 100% -> Thực thi chuyển động uyển chuyển
+        // Thả tay ở 100% -> Chạy chậm rãi, uyển chuyển
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -211,11 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     sharkRange.disabled = true;
                     sharkThumb.style.opacity = '0';
                     
-                    // --- CHẶNG 1: UỐN VÒNG MỀM MẠI -> HIỆN CHỮ -> CẦU VỒNG KHUẤT ĐỈNH RA MÉP TRÁI ---
+                    // --- CHẶNG 1 ---
                     setActivePath(getOutboundPathString());
                     svgPlane.style.opacity = '1';
 
-                    const outboundDuration = 5400; // Tốc độ chậm vừa phải để nhìn rõ độ uốn lượn mềm mại
+                    const outboundDuration = 6800; // Giảm tốc độ để đường lượn thong thả, mềm mại hơn
                     const startTime1 = performance.now();
                     let textShown = false;
 
@@ -223,7 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         const elapsed = currentTime - startTime1;
                         const progress = Math.min(elapsed / outboundDuration, 1);
                         
-                        // Nội suy mượt mà tự nhiên (ease-in-out nhẹ)
                         const smoothProgress = progress < 0.5
                             ? 2 * progress * progress
                             : 1 - Math.pow(-2 * progress + 2, 2) / 2;
@@ -233,8 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay đi hết vòng lượn và tiến tới khu vực góc trên phải ("about me")
-                        if (!textShown && smoothProgress >= 0.54) {
+                        if (!textShown && smoothProgress >= 0.50) {
                             textShown = true;
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
@@ -243,25 +243,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (progress < 1) {
                             requestAnimationFrame(animateOutbound);
                         } else {
-                            // Máy bay đã bay khuất hẳn ra ngoài viền bên trái màn hình
                             svgPlane.style.opacity = '0';
                             if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
-                            // --- KHOẢNG CHỜ NGẮN SAU KHI RA VIỀN TRÁI ---
                             setTimeout(() => {
-                                // --- CHẶNG 2: XUẤT HIỆN TỪ VIỀN TRÁI BAY THẲNG TẮP VỀ VỊ TRÍ 100% ---
+                                // --- CHẶNG 2 ---
                                 setActivePath(getInboundPathString());
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
 
-                                const inboundDuration = 2200; // Tốc độ bay thẳng vào chậm rãi, uyển chuyển
+                                const inboundDuration = 2800; // Hạ cánh chậm rãi, êm ái
                                 const startTime2 = performance.now();
 
                                 function animateInbound(time2) {
                                     const elapsed2 = time2 - startTime2;
                                     const progress2 = Math.min(elapsed2 / inboundDuration, 1);
                                     
-                                    // Giảm tốc êm ái khi đáp đúng vào điểm 100% của thanh kéo
                                     const easeOut = 1 - Math.pow(1 - progress2, 3);
                                     const currentDist2 = easeOut * pathLength;
 
@@ -271,7 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                     if (progress2 < 1) {
                                         requestAnimationFrame(animateInbound);
                                     } else {
-                                        // Đáp gọn gàng đúng vào vị trí 100% trên thanh slider
                                         svgPlane.style.opacity = '0';
                                         if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
                                         
