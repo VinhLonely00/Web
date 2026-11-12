@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Đã hạ thấp hệ số uốn cong xuống thêm khoảng 0.25
         const dx = endX - startX;
         const controlX1 = startX + dx * 0.45;
-        const controlY1 = startY - overlay.offsetHeight * 0.15; 
+        const controlY1 = startY - overlay.offsetHeight * 0.15  + 15; 
         const controlX2 = endX - 320;
         const controlY2 = endY + 100; 
 
