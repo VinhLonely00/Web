@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
      * CHẶNG 1:
      * - Từ slider lướt nhẹ nhàng lên, tạo vòng lặp mềm mại ở khoảng giữa bầu trời
      * - Vươn lượn thoáng đãng cách xa mép phải và cách xa mép trên, bay bổng qua "about me"
-     * - Uốn vòm cung lớn ở khoảng giữa khung hình rồi lượn thong thả vòng xuống phía trái
      */
     function getOutboundPathString() {
         const c = getCoordinates();
@@ -285,3 +284,109 @@ document.addEventListener('DOMContentLoaded', () => {
                                         
                                         if (sharkRange) {
                                             sharkRange.value = 100;
+                                            updateSliderThumbPosition(100);
+                                            sharkRange.disabled = false;
+                                        }
+                                        if (sharkThumb) {
+                                            sharkThumb.style.opacity = '1';
+                                        }
+                                        isFlying = false;
+                                    }
+                                }
+
+                                requestAnimationFrame(animateInbound);
+                            }, 700);
+                        }
+                    }
+
+                    requestAnimationFrame(animateOutbound);
+                }
+            });
+        });
+    }
+
+    /* --- CHUYỂN ĐỔI BACKGROUND VIDEO --- */
+    const switchBgBtn = document.getElementById('switchBgBtn');
+    const bgVideo1 = document.getElementById('bgVideo1');
+    const bgVideo2 = document.getElementById('bgVideo2');
+
+    if (switchBgBtn && bgVideo1 && bgVideo2) {
+        switchBgBtn.addEventListener('click', () => {
+            if (bgVideo1.classList.contains('active')) {
+                bgVideo1.classList.remove('active');
+                bgVideo1.pause();
+                bgVideo2.classList.add('active');
+                bgVideo2.play().catch(e => console.log(e));
+            } else {
+                bgVideo2.classList.remove('active');
+                bgVideo2.pause();
+                bgVideo1.classList.add('active');
+                bgVideo1.play().catch(e => console.log(e));
+            }
+        });
+    }
+
+    /* --- TỰ ĐỘNG MỜ DẦN SAU 10 GIÂY KHÔNG TƯƠNG TÁC --- */
+    let idleTimer;
+    function resetIdleTimer() {
+        if (document.body.classList.contains('idle-mode')) {
+            document.body.classList.remove('idle-mode');
+        }
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            document.body.classList.add('idle-mode');
+        }, 10000);
+    }
+
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('mousedown', resetIdleTimer);
+    window.addEventListener('keypress', resetIdleTimer);
+    window.addEventListener('scroll', resetIdleTimer);
+    resetIdleTimer();
+
+    /* --- CHẾ ĐỘ KHÁCH / CHỦ VÀ MẬT KHẨU --- */
+    const roleModal = document.getElementById('roleModal');
+    const passwordModal = document.getElementById('passwordModal');
+    const secretMenuLi = document.getElementById('secretMenuLi');
+    const secretSection = document.getElementById('secret-section');
+    const passInput = document.getElementById('passInput');
+    const passError = document.getElementById('passError');
+
+    window.selectRole = function(role) {
+        if (roleModal) roleModal.style.display = 'none';
+        if (role === 'guest') {
+            if (secretMenuLi) secretMenuLi.style.display = 'none';
+            if (secretSection) secretSection.style.display = 'none';
+        } else if (role === 'owner') {
+            if (passwordModal) {
+                passwordModal.style.display = 'flex';
+                if (passInput) passInput.focus();
+            }
+        }
+    };
+
+    window.backToRoleModal = function() {
+        if (passwordModal) passwordModal.style.display = 'none';
+        if (roleModal) roleModal.style.display = 'flex';
+        if (passError) passError.style.display = 'none';
+        if (passInput) passInput.value = '';
+    };
+
+    window.verifyPassword = function() {
+        if (!passInput) return;
+        if (passInput.value === 'Vinh23456f@@') {
+            if (passwordModal) passwordModal.style.display = 'none';
+            if (secretMenuLi) secretMenuLi.style.display = 'inline-block';
+            if (secretSection) secretSection.style.display = 'block';
+            if (passError) passError.style.display = 'none';
+        } else {
+            if (passError) passError.style.display = 'block';
+        }
+    };
+
+    window.checkEnterKey = function(event) {
+        if (event.key === 'Enter') {
+            window.verifyPassword();
+        }
+    };
+});
