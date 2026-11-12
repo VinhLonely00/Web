@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const controlX1 = startX + dx * 0.45;
         const controlY1 = startY - overlay.offsetHeight * 0.15; 
         const controlX2 = endX - 320;
-        const controlY2 = endY + 75; 
+        const controlY2 = endY + 85; 
 
         return `M ${startX} ${startY}
                 C ${controlX1} ${controlY1},
