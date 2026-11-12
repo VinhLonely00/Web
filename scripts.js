@@ -68,10 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /*
-     * CHẶNG 1:
-     * - Từ slider lướt nhẹ nhàng lên, tạo vòng lặp mềm mại ở khoảng giữa bầu trời
-     * - Vươn lượn thoáng đãng cách xa mép phải và cách xa mép trên, bay bổng qua "about me"
-     * - Uốn vòm cung lớn ở khoảng giữa khung hình rồi lượn thong thả vòng xuống phía trái
+     * CHẶNG 1: Từ slider bay lượn lên và dừng/đi qua khu vực "about me"
      */
     function getOutboundPathString() {
         const c = getCoordinates();
@@ -102,8 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /*
-     * CHẶNG 2:
-     * - Xuất hiện từ viền trái màn hình, bay thẳng tắp mượt mà về đúng vị trí 100% của slider
+     * CHẶNG 2: Đường bay tiếp tục quãng đường còn lại
      */
     function getInboundPathString() {
         const c = getCoordinates();
@@ -118,21 +114,19 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
     }
 
-    function updateMovingTrail(currentDistance) {
+    // Cập nhật vệt nét đứt bám theo máy bay (Hỗ trợ tùy chọn giữ lại vệt vẽ)
+    function updateMovingTrail(currentDistance, keepFullTrail = false) {
         if (!animatedTrailPath || !flightPath) return;
 
         if (currentDistance <= 0) {
-            animatedTrailPath.setAttribute('d', '');
+            if (!keepFullTrail) animatedTrailPath.setAttribute('d', '');
             return;
         }
 
-        const startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
+        const startDistance = keepFullTrail ? 0 : Math.max(0, currentDistance - TRAIL_LENGTH);
         const actualLength = currentDistance - startDistance;
 
-        if (actualLength <= 0) {
-            animatedTrailPath.setAttribute('d', '');
-            return;
-        }
+        if (actualLength <= 0) return;
 
         const segments = Math.max(28, Math.ceil(actualLength / 4));
         let d = '';
@@ -192,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (svgPlane) svgPlane.style.opacity = '0';
                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
-                // Tự động ẩn nội dung "about me" khi kéo lùi về 0%
                 if (handwritingTitle) handwritingTitle.classList.remove('show');
                 if (externalAboutContent) externalAboutContent.classList.remove('show');
             } else {
@@ -204,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Thả tay ở 100% -> Chạy chậm rãi, mượt mà, thoáng đãng
+        // Thả tay ở 100% -> Chạy hiệu ứng máy bay
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -219,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setActivePath(getOutboundPathString());
                     svgPlane.style.opacity = '1';
 
-                    const outboundDuration = 8500; // Tốc độ siêu mượt và thong thả
+                    const outboundDuration = 8500; 
                     const startTime1 = performance.now();
                     let textShown = false;
 
@@ -234,9 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         const currentDist = smoothProgress * pathLength;
 
                         positionSvgPlaneAt(currentDist);
-                        updateMovingTrail(currentDist);
+                        
+                        // GIỮ LẠI VỆT NÉT ĐỨT Ở DƯỚI ABOUT ME: 
+                        // Khi máy bay bay qua tầm ~45-50% chặng đường (đúng lúc tới about me), ta bật chế độ giữ nguyên vệt đường đi (keepFullTrail = true)
+                        const reachAboutMe = smoothProgress >= 0.45;
+                        updateMovingTrail(currentDist, reachAboutMe);
 
-                        if (!textShown && smoothProgress >= 0.45) {
+                        if (!textShown && reachAboutMe) {
                             textShown = true;
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
@@ -245,16 +242,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (progress < 1) {
                             requestAnimationFrame(animateOutbound);
                         } else {
-                            svgPlane.style.opacity = '0';
-                            if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
-
+                            // Chặng 1 kết thúc: Máy bay tiếp tục bay quãng đường còn lại mà vẫn giữ nguyên vệt nét đứt ở chỗ About Me
                             setTimeout(() => {
                                 // --- CHẶNG 2 ---
                                 setActivePath(getInboundPathString());
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
 
-                                const inboundDuration = 3000; // Hạ cánh thẳng tắp êm ái
+                                const inboundDuration = 3000; 
                                 const startTime2 = performance.now();
 
                                 function animateInbound(time2) {
@@ -265,13 +260,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                     const currentDist2 = easeOut * pathLength;
 
                                     positionSvgPlaneAt(currentDist2);
-                                    updateMovingTrail(currentDist2);
+                                    
+                                    // Ở chặng 2 chỉ cho máy bay đơn độc bay về, không vẽ đè vệt nét đứt mới nữa
+                                    if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
                                     if (progress2 < 1) {
                                         requestAnimationFrame(animateInbound);
                                     } else {
                                         svgPlane.style.opacity = '0';
-                                        if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
                                         
                                         if (sharkRange) {
                                             sharkRange.value = 100;
