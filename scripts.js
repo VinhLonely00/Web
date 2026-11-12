@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /*
      * CHẶNG 1:
      * - Từ slider lướt nhẹ nhàng lên, tạo vòng lặp mềm mại ở khoảng giữa bầu trời
-     * - Vươn lượn thoáng đãng cách xa mép phải (screenW - 120) và cách xa mép trên (-80), bay bổng qua "about me"
+     * - Vươn lượn thoáng đãng cách xa mép phải và cách xa mép trên, bay bổng qua "about me"
      * - Uốn vòm cung lớn ở khoảng giữa khung hình rồi lượn thong thả vòng xuống phía trái
      */
     function getOutboundPathString() {
@@ -191,6 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 sharkThumb.style.opacity = '1';
                 if (svgPlane) svgPlane.style.opacity = '0';
                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
+
+                // Tự động ẩn nội dung "about me" khi kéo lùi về 0%
+                if (handwritingTitle) handwritingTitle.classList.remove('show');
+                if (externalAboutContent) externalAboutContent.classList.remove('show');
             } else {
                 sharkThumb.style.opacity = '0';
                 if (svgPlane) {
