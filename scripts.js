@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY CHUẨN THEO BẢN VẼ --- */
+    /* --- LOGIC ĐƯỜNG BAY 6 BƯỚC CHUẨN XÁC --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -67,25 +67,30 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startX, startY, midX, midY, screenW, screenH };
     }
 
-    // Quỹ đạo mô phỏng chính xác nét vẽ của bạn:
-    // 1. Slider -> Lên sát viền trên -> Sang phải -> "About me"
-    // 2. Từ "About me" bay ngược về giữa -> Tạo vòng lượn (Loop) tại khung cửa sổ
-    // 3. Bay thẳng ngang từ phải về trái để hạ cánh vào slider
+    // Quỹ đạo 6 bước chi tiết theo đúng mô tả:
+    // 1 & 2. Từ slider bay ngang qua khung nhạc.
+    // 3. Nhào lộn tạo vòng lặp (loop) ở trung tâm trước cửa sổ tàu điện.
+    // 4. Bay chéo lên góc phải qua khu vực "about me".
+    // 5. Lượn vòng cung lớn sát mép trên màn hình từ phải sang trái qua thanh điều hướng & tay nắm.
+    // 6. Hạ độ cao lướt qua góc thẻ hồ sơ cá nhân và bay ra sát mép trái màn hình.
     function getFlightPathString() {
         const c = getCoordinates();
         if (!c) return '';
 
-        const topY = 35; // Sát viền trên màn hình
-        const loopX = c.screenW * 0.48; // Tâm vòng lượn ở giữa khung cửa sổ
-        const loopY = c.midY - 10;
-        const loopR = 40; // Bán kính vòng lượn
+        // Tọa độ tâm vòng lặp (loop) ở vùng trung tâm cửa sổ tàu điện
+        const loopX = c.screenW * 0.52;
+        const loopY = c.screenH * 0.55;
+        const loopR = 45;
+
+        // Tọa độ đỉnh vòm cung phía trên màn hình
+        const topArchY = 40;
 
         return `M ${c.startX} ${c.startY}
-                C ${c.startX} ${topY}, ${c.screenW * 0.3} ${topY}, ${c.screenW * 0.6} ${topY}
-                C ${c.screenW * 0.88} ${topY}, ${c.midX + 40} ${c.midY - 60}, ${c.midX} ${c.midY}
-                C ${c.midX - 120} ${c.midY + 60}, ${loopX + 90} ${loopY}, ${loopX} ${loopY}
-                C ${loopX - loopR * 2.2} ${loopY - loopR * 1.5}, ${loopX - loopR * 2.2} ${loopY + loopR * 1.5}, ${loopX} ${loopY + loopR}
-                C ${loopX + 120} ${loopY + 70}, ${c.startX + 200} ${c.startY}, ${c.startX} ${c.startY}`;
+                C ${c.startX + 150} ${c.startY}, ${c.screenW * 0.35} ${c.startY + 20}, ${loopX - 100} ${loopY + 50}
+                C ${loopX - loopR * 2} ${loopY - loopR * 2}, ${loopX + loopR * 2} ${loopY - loopR * 2}, ${loopX} ${loopY + loopR}
+                C ${loopX + 150} ${loopY + 100}, ${c.midX - 50} ${c.midY + 50}, ${c.midX} ${c.midY}
+                C ${c.midX + 150} ${c.midY - 100}, ${c.screenW * 0.85} ${topArchY}, ${c.screenW * 0.5} ${topArchY}
+                C ${c.screenW * 0.2} ${topArchY}, 150 150, -50 220`;
     }
 
     function setActivePath(pathString) {
@@ -176,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 2. Thả tay ở 100% -> Bay theo quỹ đạo bản vẽ -> Hạ cánh -> Chờ 3s reset
+        // 2. Thả tay ở 100% -> Cất cánh bay theo lộ trình 6 bước -> Bay mất hút -> Đợi 3s lặp lại
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -190,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setActivePath(getFlightPathString());
                     svgPlane.style.opacity = '1';
 
-                    const flightDuration = 4500; // Thời gian cho toàn bộ hành trình bay mượt mà
+                    const flightDuration = 4500; // Thời gian bay trọn vẹn hành trình
                     const startTime = performance.now();
 
                     function animateFlight(currentTime) {
@@ -203,8 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay bay qua khu vực "about me" (khoảng 25% tiến trình), hiện chữ và nội dung
-                        if (progress >= 0.25) {
+                        // Khi bay đến khu vực about me (bước 4), kích hoạt hiển thị chữ và nội dung
+                        if (progress >= 0.45 && progress <= 0.7) {
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
@@ -212,11 +217,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (progress < 1) {
                             requestAnimationFrame(animateFlight);
                         } else {
-                            // Hạ cánh thành công về đích tại slider
+                            // Bay khuất hẳn ra ngoài mép trái
                             svgPlane.style.opacity = '0';
                             if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
-                            // Đợi đúng 3 giây rồi reset lại trạng thái ban đầu để có thể tiếp tục kéo bay lại
+                            // Đợi đúng 3 giây rồi reset lại trạng thái ban đầu để sẵn sàng cho lần bay tiếp theo
                             setTimeout(() => {
                                 if (sharkRange) {
                                     sharkRange.value = 0;
