@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let pathLength = 0;
     let aboutMeDistance = 0; 
-    const TRAIL_LENGTH = 350; // Tăng độ dài nét đứt để ôm trọn bên dưới chữ about me
+    const TRAIL_LENGTH = 320; 
     let isFlying = false;
 
     function updateSliderThumbPosition(val) {
@@ -58,14 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const startX = (trackRect.right - overlayRect.left) * scaleX;
         const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * scaleY;
 
-        // Lấy chính xác vị trí của cụm chữ "about me" góc phải
+        // Định vị chính xác phần dưới của chữ "about me" để gạch chân nét đứt hiển thị đẹp mắt
         const titleRect = handwritingTitle
             ? handwritingTitle.getBoundingClientRect()
             : targetPlaneAnchor.getBoundingClientRect();
 
-        // Định vị điểm dừng đúng ngay phía dưới chữ about me
-        const midX = (titleRect.left + titleRect.width * 0.5 - overlayRect.left) * scaleX;
-        const midY = (titleRect.bottom + 15 - overlayRect.top) * scaleY;
+        const midX = (titleRect.left + titleRect.width * 0.45 - overlayRect.left) * scaleX;
+        const midY = (titleRect.bottom + 8 - overlayRect.top) * scaleY;
 
         const screenW = overlay.offsetWidth;
         const screenH = overlay.offsetHeight;
@@ -73,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startX, startY, midX, midY, screenW, screenH };
     }
 
-    // Thiết lập đường bay SVG gồm 2 phân đoạn: đến about me và bay tiếp ra ngoài
     function setupOutboundPath() {
         const c = getCoordinates();
         if (!c || !flightPath) return;
@@ -83,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rightSafePeakX = c.screenW - 120;
         const topSafeArchY = -80;
 
-        // Phân đoạn 1: Từ slider uốn lượn bay đến ngay dưới "about me"
+        // Giai đoạn 1: Bay từ slider lượn tới thẳng chữ "about me"
         const part1 = `M ${c.startX} ${c.startY}
                        C ${loopX - 70} ${c.startY - 50},
                          ${loopX + 180} ${loopY + 110},
@@ -92,14 +90,14 @@ document.addEventListener('DOMContentLoaded', () => {
                          ${loopX - 130} ${loopY - 100},
                          ${loopX - 40} ${loopY + 40}
                        C ${loopX + 40} ${loopY + 160},
-                         ${c.midX - 200} ${c.midY + 40},
+                         ${c.midX - 180} ${c.midY + 20},
                          ${c.midX} ${c.midY}`;
 
         flightPath.setAttribute('d', part1);
-        aboutMeDistance = flightPath.getTotalLength(); // Lưu lại mốc khoảng cách tại about me
+        aboutMeDistance = flightPath.getTotalLength();
 
-        // Phân đoạn 2: Quãng đường tiếp tục bay từ about me đi khuất màn hình
-        const part2 = `C ${c.midX + 220} ${c.midY - 50},
+        // Giai đoạn 2: Tiếp tục bay vòng ra khỏi màn hình
+        const part2 = `C ${c.midX + 220} ${c.midY - 40},
                          ${rightSafePeakX} ${c.midY - 180},
                          ${c.screenW * 0.45} ${topSafeArchY}
                        C ${c.screenW * 0.15} ${topSafeArchY},
@@ -122,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
     }
 
-    // Hàm quản lý vệt nét đứt: Neo cố định đầu dưới "about me", đuôi thu ngắn lại khi máy bay đi tiếp
     function updateMovingTrail(currentDistance) {
         if (!animatedTrailPath || !flightPath) return;
 
@@ -132,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (currentDistance <= aboutMeDistance) {
-            // Khi máy bay đang bay tới about me: Nét đứt chạy đuổi theo máy bay bình thường
+            // Khi máy bay chưa đến about me: nét đứt bay theo sau máy bay
             const startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
             const actualLength = currentDistance - startDistance;
             if (actualLength <= 0) {
@@ -140,8 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const segments = Math.max(20, Math.ceil(actualLength / 4));
             let d = '';
+            const segments = Math.max(20, Math.ceil(actualLength / 4));
             for (let i = 0; i <= segments; i++) {
                 const sampleDist = startDistance + (actualLength * (i / segments));
                 const point = flightPath.getPointAtLength(sampleDist);
@@ -150,9 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
             animatedTrailPath.setAttribute('d', d);
         } 
         else {
-            // Khi máy bay đã qua about me và bay tiếp: Cố định đầu nét đứt tại aboutMeDistance
+            // QUAN TRỌNG: Khi máy bay đã chạm và vượt qua about me, 
+            // Cố định đầu vệt nét đứt tại aboutMeDistance để nó nằm yên lót dưới chữ, 
+            // phần đuôi phía sau tiếp tục thu ngắn lại trọn vẹn đúng bằng độ dài TRAIL_LENGTH.
             const fixedHead = aboutMeDistance;
-            const dynamicTail = Math.max(0, currentDistance - TRAIL_LENGTH);
+            const dynamicTail = Math.min(aboutMeDistance, currentDistance - TRAIL_LENGTH);
             const actualLength = fixedHead - dynamicTail;
 
             if (actualLength <= 0) {
@@ -160,8 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const segments = Math.max(20, Math.ceil(actualLength / 4));
             let d = '';
+            const segments = Math.max(20, Math.ceil(actualLength / 4));
             for (let i = 0; i <= segments; i++) {
                 const sampleDist = dynamicTail + (actualLength * (i / segments));
                 const point = flightPath.getPointAtLength(sampleDist);
@@ -266,11 +265,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (progress < 1) {
                             requestAnimationFrame(animateOutbound);
                         } else {
-                            // Hết chặng 1 & 2: Máy bay biến mất ở đầu bên kia, vệt nét đứt neo lại trọn vẹn dưới about me
+                            // Máy bay bay hết chặng -> Ẩn máy bay, để lại trọn vẹn nét đứt lót dưới about me
                             svgPlane.style.opacity = '0';
 
                             setTimeout(() => {
-                                // Chặng về: Máy bay chạy từ trái về slider (không kéo nét đứt)
                                 setActivePath(getInboundPathString());
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
