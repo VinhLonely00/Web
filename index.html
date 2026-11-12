@@ -35,26 +35,40 @@
         </nav>
     </header>
 
-    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY -->
+    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY TÍCH HỢP CHUNG TRONG SVG -->
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" id="flightSvg">
-            <path id="flightPath" fill="none" stroke="transparent" />
-            <!-- Đường nét đứt uốn cong bám theo quỹ đạo máy bay -->
-            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.85)" stroke-width="2.5" stroke-dasharray="6,6" />
-        </svg>
+            <defs>
+                <!-- Hiệu ứng phát sáng cho máy bay & đường kẻ -->
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
 
-        <!-- Máy bay cất cánh từ slider -->
-        <div id="paperPlane" class="paper-plane">
-            <i class="fa-solid fa-paper-plane"></i>
-        </div>
+            <!-- Quỹ đạo ẩn để tính toán -->
+            <path id="flightPath" fill="none" stroke="transparent" />
+
+            <!-- Đường nét đứt vệt đuôi -->
+            <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="2.5" stroke-dasharray="6,6" stroke-linecap="round" />
+
+            <!-- MÁY BAY NẰM TRỰC TIẾP TRONG SVG (DÍNH CHẶT VÀO ĐẦU MÚT ĐƯỜNG NÉT ĐỨT) -->
+            <g id="svgPlane" style="opacity: 0;" filter="url(#glow)">
+                <!-- Vẽ icon máy bay giấy chuẩn tỉ lệ, tâm (0,0) nằm ngay tại đuôi nhọn của máy bay -->
+                <path d="M 0,0 L -8,-14 L 34,0 L -8,14 L -3,0 Z" fill="#ffffff" />
+                <path d="M -3,0 L 34,0 L -8,14 Z" fill="#cbd5e1" opacity="0.6" />
+            </g>
+        </svg>
 
         <!-- CỤM "ABOUT ME" GÓC PHẢI -->
         <div class="right-sky-container" id="rightSkyContainer">
             <div class="about-me-header">
                 <span id="handwritingTitle" class="handwriting-title">about me</span>
-                <div class="plane-icon-wrapper" id="targetPlaneIcon">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </div>
+                <!-- Điểm neo vô hình để xác định đích đến cho máy bay SVG -->
+                <div class="plane-target-anchor" id="targetPlaneAnchor"></div>
             </div>
 
             <div id="externalAboutContent" class="external-about-content">
