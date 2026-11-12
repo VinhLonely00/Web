@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customSliderTrack = document.getElementById('sliderTrack');
 
     let pathLength = 0;
-    const TRAIL_LENGTH = 260; // Chiều dài đoạn vệt nét đứt uốn cong dưới chữ "about me"
+    const TRAIL_LENGTH = 330; // Chiều dài đoạn vệt nét đứt ôm trọn dưới chữ "about me"
     let isFlying = false;
 
     function updateSliderThumbPosition(val) {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const overlayRect = overlay.getBoundingClientRect();
         
-        // Lấy tọa độ điểm xuất phát từ vị trí 100% của thanh slider (khi đã kéo kịch kim)
+        // Lấy tọa độ điểm xuất phát từ vị trí 100% của thanh slider
         const trackRect = customSliderTrack.getBoundingClientRect();
         const startX = (trackRect.right - overlayRect.left) * (overlay.offsetWidth / overlayRect.width);
         const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * (overlay.offsetHeight / overlayRect.height);
@@ -63,11 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const endX = (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
         const endY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
 
+        // Tạo đường cong đi ngang bên dưới chữ "about me" tới đuôi máy bay
         const dx = endX - startX;
         const controlX1 = startX + dx * 0.45;
-        const controlY1 = startY - overlay.offsetHeight * 0.15;
-        const controlX2 = endX - 280;
-        const controlY2 = endY + 45;
+        const controlY1 = startY - overlay.offsetHeight * 0.12;
+        const controlX2 = endX - 320;
+        const controlY2 = endY + 55;
 
         return `M ${startX} ${startY}
                 C ${controlX1} ${controlY1},
@@ -116,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
         animatedTrailPath.setAttribute('d', '');
     }
 
-    // Đảm bảo ban đầu máy bay cất cánh (paperPlane) hoàn toàn ẩn đi
     if (paperPlane) {
         paperPlane.style.opacity = '0';
     }
@@ -146,13 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 initPath();
             }
 
-            // Khi chưa đạt 100%, máy bay cất cánh vẫn ẩn, chỉ có nút thumb trên slider chạy
             if (val < 99) {
                 sharkThumb.style.opacity = '1';
                 if (paperPlane) paperPlane.style.opacity = '0';
                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
             } else {
-                // Khi kéo đến 100%, ẩn thumb trên slider và hiện máy bay ngay tại điểm 100% (đầu quỹ đạo)
                 sharkThumb.style.opacity = '0';
                 if (paperPlane) {
                     paperPlane.style.opacity = '1';
