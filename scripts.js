@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customSliderTrack = document.getElementById('sliderTrack');
 
     let pathLength = 0;
-    const TRAIL_LENGTH = 330; // Chiều dài đoạn vệt nét đứt ôm trọn dưới chữ "about me"
+    const TRAIL_LENGTH = 330; 
     let isFlying = false;
 
     function updateSliderThumbPosition(val) {
@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const overlayRect = overlay.getBoundingClientRect();
         
-        // Lấy tọa độ điểm xuất phát từ vị trí 100% của thanh slider
         const trackRect = customSliderTrack.getBoundingClientRect();
         const startX = (trackRect.right - overlayRect.left) * (overlay.offsetWidth / overlayRect.width);
         const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * (overlay.offsetHeight / overlayRect.height);
@@ -63,12 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const endX = (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
         const endY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
 
-        // Tạo đường cong đi ngang bên dưới chữ "about me" tới đuôi máy bay
+        // Đã hạ thấp hệ số uốn cong xuống thêm khoảng 0.25
         const dx = endX - startX;
         const controlX1 = startX + dx * 0.45;
-        const controlY1 = startY - overlay.offsetHeight * 0.12;
+        const controlY1 = startY - overlay.offsetHeight * 0.15; 
         const controlX2 = endX - 320;
-        const controlY2 = endY + 55;
+        const controlY2 = endY + 75; 
 
         return `M ${startX} ${startY}
                 C ${controlX1} ${controlY1},
