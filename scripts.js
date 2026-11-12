@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY QUÁ CẢNH & MÁY BAY GIẤY SVG --- */
+    /* --- LOGIC ĐƯỜNG BAY HẠ CÁNH ĐƯỜNG THẲNG & MÁY BAY GIẤY SVG --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -64,20 +64,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const midY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
 
         const screenW = overlay.offsetWidth;
-        const screenH = overlay.offsetHeight;
 
-        // Quỹ đạo quá cảnh: Bay từ slider -> lướt qua khu vực about me -> vút bay quá cảnh ra góc phải màn hình, 
-        // bám theo mép khung viền phía trên vòng sang trái rồi lao thẳng xuống đáp đúng vào điểm 100% của thanh kéo slider!
+        // Quỹ đạo: Cất cánh từ slider -> qua "about me" -> bay ra khuất mép phải màn hình -> 
+        // vòng qua trên đỉnh -> từ mép trái màn hình lao vào và HẠ CÁNH BẰNG MỘT ĐƯỜNG THẲNG TẮP về đúng điểm 100% của slider.
         return `M ${startX} ${startY}
-                C ${startX + (midX - startX) * 0.45} ${startY - screenH * 0.15},
+                C ${startX + (midX - startX) * 0.45} ${startY - overlay.offsetHeight * 0.15},
                   ${midX - 320} ${midY + 75},
                   ${midX} ${midY}
-                C ${screenW + 50} ${midY - 150},
-                  ${screenW + 50} -50,
-                  ${screenW * 0.5} -50
-                C 100 -50,
-                  -50 100,
-                  ${startX} ${startY}`;
+                C ${screenW + 100} ${midY - 150},
+                  ${screenW + 100} -100,
+                  ${screenW * 0.5} -100
+                C -100 -100,
+                  -100 ${startY - 150},
+                  -100 ${startY}
+                L ${startX} ${startY}`;
     }
 
     function initPath() {
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 2 & 3. Thả tay ở 100% -> Cất cánh bay quá cảnh
+        // 2 & 3. Thả tay ở 100% -> Cất cánh bay đường thẳng hạ cánh
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     svgPlane.style.opacity = '1';
 
                     let currentDist = 0;
-                    const flightDuration = 3200; // Tăng thời gian bay để máy bay thực hiện trọn vẹn hành trình quá cảnh mượt mà
+                    const flightDuration = 3400; // Tăng thời gian để máy bay thực hiện hành trình bay vòng và hạ cánh đường thẳng mượt mà
                     const startTime = performance.now();
 
                     function animateFlight(currentTime) {
@@ -205,8 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay lướt qua khu vực about me (khoảng 20% tiến trình), kích hoạt hiện chữ và nội dung
-                        if (progress >= 0.20) {
+                        // Khi máy bay lướt qua khu vực about me (khoảng 15% tiến trình), kích hoạt hiện chữ và nội dung
+                        if (progress >= 0.15) {
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (progress < 1) {
                             requestAnimationFrame(animateFlight);
                         } else {
-                            // 4. Khi bay quá cảnh vòng quanh màn hình và đáp cánh chính xác về chỗ cuối nút kéo
+                            // 4. Khi bay xong đường thẳng hạ cánh về đích
                             svgPlane.style.opacity = '0'; 
                             if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
                             if (sharkRange) {
