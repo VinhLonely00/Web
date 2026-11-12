@@ -53,7 +53,7 @@ body {
     opacity: 1;
 }
 
-/* TÀNG HÌNH SAU 10S KHÔNG TƯƠNG TÁC (Đã sửa từ main-content thành thẻ main) */
+/* TÀNG HÌNH SAU 10S KHÔNG TƯƠNG TÁC */
 .navbar-wrapper,
 main,
 .right-sky-container {
@@ -239,7 +239,7 @@ main {
     background: transparent;
 }
 
-/* NÚT MÁY BAY GIẤY TRÊN SLIDER - MÀU TRẮNG TINH */
+/* NÚT MÁY BAY GIẤY TRÊN SLIDER */
 .shark-thumb {
     position: absolute;
     left: 0px;
@@ -269,6 +269,7 @@ main {
     overflow: visible;
 }
 
+/* MÁY BAY CHÍNH & HIỆU ỨNG CẤT CÁNH (FLY-AWAY) */
 .paper-plane {
     position: absolute;
     font-size: 2.2rem;
@@ -278,6 +279,31 @@ main {
     filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
     pointer-events: none;
     z-index: 20;
+    will-change: transform, left, top, opacity;
+    transition: opacity 0.2s ease;
+}
+
+@keyframes planeFlyAway {
+    0% {
+        transform: translate(-50%, -50%) rotate(var(--start-angle, 45deg)) scale(1);
+        opacity: 1;
+    }
+    35% {
+        transform: translate(90px, -90px) rotate(22deg) scale(1.08);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(240px, -220px) rotate(8deg) scale(1.12);
+        opacity: 0.85;
+    }
+    100% {
+        transform: translate(400px, -360px) rotate(-10deg) scale(1.18);
+        opacity: 0;
+    }
+}
+
+.paper-plane.fly-away {
+    animation: planeFlyAway 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* CỤM GÓC PHẢI "ABOUT ME" */
