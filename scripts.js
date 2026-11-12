@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sharkThumb.style.left = thumbPos + 'px';
     }
 
-    // 1. SỬA HÀM GETPATHSTRING VỚI HỆ SỐ SCALE KHẮC PHỤC ZOOM 0.5
+    // 1. GIỮ NGUYÊN HÀM GETPATHSTRING VỚI HỆ SỐ SCALE KHẮC PHỤC ZOOM 0.5
     function getPathString() {
         const overlay = document.getElementById('airplaneOverlay');
 
@@ -159,13 +159,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (val > 0) {
                 paperPlane.style.opacity = '1';
                 
-                // 2. KIỂM TRA PHẦN KẾT THÚC ANIMATION (ĐẠT NGƯỠNG GẦN 100%)
+                // 2. KHI KÉO ĐẠT 100% (HOẶC >= 99), KÍCH HOẠT HIỆU ỨNG BAY VÚT ĐI
                 if (val >= 99) {
                     sharkThumb.style.opacity = '0';
-                    // Giữ máy bay tại điểm đích để kiểm tra trùng tâm icon
-                    paperPlane.style.opacity = '1';
+                    paperPlane.classList.add('fly-away');
+
+                    // Hiển thị nội dung góc phải
+                    if (targetPlaneIcon) targetPlaneIcon.classList.add('show');
+                    if (handwritingTitle) handwritingTitle.classList.add('show');
+                    if (externalAboutContent) externalAboutContent.classList.add('show');
+                    return;
                 } else {
                     sharkThumb.style.opacity = '1';
+                    paperPlane.classList.remove('fly-away');
                 }
 
                 // 1. Cập nhật vị trí máy bay
@@ -187,20 +193,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 3. Cập nhật dải nét đứt bám theo sau đuôi máy bay
                 updateMovingTrail(currentDistance);
 
-                // Hiển thị nội dung góc phải khi kéo đến gần cuối, ẩn đi khi kéo ngược về
-                if (val >= 98) {
-                    if (targetPlaneIcon) targetPlaneIcon.classList.add('show');
-                    if (handwritingTitle) handwritingTitle.classList.add('show');
-                    if (externalAboutContent) externalAboutContent.classList.add('show');
-                } else {
-                    if (targetPlaneIcon) targetPlaneIcon.classList.remove('show');
-                    if (handwritingTitle) handwritingTitle.classList.remove('show');
-                    if (externalAboutContent) externalAboutContent.classList.remove('show');
-                }
+                // Ẩn nội dung khi kéo ngược về
+                if (targetPlaneIcon) targetPlaneIcon.classList.remove('show');
+                if (handwritingTitle) handwritingTitle.classList.remove('show');
+                if (externalAboutContent) externalAboutContent.classList.remove('show');
             } else {
                 // Reset hoàn toàn về mốc 0
                 paperPlane.style.opacity = '0';
                 sharkThumb.style.opacity = '1';
+                paperPlane.classList.remove('fly-away');
                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
                 if (targetPlaneIcon) targetPlaneIcon.classList.remove('show');
                 if (handwritingTitle) handwritingTitle.classList.remove('show');
