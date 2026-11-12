@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * CHẶNG 1:
      * - Từ slider lướt nhẹ nhàng lên, tạo vòng lặp mềm mại ở khoảng giữa bầu trời
      * - Vươn lượn thoáng đãng cách xa mép phải và cách xa mép trên, bay bổng qua "about me"
+     * - Uốn vòm cung lớn ở khoảng giữa khung hình rồi lượn thong thả vòng xuống phía trái
      */
     function getOutboundPathString() {
         const c = getCoordinates();
@@ -117,11 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
     }
 
-    /*
-     * Xử lý vệt nét đứt: Khi máy bay bay qua khu vực about me (progress > 0.6), 
-     * vệt nét đứt được giữ neo cố định lại dưới about me, máy bay tiếp tục bay một mình.
-     */
-    function updateMovingTrail(currentDistance, progress) {
+    function updateMovingTrail(currentDistance) {
         if (!animatedTrailPath || !flightPath) return;
 
         if (currentDistance <= 0) {
@@ -129,13 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        let startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
-        
-        if (progress > 0.6) {
-            const fixedAnchorDist = flightPath.getTotalLength() * 0.45;
-            startDistance = Math.min(startDistance, fixedAnchorDist);
-        }
-
+        const startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
         const actualLength = currentDistance - startDistance;
 
         if (actualLength <= 0) {
@@ -201,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (svgPlane) svgPlane.style.opacity = '0';
                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
-                // Tự động mờ dần ẩn nội dung "about me" khi kéo lùi về 0%
+                // Tự động ẩn nội dung "about me" khi kéo lùi về 0%
                 if (handwritingTitle) handwritingTitle.classList.remove('show');
                 if (externalAboutContent) externalAboutContent.classList.remove('show');
             } else {
@@ -243,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const currentDist = smoothProgress * pathLength;
 
                         positionSvgPlaneAt(currentDist);
-                        updateMovingTrail(currentDist, smoothProgress);
+                        updateMovingTrail(currentDist);
 
                         if (!textShown && smoothProgress >= 0.45) {
                             textShown = true;
@@ -274,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     const currentDist2 = easeOut * pathLength;
 
                                     positionSvgPlaneAt(currentDist2);
-                                    updateMovingTrail(currentDist2, progress2);
+                                    updateMovingTrail(currentDist2);
 
                                     if (progress2 < 1) {
                                         requestAnimationFrame(animateInbound);
