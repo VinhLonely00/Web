@@ -306,7 +306,6 @@ main {
     transform: rotate(-11deg) translate(10px, -12px);
 }
 
-/* Điểm neo xác định đích đến cho máy bay SVG */
 .plane-target-anchor {
     width: 36px;
     height: 36px;
