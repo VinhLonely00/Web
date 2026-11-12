@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC QUỸ ĐẠO MÁY BAY GIẤY --- */
+    /* --- LOGIC QUỸ ĐẠO MÁY BAY GIẤY MỀM MẠI & RỘNG RÃI --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customSliderTrack = document.getElementById('sliderTrack');
 
     let pathLength = 0;
-    const TRAIL_LENGTH = 360;
+    const TRAIL_LENGTH = 380;
     let isFlying = false;
 
     function updateSliderThumbPosition(val) {
@@ -68,47 +68,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /*
-     * CHẶNG 1:
-     * - Từ mũi máy bay giấy khi kéo 100%, bay chếch lên góc phải, uốn vòng lượn mềm mại ở khoảng giữa
-     * - Mở rộng tối đa vòm cung sát biên phải và lượn rộng thoáng qua phía trên thẻ hồ sơ sang góc trái
+     * CHẶNG 1 (CỰC KỲ RỘNG RÃI & MỀM MẠI):
+     * - Từ slider lướt nhẹ nhàng lên, tạo vòng lặp ở giữa thật thong thả không bị gắt
+     * - Vươn dài sát hẳn ra ngoài mép phải màn hình (screenW + 280), lượn vòng cung cực kỳ rộng và mượt
+     * - Sải cánh bay vắt qua đỉnh màn hình rồi lượn thong thả xuống phía trái thoát ra ngoài viền
      */
     function getOutboundPathString() {
         const c = getCoordinates();
         if (!c) return '';
 
-        const loopX = c.startX + (c.midX - c.startX) * 0.46;
-        const loopY = c.startY + (c.midY - c.startY) * 0.50;
+        const loopX = c.startX + (c.midX - c.startX) * 0.45;
+        const loopY = c.startY + (c.midY - c.startY) * 0.48;
 
-        const rightArcPeakX = c.screenW + 140;
-        const topHiddenPeakY = -190;
+        // Mở rộng tối đa biên phải và đỉnh vòm cung để tuyệt đối không bị cảm giác bị ép góc
+        const rightWidePeakX = c.screenW + 280;
+        const topArchY = -230;
 
         return `M ${c.startX} ${c.startY}
-                C ${loopX - 45} ${c.startY - 25},
-                  ${loopX + 130} ${loopY + 80},
-                  ${loopX + 80} ${loopY - 38}
-                C ${loopX + 38} ${loopY - 135},
-                  ${loopX - 90} ${loopY - 80},
-                  ${loopX - 38} ${loopY + 28}
-                C ${loopX + 28} ${loopY + 120},
-                  ${c.midX - 190} ${c.midY + 65},
+                C ${loopX - 60} ${c.startY - 40},
+                  ${loopX + 160} ${loopY + 90},
+                  ${loopX + 90} ${loopY - 45}
+                C ${loopX + 40} ${loopY - 150},
+                  ${loopX - 110} ${loopY - 90},
+                  ${loopX - 40} ${loopY + 35}
+                C ${loopX + 30} ${loopY + 140},
+                  ${c.midX - 210} ${c.midY + 75},
                   ${c.midX} ${c.midY}
-                C ${c.midX + 240} ${c.midY - 25},
-                  ${rightArcPeakX} ${c.midY - 240},
-                  ${c.screenW * 0.50} ${topHiddenPeakY}
-                C ${c.screenW * 0.12} ${topHiddenPeakY},
-                  20 120,
-                  -360 440`;
+                C ${c.midX + 300} ${c.midY - 10},
+                  ${rightWidePeakX} ${c.midY - 320},
+                  ${c.screenW * 0.48} ${topArchY}
+                C ${c.screenW * 0.05} ${topArchY - 20},
+                  -80 160,
+                  -400 480`;
     }
 
     /*
      * CHẶNG 2:
-     * - Xuất hiện từ viền màn hình bên trái, song song với thanh slider và bay thẳng tắp về đích 100%
+     * - Xuất hiện từ viền trái màn hình, bay thẳng tắp mượt mà về đúng vị trí 100% của slider
      */
     function getInboundPathString() {
         const c = getCoordinates();
         if (!c) return '';
 
-        return `M -360 ${c.startY} L ${c.startX} ${c.startY}`;
+        return `M -400 ${c.startY} L ${c.startX} ${c.startY}`;
     }
 
     function setActivePath(pathString) {
@@ -133,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const segments = Math.max(24, Math.ceil(actualLength / 4));
+        const segments = Math.max(28, Math.ceil(actualLength / 4));
         let d = '';
 
         for (let i = 0; i <= segments; i++) {
@@ -199,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Thả tay ở 100% -> Chạy chậm rãi, uyển chuyển
+        // Thả tay ở 100% -> Chạy chậm rãi, mượt mà, không gấp khúc
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -214,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setActivePath(getOutboundPathString());
                     svgPlane.style.opacity = '1';
 
-                    const outboundDuration = 8200; // Tốc độ chậm rãi, mượt mà
+                    const outboundDuration = 8800; // Tốc độ siêu mượt và thong thả
                     const startTime1 = performance.now();
                     let textShown = false;
 
@@ -231,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        if (!textShown && smoothProgress >= 0.48) {
+                        if (!textShown && smoothProgress >= 0.46) {
                             textShown = true;
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
@@ -243,14 +245,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             svgPlane.style.opacity = '0';
                             if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
-                            // Thời gian chờ nhanh hơn (700ms) trước khi máy bay vòng về
                             setTimeout(() => {
                                 // --- CHẶNG 2 ---
                                 setActivePath(getInboundPathString());
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
 
-                                const inboundDuration = 3300; // Bay thẳng vào mượt mà
+                                const inboundDuration = 3300; // Hạ cánh thẳng tắp êm ái
                                 const startTime2 = performance.now();
 
                                 function animateInbound(time2) {
