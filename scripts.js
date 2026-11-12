@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY 2 CHẶNG (LƯỢN TỪ TRÁI VÀO & HẠ CÁNH THẲNG) --- */
+    /* --- LOGIC ĐƯỜNG BAY CHUẨN THEO HÌNH VẼ --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -67,26 +67,32 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startX, startY, midX, midY, screenW, screenH };
     }
 
-    // Chặng 1: Bay từ slider -> qua about me -> vút mất hút ra ngoài mép phải màn hình
-    function getOutboundPathString() {
+    // Quỹ đạo chuẩn khớp với hình vẽ:
+    // 1. Cất cánh từ slider -> bay qua "about me" (góc phải)
+    // 2. Nhào lộn một vòng tròn (loop) trên không trung
+    // 3. Bay thẳng tắp một đường ngang từ phải về trái để hạ cánh chính xác vào slider
+    function getFlightPathString() {
         const c = getCoordinates();
         if (!c) return '';
+
+        // Tọa độ tâm vòng lượn (loop) nằm ở khoảng giữa màn hình
+        const loopCenterX = c.screenW * 0.52;
+        const loopCenterY = c.midY - 40;
+        const loopRadius = 45; // Bán kính vòng lượn
 
         return `M ${c.startX} ${c.startY}
                 C ${c.startX + (c.midX - c.startX) * 0.45} ${c.startY - c.screenH * 0.15},
-                  ${c.midX - 320} ${c.midY + 75},
+                  ${c.midX - 250} ${c.midY + 50},
                   ${c.midX} ${c.midY}
-                S ${c.screenW + 250} ${c.midY - 120},
-                  ${c.screenW + 400} ${c.midY - 220}`;
-    }
-
-    // Chặng 2: Lượn từ góc trên bên trái -> ẩn ra viền trái -> bay thẳng tắp hạ cánh vào slider
-    function getInboundPathString() {
-        const c = getCoordinates();
-        if (!c) return '';
-
-        return `M -100 -100
-                Q 50 ${c.screenH * 0.3}, -150 ${c.startY - 100}
+                C ${c.midX + 100} ${c.midY - 150},
+                  ${loopCenterX + loopRadius * 2} ${loopCenterY - loopRadius * 1.5},
+                  ${loopCenterX} ${loopCenterY - loopRadius}
+                C ${loopCenterX - loopRadius * 2} ${loopCenterY - loopRadius},
+                  ${loopCenterX - loopRadius * 2} ${loopCenterY + loopRadius},
+                  ${loopCenterX} ${loopCenterY + loopRadius}
+                C ${loopCenterX + loopRadius * 1.5} ${loopCenterY + loopRadius},
+                  ${loopCenterX + 100} ${c.startY - 30},
+                  ${c.screenW - 50} ${c.startY - 30}
                 L ${c.startX} ${c.startY}`;
     }
 
@@ -144,13 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (svgPlane) svgPlane.style.opacity = '0';
 
     requestAnimationFrame(() => {
-        setActivePath(getOutboundPathString());
+        setActivePath(getFlightPathString());
         updateSliderThumbPosition(0);
     });
 
     window.addEventListener('resize', () => {
         if (!isFlying) {
-            setActivePath(getOutboundPathString());
+            setActivePath(getFlightPathString());
             const val = sharkRange ? Number(sharkRange.value) : 0;
             updateSliderThumbPosition(val);
         }
@@ -163,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const val = Number(e.target.value);
             updateSliderThumbPosition(val);
-            setActivePath(getOutboundPathString());
+            setActivePath(getFlightPathString());
 
             if (val < 99) {
                 sharkThumb.style.opacity = '1';
@@ -178,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 2. Thả tay ở 100% -> Chạy Chặng 1 -> Chờ 3s -> Chạy Chặng 2 lượn vòng & hạ cánh thẳng tắp
+        // 2. Thả tay ở 100% -> Cất cánh bay đúng quỹ đạo vòng lượn -> Hạ cánh -> Đợi 3s lặp lại
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -189,78 +195,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     sharkRange.disabled = true;
                     sharkThumb.style.opacity = '0';
                     
-                    // --- CHẶNG 1: BAY MẤT HÚT SANG PHẢI ---
-                    setActivePath(getOutboundPathString());
+                    setActivePath(getFlightPathString());
                     svgPlane.style.opacity = '1';
 
-                    const outboundDuration = 1800;
-                    const startTime1 = performance.now();
+                    const flightDuration = 4000; // Thời gian trọn vẹn cho cả cú lượn vòng và bay về
+                    const startTime = performance.now();
 
-                    function animateOutbound(currentTime) {
-                        const elapsed = currentTime - startTime1;
-                        const progress = Math.min(elapsed / outboundDuration, 1);
-                        const easeProgress = 1 - Math.pow(1 - progress, 2.5);
+                    function animateFlight(currentTime) {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / flightDuration, 1);
+                        
+                        const easeProgress = 1 - Math.pow(1 - progress, 2.8);
                         const currentDist = easeProgress * pathLength;
 
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        if (progress >= 0.35) {
+                        // Khi bay đến khu vực about me (khoảng 20% tiến trình), hiện chữ và nội dung
+                        if (progress >= 0.20) {
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
 
                         if (progress < 1) {
-                            requestAnimationFrame(animateOutbound);
+                            requestAnimationFrame(animateFlight);
                         } else {
-                            // Bay khuất hẳn -> Ẩn máy bay và vệt đuôi
+                            // Hạ cánh thành công về đích tại slider
                             svgPlane.style.opacity = '0';
                             if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
-                            // --- CHỜ ĐÚNG 3 GIÂY ---
+                            // Đợi đúng 3 giây rồi reset lại trạng thái ban đầu để có thể tiếp tục kéo bay lại
                             setTimeout(() => {
-                                // --- CHẶNG 2: LƯỢN TỪ TRÁI VÀO & HẠ CÁNH THẲNG ---
-                                setActivePath(getInboundPathString());
-                                positionSvgPlaneAt(0);
-                                svgPlane.style.opacity = '1';
-
-                                const inboundDuration = 2000;
-                                const startTime2 = performance.now();
-
-                                function animateInbound(time2) {
-                                    const elapsed2 = time2 - startTime2;
-                                    const progress2 = Math.min(elapsed2 / inboundDuration, 1);
-                                    const easeOut = 1 - Math.pow(1 - progress2, 3);
-                                    const currentDist2 = easeOut * pathLength;
-
-                                    positionSvgPlaneAt(currentDist2);
-                                    updateMovingTrail(currentDist2);
-
-                                    if (progress2 < 1) {
-                                        requestAnimationFrame(animateInbound);
-                                    } else {
-                                        // Hoàn tất hạ cánh
-                                        svgPlane.style.opacity = '0';
-                                        if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
-                                        
-                                        if (sharkRange) {
-                                            sharkRange.value = 100;
-                                            updateSliderThumbPosition(100);
-                                            sharkRange.disabled = false;
-                                        }
-                                        if (sharkThumb) {
-                                            sharkThumb.style.opacity = '1';
-                                        }
-                                        isFlying = false;
-                                    }
+                                if (sharkRange) {
+                                    sharkRange.value = 0;
+                                    sharkRange.disabled = false;
+                                    updateSliderThumbPosition(0);
+                                    if (sharkThumb) sharkThumb.style.opacity = '1';
                                 }
-
-                                requestAnimationFrame(animateInbound);
+                                isFlying = false;
                             }, 3000);
                         }
                     }
 
-                    requestAnimationFrame(animateOutbound);
+                    requestAnimationFrame(animateFlight);
                 }
             });
         });
