@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC ĐƯỜNG BAY 2 CHẶNG ĐỘC LẬP --- */
+    /* --- LOGIC ĐƯỜNG BAY 2 CHẶNG (LƯỢN TỪ TRÁI VÀO & HẠ CÁNH THẲNG) --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -80,12 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
                   ${c.screenW + 400} ${c.midY - 220}`;
     }
 
-    // Chặng 2: Hạ cánh bằng một đường thẳng tắp từ mép trái màn hình vào đúng vị trí 100% của slider
+    // Chặng 2: Lượn từ góc trên bên trái -> ẩn ra viền trái -> bay thẳng tắp hạ cánh vào slider
     function getInboundPathString() {
         const c = getCoordinates();
         if (!c) return '';
 
-        return `M -400 ${c.startY} L ${c.startX} ${c.startY}`;
+        return `M -100 -100
+                Q 50 ${c.screenH * 0.3}, -150 ${c.startY - 100}
+                L ${c.startX} ${c.startY}`;
     }
 
     function setActivePath(pathString) {
@@ -176,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 2. Thả tay ở 100% -> Chạy Chặng 1 -> Chờ 3s -> Chạy Chặng 2 hạ cánh thẳng tắp
+        // 2. Thả tay ở 100% -> Chạy Chặng 1 -> Chờ 3s -> Chạy Chặng 2 lượn vòng & hạ cánh thẳng tắp
         ['mouseup', 'touchend', 'change'].forEach(eventType => {
             sharkRange.addEventListener(eventType, () => {
                 if (isFlying) return;
@@ -217,12 +219,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             // --- CHỜ ĐÚNG 3 GIÂY ---
                             setTimeout(() => {
-                                // --- CHẶNG 2: BAY ĐƯỜNG THẲNG TỪ TRÁI VÀO HẠ CÁNH ---
+                                // --- CHẶNG 2: LƯỢN TỪ TRÁI VÀO & HẠ CÁNH THẲNG ---
                                 setActivePath(getInboundPathString());
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
 
-                                const inboundDuration = 1400;
+                                const inboundDuration = 2000;
                                 const startTime2 = performance.now();
 
                                 function animateInbound(time2) {
