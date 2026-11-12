@@ -35,7 +35,7 @@
         </nav>
     </header>
 
-    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY GIẤY TÍCH HỢP CHUNG TRONG SVG -->
+    <!-- OVERLAY ĐƯỜNG BAY & MÁY BAY TÍCH HỢP CHUNG TRONG SVG -->
     <div id="airplaneOverlay" class="airplane-overlay">
         <svg class="flight-svg" id="flightSvg">
             <defs>
@@ -55,9 +55,8 @@
             <!-- Đường nét đứt vệt đuôi -->
             <path id="animatedTrailPath" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="2.5" stroke-dasharray="6,6" stroke-linecap="round" />
 
-            <!-- MÁY BAY NẰM TRỰC TIẾP TRONG SVG (DÍNH CHẶT VÀO ĐẦU MÚT ĐƯỜNG NÉT ĐỨT) -->
+            <!-- MÁY BAY NẰM TRỰC TIẾP TRONG SVG -->
             <g id="svgPlane" style="opacity: 0;" filter="url(#glow)">
-                <!-- Vẽ icon máy bay giấy chuẩn tỉ lệ, tâm (0,0) nằm ngay tại đuôi nhọn của máy bay -->
                 <path d="M 0,0 L -8,-14 L 34,0 L -8,14 L -3,0 Z" fill="#ffffff" />
                 <path d="M -3,0 L 34,0 L -8,14 Z" fill="#cbd5e1" opacity="0.6" />
             </g>
@@ -67,7 +66,6 @@
         <div class="right-sky-container" id="rightSkyContainer">
             <div class="about-me-header">
                 <span id="handwritingTitle" class="handwriting-title">about me</span>
-                <!-- Điểm neo vô hình để xác định đích đến cho máy bay SVG -->
                 <div class="plane-target-anchor" id="targetPlaneAnchor"></div>
             </div>
 
