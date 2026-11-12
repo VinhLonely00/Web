@@ -56,7 +56,8 @@ body {
 /* TÀNG HÌNH SAU 10S KHÔNG TƯƠNG TÁC */
 .navbar-wrapper,
 main,
-.right-sky-container {
+.right-sky-container,
+.flight-svg {
     opacity: 1;
     visibility: visible;
     transition: opacity 1s ease, visibility 1s ease;
@@ -64,7 +65,8 @@ main,
 
 body.idle-mode .navbar-wrapper,
 body.idle-mode main,
-body.idle-mode .right-sky-container {
+body.idle-mode .right-sky-container,
+body.idle-mode .flight-svg {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -269,17 +271,6 @@ main {
     overflow: visible;
 }
 
-.paper-plane {
-    position: absolute;
-    font-size: 2.2rem;
-    color: #ffffff;
-    opacity: 0;
-    transform: translate(-50%, -50%);
-    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
-    pointer-events: none;
-    z-index: 20;
-}
-
 /* CỤM GÓC PHẢI "ABOUT ME" CĂN CHỈNH CÂN BẰNG Ở GIỮA */
 .right-sky-container {
     position: fixed;
@@ -315,17 +306,11 @@ main {
     transform: rotate(-11deg) translate(10px, -12px);
 }
 
-.plane-icon-wrapper {
-    font-size: 2.4rem;
-    color: #ffffff;
-    transform: rotate(25deg) translateY(-18px);
-    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.95));
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-.plane-icon-wrapper.show {
-    opacity: 1;
+/* Điểm neo xác định đích đến cho máy bay SVG */
+.plane-target-anchor {
+    width: 36px;
+    height: 36px;
+    transform: translateY(-18px);
 }
 
 /* NỘI DUNG GIỚI THIỆU PHÍA DƯỚI */
