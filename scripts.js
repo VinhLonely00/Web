@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC QUỸ ĐẠO MÁY BAY & GẠCH CHÂN NÉT ĐỨT --- */
+    /* --- LOGIC QUỸ ĐẠO MÁY BAY & HIỆN DẦN NÉT ĐỨT / ABOUT ME --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -36,8 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let pathLength = 0;
     let aboutMeDistance = 0; 
-    const TRAIL_LENGTH = 320; // Độ dài đoạn gạch chân nét đứt nằm dưới about me
+    const TRAIL_LENGTH = 300; // Độ dài đoạn nét đứt dưới about me
     let isFlying = false;
+
+    // Thiết lập độ mờ ban đầu cho vệt nét đứt
+    if (animatedTrailPath) {
+        animatedTrailPath.style.transition = 'opacity 0.4s ease-in-out';
+        animatedTrailPath.style.opacity = '0';
+    }
 
     function updateSliderThumbPosition(val) {
         if (!customSliderTrack || !sharkThumb) return;
@@ -68,10 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startX, startY, midX, midY, screenW, screenH };
     }
 
-    /*
-     * Giữ nguyên hoàn toàn đường bay mềm mại, thoáng đãng ban đầu của bạn.
-     * Xác định điểm "about me" nằm đúng trên quỹ đạo này để neo nét đứt.
-     */
+    // Giữ nguyên hoàn toàn quỹ đạo bay thoáng đãng, mượt mà chuẩn ban đầu
     function setupOutboundPath() {
         const c = getCoordinates();
         if (!c || !flightPath) return;
@@ -81,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const rightSafePeakX = c.screenW - 120;
         const topSafeArchY = -80;
 
-        // Quỹ đạo chuẩn ban đầu
         const fullPath = `M ${c.startX} ${c.startY}
                           C ${loopX - 70} ${c.startY - 50},
                             ${loopX + 180} ${loopY + 110},
@@ -101,10 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         flightPath.setAttribute('d', fullPath);
         pathLength = flightPath.getTotalLength();
-
-        // Tự động tìm vị trí chính xác khi đường bay lướt qua khu vực "about me"
-        // (nằm ở khoảng 55% tổng chiều dài quỹ đạo bay)
-        aboutMeDistance = pathLength * 0.55;
+        aboutMeDistance = pathLength * 0.55; // Vị trí ngang qua khu vực about me
     }
 
     function getInboundPathString() {
@@ -128,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (currentDistance <= aboutMeDistance) {
-            // Khi máy bay chưa tới about me: vệt nét đứt chạy theo sát máy bay
+            // Khi máy bay bay tới: vệt nét đứt chạy theo sau máy bay
             const startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
             const actualLength = currentDistance - startDistance;
             if (actualLength <= 0) {
@@ -146,9 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             animatedTrailPath.setAttribute('d', d);
         } 
         else {
-            // Khi máy bay đã qua about me: 
-            // Cố định đầu vệt nét đứt ngay tại vị trí aboutMeDistance (nằm dưới chữ about me),
-            // đuôi phía sau tiếp tục thu gọn lại đúng bằng chiều dài TRAIL_LENGTH.
+            // Khi máy bay đã lướt qua: Cố định đoạn nét đứt dưới about me ở lại đó
             const fixedHead = aboutMeDistance;
             const dynamicTail = Math.max(0, currentDistance - TRAIL_LENGTH);
             const actualLength = fixedHead - dynamicTail;
@@ -185,7 +182,10 @@ document.addEventListener('DOMContentLoaded', () => {
         svgPlane.setAttribute('transform', `translate(${point.x}, ${point.y}) rotate(${angle})`);
     }
 
-    if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
+    if (animatedTrailPath) {
+        animatedTrailPath.setAttribute('d', '');
+        animatedTrailPath.style.opacity = '0';
+    }
     if (svgPlane) svgPlane.style.opacity = '0';
 
     requestAnimationFrame(() => {
@@ -212,7 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (val < 99) {
                 sharkThumb.style.opacity = '1';
                 if (svgPlane) svgPlane.style.opacity = '0';
-                if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
+                if (animatedTrailPath) {
+                    animatedTrailPath.setAttribute('d', '');
+                    animatedTrailPath.style.opacity = '0';
+                }
 
                 if (handwritingTitle) handwritingTitle.classList.remove('show');
                 if (externalAboutContent) externalAboutContent.classList.remove('show');
@@ -240,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const outboundDuration = 8500;
                     const startTime1 = performance.now();
-                    let textShown = false;
+                    let triggeredShow = false;
 
                     function animateOutbound(currentTime) {
                         const elapsed = currentTime - startTime1;
@@ -255,8 +258,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        if (!textShown && currentDist >= aboutMeDistance * 0.9) {
-                            textShown = true;
+                        // Khi máy bay lướt tới gần khu vực about me: hiện nhanh vệt nét đứt và chữ "about me" lên
+                        if (!triggeredShow && currentDist >= aboutMeDistance * 0.88) {
+                            triggeredShow = true;
+                            if (animatedTrailPath) animatedTrailPath.style.opacity = '1';
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
@@ -264,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (progress < 1) {
                             requestAnimationFrame(animateOutbound);
                         } else {
-                            // Máy bay bay đi mất, vệt nét đứt được giữ lại cố định trọn vẹn dưới about me giống hệt ảnh mẫu
+                            // Máy bay bay đi mất, vệt nét đứt và chữ about me vẫn giữ nguyên ở vị trí cũ
                             svgPlane.style.opacity = '0';
 
                             setTimeout(() => {
