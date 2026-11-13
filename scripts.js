@@ -144,14 +144,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!svgPlane || !flightPath) return;
         const point = flightPath.getPointAtLength(distance);
         
-        const delta = 1;
-        const nextDist = Math.min(distance + delta, pathLength);
-        const prevDist = Math.max(0, distance - delta);
+        const nextDist = Math.min(distance + 2, pathLength);
+        const prevDist = Math.max(0, distance - 2);
         const nextPoint = flightPath.getPointAtLength(nextDist);
         const prevPoint = flightPath.getPointAtLength(prevDist);
 
-        // Chuẩn hóa góc hướng bay mượt mà theo phương tiếp tuyến của quỹ đạo
-        const angle = Math.atan2(nextPoint.y - prevPoint.y, nextPoint.x - prevPoint.x) * (180 / Math.PI);
+        const angle = distance < pathLength
+            ? Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI)
+            : Math.atan2(point.y - prevPoint.y, point.x - prevPoint.x) * (180 / Math.PI);
 
         svgPlane.setAttribute('transform', `translate(${point.x}, ${point.y}) rotate(${angle})`);
     }
@@ -233,16 +233,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         positionSvgPlaneAt(currentDist);
                         
+                        // Vẫn vẽ đuôi bình thường khi chưa đến about me
                         if (!trailHidden) {
                             updateMovingTrail(currentDist);
                         }
 
+                        // Khi bay tới about me: hiện chữ
                         if (!textShown && smoothProgress >= 0.45) {
                             textShown = true;
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
 
+                        // Vừa đi qua khỏi about me: mờ dần và mất hẳn đuôi trên đường đi
                         if (!trailHidden && smoothProgress >= 0.52) {
                             trailHidden = true;
                             if (animatedTrailPath) {
@@ -264,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
                                 
+                                // KHÔNG CÓ ĐUÔI KHI BAY VỀ
                                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
                                 const inboundDuration = 3000;
@@ -277,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     const currentDist2 = easeOut * pathLength;
 
                                     positionSvgPlaneAt(currentDist2);
+                                    // Tuyệt đối không gọi updateMovingTrail ở đây để lúc bay về hoàn toàn sạch sẽ không có đuôi
 
                                     if (progress2 < 1) {
                                         requestAnimationFrame(animateInbound);
