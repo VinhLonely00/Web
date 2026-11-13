@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC QUỸ ĐẠO MÁY BAY GIẤY MỀM MẠI, THOÁNG ĐÃNG (CÁCH XA CÁC MÉP) --- */
+    /* --- LOGIC QUỸ ĐẠO MÁY BAY GIẤY --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
@@ -37,6 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let pathLength = 0;
     const TRAIL_LENGTH = 380;
     let isFlying = false;
+
+    if (animatedTrailPath) {
+        animatedTrailPath.style.transition = 'opacity 0.5s ease-out';
+    }
 
     function updateSliderThumbPosition(val) {
         if (!customSliderTrack || !sharkThumb) return;
@@ -152,7 +156,10 @@ document.addEventListener('DOMContentLoaded', () => {
         svgPlane.setAttribute('transform', `translate(${point.x}, ${point.y}) rotate(${angle})`);
     }
 
-    if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
+    if (animatedTrailPath) {
+        animatedTrailPath.setAttribute('d', '');
+        animatedTrailPath.style.opacity = '1';
+    }
     if (svgPlane) svgPlane.style.opacity = '0';
 
     requestAnimationFrame(() => {
@@ -179,7 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (val < 99) {
                 sharkThumb.style.opacity = '1';
                 if (svgPlane) svgPlane.style.opacity = '0';
-                if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
+                if (animatedTrailPath) {
+                    animatedTrailPath.setAttribute('d', '');
+                    animatedTrailPath.style.opacity = '1';
+                }
 
                 if (handwritingTitle) handwritingTitle.classList.remove('show');
                 if (externalAboutContent) externalAboutContent.classList.remove('show');
@@ -204,10 +214,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     setActivePath(getOutboundPathString());
                     svgPlane.style.opacity = '1';
+                    if (animatedTrailPath) animatedTrailPath.style.opacity = '1';
 
                     const outboundDuration = 8500;
                     const startTime1 = performance.now();
                     let textShown = false;
+                    let trailHidden = false;
 
                     function animateOutbound(currentTime) {
                         const elapsed = currentTime - startTime1;
@@ -220,12 +232,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         const currentDist = smoothProgress * pathLength;
 
                         positionSvgPlaneAt(currentDist);
-                        updateMovingTrail(currentDist);
+                        
+                        // Chỉ vẽ đuôi khi chưa đi qua đoạn about me
+                        if (!trailHidden) {
+                            updateMovingTrail(currentDist);
+                        }
 
+                        // Khi máy bay bay tới vị trí about me (khoảng 45% hành trình): hiện chữ
                         if (!textShown && smoothProgress >= 0.45) {
                             textShown = true;
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
+                        }
+
+                        // Ngay khi vừa đi qua khỏi about me (khoảng 52% hành trình): mờ dần và mất hẳn đuôi
+                        if (!trailHidden && smoothProgress >= 0.52) {
+                            trailHidden = true;
+                            if (animatedTrailPath) {
+                                animatedTrailPath.style.opacity = '0';
+                                setTimeout(() => {
+                                    animatedTrailPath.setAttribute('d', '');
+                                }, 500);
+                            }
                         }
 
                         if (progress < 1) {
@@ -238,6 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 setActivePath(getInboundPathString());
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
+                                if (animatedTrailPath) animatedTrailPath.style.opacity = '1';
 
                                 const inboundDuration = 3000;
                                 const startTime2 = performance.now();
