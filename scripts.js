@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
         aboutMeDistance = pathLength * 0.55;
 
-        // Định hình đoạn gạch chân tĩnh nằm ngay dưới about me
+        // Định hình đoạn gạch chân tĩnh nằm ngay dưới about me khớp với quỹ đạo
         if (staticUnderlinePath) {
             let underlineD = '';
             const startDist = Math.max(0, aboutMeDistance - 140);
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay bay tới gần: hiện chữ about me và gạch chân tĩnh cùng lúc
+                        // Khi máy bay bay tới gần: hiện gạch chân tĩnh và chữ about me cùng lúc
                         if (!triggeredShow && currentDist >= aboutMeDistance * 0.9) {
                             triggeredShow = true;
                             if (staticUnderlinePath) staticUnderlinePath.style.opacity = '1';
