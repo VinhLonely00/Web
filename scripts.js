@@ -23,16 +23,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC QUỸ ĐẠO MÁY BAY & GẠCH CHÂN DƯỚI ABOUT ME --- */
+    /* --- LOGIC QUỸ ĐẠO MÁY & GẠCH CHÂN TỰ ĐỘNG --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
     const flightPath = document.getElementById('flightPath');
     const animatedTrailPath = document.getElementById('animatedTrailPath');
-    const staticUnderlinePath = document.getElementById('staticUnderlinePath');
     const handwritingTitle = document.getElementById('handwritingTitle');
     const externalAboutContent = document.getElementById('externalAboutContent');
     const customSliderTrack = document.getElementById('sliderTrack');
+    const flightSvg = document.getElementById('flightSvg');
+
+    // Tự động tạo một thẻ path tĩnh để làm gạch chân dưới about me mà không cần sửa html
+    let staticUnderlinePath = document.getElementById('staticUnderlinePath');
+    if (!staticUnderlinePath && flightSvg) {
+        staticUnderlinePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        staticUnderlinePath.id = 'staticUnderlinePath';
+        staticUnderlinePath.setAttribute('fill', 'none');
+        staticUnderlinePath.setAttribute('stroke', 'rgba(255, 255, 255, 0.9)');
+        staticUnderlinePath.setAttribute('stroke-width', '3.5');
+        staticUnderlinePath.setAttribute('stroke-dasharray', '7,7');
+        staticUnderlinePath.setAttribute('stroke-linecap', 'round');
+        staticUnderlinePath.style.transition = 'opacity 0.5s ease';
+        staticUnderlinePath.style.opacity = '0';
+        flightSvg.insertBefore(staticUnderlinePath, animatedTrailPath);
+    }
 
     let pathLength = 0;
     let aboutMeDistance = 0; 
@@ -40,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isFlying = false;
 
     if (animatedTrailPath) {
-        animatedTrailPath.style.transition = 'opacity 0.4s ease-in-out';
+        animatedTrailPath.style.transition = 'opacity 0.5s ease-in-out';
         animatedTrailPath.style.opacity = '1';
     }
 
@@ -64,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const startX = (trackRect.right - overlayRect.left) * scaleX;
         const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * scaleY;
 
-        // Tạm bật title để lấy chính xác tọa độ gạch chân dưới chữ about me
+        // Tạm bật title để đo tọa độ chính xác của chữ about me
         const wasShown = handwritingTitle.classList.contains('show');
         if (!wasShown) handwritingTitle.classList.add('show');
         
@@ -110,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
         aboutMeDistance = pathLength * 0.55;
 
-        // Định hình đoạn gạch chân tĩnh nằm ngay dưới about me
+        // Tạo sẵn đoạn gạch chân tĩnh ngay dưới about me
         if (staticUnderlinePath) {
             let underlineD = '';
             const startDist = Math.max(0, aboutMeDistance - 140);
@@ -258,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay bay tới gần: hiện chữ about me và gạch chân tĩnh cùng lúc
+                        // Khi máy bay bay tới gần about me: hiện gạch chân tĩnh + hiện chữ about me
                         if (!triggeredShow && currentDist >= aboutMeDistance * 0.9) {
                             triggeredShow = true;
                             if (staticUnderlinePath) staticUnderlinePath.style.opacity = '1';
@@ -273,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 animatedTrailPath.style.opacity = '0';
                                 setTimeout(() => {
                                     animatedTrailPath.setAttribute('d', '');
-                                }, 400);
+                                }, 500);
                             }
                         }
 
