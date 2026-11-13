@@ -23,26 +23,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC QUỸ ĐẠO MÁY BAY & HIỆN DẦN NÉT ĐỨT / ABOUT ME --- */
+    /* --- LOGIC QUỸ ĐẠO MÁY BAY & ĐUÔI NÉT ĐỨT BIẾN MẤT KHI QUA ABOUT ME --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
     const flightPath = document.getElementById('flightPath');
     const animatedTrailPath = document.getElementById('animatedTrailPath');
     const handwritingTitle = document.getElementById('handwritingTitle');
-    const targetPlaneAnchor = document.getElementById('targetPlaneAnchor');
     const externalAboutContent = document.getElementById('externalAboutContent');
     const customSliderTrack = document.getElementById('sliderTrack');
 
     let pathLength = 0;
     let aboutMeDistance = 0; 
-    const TRAIL_LENGTH = 300; // Độ dài đoạn nét đứt dưới about me
+    const TRAIL_LENGTH = 320; // Độ dài vệt nét đứt bám theo sau máy bay
     let isFlying = false;
 
-    // Thiết lập độ mờ ban đầu cho vệt nét đứt
+    // Thiết lập hiệu ứng mờ dần mượt mà cho vệt nét đứt
     if (animatedTrailPath) {
-        animatedTrailPath.style.transition = 'opacity 0.4s ease-in-out';
-        animatedTrailPath.style.opacity = '0';
+        animatedTrailPath.style.transition = 'opacity 0.6s ease-in-out';
+        animatedTrailPath.style.opacity = '1';
     }
 
     function updateSliderThumbPosition(val) {
@@ -54,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCoordinates() {
         const overlay = document.getElementById('airplaneOverlay');
+        const targetPlaneAnchor = document.getElementById('targetPlaneAnchor');
         if (!overlay || !customSliderTrack || !targetPlaneAnchor) return null;
 
         const overlayRect = overlay.getBoundingClientRect();
@@ -126,44 +126,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (currentDistance <= aboutMeDistance) {
-            // Khi máy bay bay tới: vệt nét đứt chạy theo sau máy bay
-            const startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
-            const actualLength = currentDistance - startDistance;
-            if (actualLength <= 0) {
-                animatedTrailPath.setAttribute('d', '');
-                return;
-            }
+        const startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
+        const actualLength = currentDistance - startDistance;
 
-            let d = '';
-            const segments = Math.max(25, Math.ceil(actualLength / 4));
-            for (let i = 0; i <= segments; i++) {
-                const sampleDist = startDistance + (actualLength * (i / segments));
-                const point = flightPath.getPointAtLength(sampleDist);
-                d += `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y} `;
-            }
-            animatedTrailPath.setAttribute('d', d);
-        } 
-        else {
-            // Khi máy bay đã lướt qua: Cố định đoạn nét đứt dưới about me ở lại đó
-            const fixedHead = aboutMeDistance;
-            const dynamicTail = Math.max(0, currentDistance - TRAIL_LENGTH);
-            const actualLength = fixedHead - dynamicTail;
-
-            if (actualLength <= 0) {
-                animatedTrailPath.setAttribute('d', '');
-                return;
-            }
-
-            let d = '';
-            const segments = Math.max(25, Math.ceil(actualLength / 4));
-            for (let i = 0; i <= segments; i++) {
-                const sampleDist = dynamicTail + (actualLength * (i / segments));
-                const point = flightPath.getPointAtLength(sampleDist);
-                d += `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y} `;
-            }
-            animatedTrailPath.setAttribute('d', d);
+        if (actualLength <= 0) {
+            animatedTrailPath.setAttribute('d', '');
+            return;
         }
+
+        let d = '';
+        const segments = Math.max(25, Math.ceil(actualLength / 4));
+        for (let i = 0; i <= segments; i++) {
+            const sampleDist = startDistance + (actualLength * (i / segments));
+            const point = flightPath.getPointAtLength(sampleDist);
+            d += `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y} `;
+        }
+        animatedTrailPath.setAttribute('d', d);
     }
 
     function positionSvgPlaneAt(distance) {
@@ -184,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (animatedTrailPath) {
         animatedTrailPath.setAttribute('d', '');
-        animatedTrailPath.style.opacity = '0';
+        animatedTrailPath.style.opacity = '1';
     }
     if (svgPlane) svgPlane.style.opacity = '0';
 
@@ -214,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (svgPlane) svgPlane.style.opacity = '0';
                 if (animatedTrailPath) {
                     animatedTrailPath.setAttribute('d', '');
-                    animatedTrailPath.style.opacity = '0';
+                    animatedTrailPath.style.opacity = '1';
                 }
 
                 if (handwritingTitle) handwritingTitle.classList.remove('show');
@@ -240,10 +218,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     setupOutboundPath();
                     svgPlane.style.opacity = '1';
+                    if (animatedTrailPath) animatedTrailPath.style.opacity = '1';
 
                     const outboundDuration = 8500;
                     const startTime1 = performance.now();
                     let triggeredShow = false;
+                    let trailFading = false;
 
                     function animateOutbound(currentTime) {
                         const elapsed = currentTime - startTime1;
@@ -258,18 +238,27 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay lướt tới gần khu vực about me: hiện nhanh vệt nét đứt và chữ "about me" lên
-                        if (!triggeredShow && currentDist >= aboutMeDistance * 0.88) {
+                        // Khi máy bay bay qua khu vực about me: hiển thị chữ "about me"
+                        if (!triggeredShow && currentDist >= aboutMeDistance * 0.9) {
                             triggeredShow = true;
-                            if (animatedTrailPath) animatedTrailPath.style.opacity = '1';
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
+                        }
+
+                        // Khi máy bay bay qua about me một đoạn ngắn -> vệt nét đứt mờ dần rồi biến mất
+                        if (!trailFading && currentDist >= aboutMeDistance + 120) {
+                            trailFading = true;
+                            if (animatedTrailPath) {
+                                animatedTrailPath.style.opacity = '0';
+                                setTimeout(() => {
+                                    animatedTrailPath.setAttribute('d', '');
+                                }, 600); // Khớp với thời gian transition mờ dần
+                            }
                         }
 
                         if (progress < 1) {
                             requestAnimationFrame(animateOutbound);
                         } else {
-                            // Máy bay bay đi mất, vệt nét đứt và chữ about me vẫn giữ nguyên ở vị trí cũ
                             svgPlane.style.opacity = '0';
 
                             setTimeout(() => {
