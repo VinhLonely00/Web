@@ -23,41 +23,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC QUỸ ĐẠO MÁY & GẠCH CHÂN TỰ ĐỘNG --- */
+    /* --- LOGIC QUỸ ĐẠO MÁY BAY GIẤY MỀM MẠI, THOÁNG ĐÃNG (CÁCH XA CÁC MÉP) --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
     const flightPath = document.getElementById('flightPath');
     const animatedTrailPath = document.getElementById('animatedTrailPath');
     const handwritingTitle = document.getElementById('handwritingTitle');
+    const targetPlaneAnchor = document.getElementById('targetPlaneAnchor');
     const externalAboutContent = document.getElementById('externalAboutContent');
     const customSliderTrack = document.getElementById('sliderTrack');
-    const flightSvg = document.getElementById('flightSvg');
-
-    // Tự động tạo một thẻ path tĩnh để làm gạch chân dưới about me mà không cần sửa html
-    let staticUnderlinePath = document.getElementById('staticUnderlinePath');
-    if (!staticUnderlinePath && flightSvg) {
-        staticUnderlinePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        staticUnderlinePath.id = 'staticUnderlinePath';
-        staticUnderlinePath.setAttribute('fill', 'none');
-        staticUnderlinePath.setAttribute('stroke', 'rgba(255, 255, 255, 0.9)');
-        staticUnderlinePath.setAttribute('stroke-width', '3.5');
-        staticUnderlinePath.setAttribute('stroke-dasharray', '7,7');
-        staticUnderlinePath.setAttribute('stroke-linecap', 'round');
-        staticUnderlinePath.style.transition = 'opacity 0.5s ease';
-        staticUnderlinePath.style.opacity = '0';
-        flightSvg.insertBefore(staticUnderlinePath, animatedTrailPath);
-    }
 
     let pathLength = 0;
-    let aboutMeDistance = 0; 
-    const TRAIL_LENGTH = 280; 
+    const TRAIL_LENGTH = 380;
     let isFlying = false;
-
-    if (animatedTrailPath) {
-        animatedTrailPath.style.transition = 'opacity 0.5s ease-in-out';
-        animatedTrailPath.style.opacity = '1';
-    }
 
     function updateSliderThumbPosition(val) {
         if (!customSliderTrack || !sharkThumb) return;
@@ -68,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCoordinates() {
         const overlay = document.getElementById('airplaneOverlay');
-        const targetPlaneAnchor = document.getElementById('targetPlaneAnchor');
         if (!overlay || !customSliderTrack || !targetPlaneAnchor) return null;
 
         const overlayRect = overlay.getBoundingClientRect();
@@ -79,15 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const startX = (trackRect.right - overlayRect.left) * scaleX;
         const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * scaleY;
 
-        // Tạm bật title để đo tọa độ chính xác của chữ about me
-        const wasShown = handwritingTitle.classList.contains('show');
-        if (!wasShown) handwritingTitle.classList.add('show');
-        
-        const titleRect = handwritingTitle.getBoundingClientRect();
-        const midX = (titleRect.left + titleRect.width * 0.5 - overlayRect.left) * scaleX;
-        const midY = (titleRect.bottom - 2 - overlayRect.top) * scaleY;
-
-        if (!wasShown) handwritingTitle.classList.remove('show');
+        const endRect = targetPlaneAnchor.getBoundingClientRect();
+        const midX = (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
+        const midY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
 
         const screenW = overlay.offsetWidth;
         const screenH = overlay.offsetHeight;
@@ -95,53 +67,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startX, startY, midX, midY, screenW, screenH };
     }
 
-    function setupOutboundPath() {
+    function getOutboundPathString() {
         const c = getCoordinates();
-        if (!c || !flightPath) return;
+        if (!c) return '';
 
         const loopX = c.startX + (c.midX - c.startX) * 0.44;
         const loopY = c.startY + (c.midY - c.startY) * 0.45;
+
         const rightSafePeakX = c.screenW - 120;
         const topSafeArchY = -80;
 
-        const fullPath = `M ${c.startX} ${c.startY}
-                          C ${loopX - 70} ${c.startY - 50},
-                            ${loopX + 180} ${loopY + 110},
-                            ${loopX + 100} ${loopY - 50}
-                          C ${loopX + 50} ${loopY - 170},
-                            ${loopX - 130} ${loopY - 100},
-                            ${loopX - 40} ${loopY + 40}
-                          C ${loopX + 40} ${loopY + 160},
-                            ${c.midX - 220} ${c.midY + 80},
-                            ${c.midX} ${c.midY}
-                          C ${c.midX + 220} ${c.midY - 50},
-                            ${rightSafePeakX} ${c.midY - 180},
-                            ${c.screenW * 0.45} ${topSafeArchY}
-                          C ${c.screenW * 0.15} ${topSafeArchY},
-                            100 80,
-                            -250 380`;
-
-        flightPath.setAttribute('d', fullPath);
-        pathLength = flightPath.getTotalLength();
-        aboutMeDistance = pathLength * 0.55;
-
-        // Tạo sẵn đoạn gạch chân tĩnh ngay dưới about me
-        if (staticUnderlinePath) {
-            let underlineD = '';
-            const startDist = Math.max(0, aboutMeDistance - 140);
-            const endDist = Math.min(pathLength, aboutMeDistance + 140);
-            const segs = 20;
-            for (let i = 0; i <= segs; i++) {
-                const pt = flightPath.getPointAtLength(startDist + (endDist - startDist) * (i / segs));
-                underlineD += `${i === 0 ? 'M' : 'L'} ${pt.x} ${pt.y} `;
-            }
-            staticUnderlinePath.setAttribute('d', underlineD);
-        }
+        return `M ${c.startX} ${c.startY}
+                C ${loopX - 70} ${c.startY - 50},
+                  ${loopX + 180} ${loopY + 110},
+                  ${loopX + 100} ${loopY - 50}
+                C ${loopX + 50} ${loopY - 170},
+                  ${loopX - 130} ${loopY - 100},
+                  ${loopX - 40} ${loopY + 40}
+                C ${loopX + 40} ${loopY + 160},
+                  ${c.midX - 220} ${c.midY + 80},
+                  ${c.midX} ${c.midY}
+                C ${c.midX + 220} ${c.midY - 50},
+                  ${rightSafePeakX} ${c.midY - 180},
+                  ${c.screenW * 0.45} ${topSafeArchY}
+                C ${c.screenW * 0.15} ${topSafeArchY},
+                  100 80,
+                  -250 380`;
     }
 
     function getInboundPathString() {
         const c = getCoordinates();
         if (!c) return '';
+
         return `M -250 ${c.startY} L ${c.startX} ${c.startY}`;
     }
 
@@ -167,13 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const segments = Math.max(28, Math.ceil(actualLength / 4));
         let d = '';
-        const segments = Math.max(25, Math.ceil(actualLength / 4));
+
         for (let i = 0; i <= segments; i++) {
             const sampleDist = startDistance + (actualLength * (i / segments));
             const point = flightPath.getPointAtLength(sampleDist);
             d += `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y} `;
         }
+
         animatedTrailPath.setAttribute('d', d);
     }
 
@@ -193,21 +152,17 @@ document.addEventListener('DOMContentLoaded', () => {
         svgPlane.setAttribute('transform', `translate(${point.x}, ${point.y}) rotate(${angle})`);
     }
 
-    if (animatedTrailPath) {
-        animatedTrailPath.setAttribute('d', '');
-        animatedTrailPath.style.opacity = '1';
-    }
-    if (staticUnderlinePath) staticUnderlinePath.style.opacity = '0';
+    if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
     if (svgPlane) svgPlane.style.opacity = '0';
 
     requestAnimationFrame(() => {
-        setupOutboundPath();
+        setActivePath(getOutboundPathString());
         updateSliderThumbPosition(0);
     });
 
     window.addEventListener('resize', () => {
         if (!isFlying) {
-            setupOutboundPath();
+            setActivePath(getOutboundPathString());
             const val = sharkRange ? Number(sharkRange.value) : 0;
             updateSliderThumbPosition(val);
         }
@@ -219,16 +174,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const val = Number(e.target.value);
             updateSliderThumbPosition(val);
-            setupOutboundPath();
+            setActivePath(getOutboundPathString());
 
             if (val < 99) {
                 sharkThumb.style.opacity = '1';
                 if (svgPlane) svgPlane.style.opacity = '0';
-                if (animatedTrailPath) {
-                    animatedTrailPath.setAttribute('d', '');
-                    animatedTrailPath.style.opacity = '1';
-                }
-                if (staticUnderlinePath) staticUnderlinePath.style.opacity = '0';
+                if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
                 if (handwritingTitle) handwritingTitle.classList.remove('show');
                 if (externalAboutContent) externalAboutContent.classList.remove('show');
@@ -251,14 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     sharkRange.disabled = true;
                     sharkThumb.style.opacity = '0';
                     
-                    setupOutboundPath();
+                    setActivePath(getOutboundPathString());
                     svgPlane.style.opacity = '1';
-                    if (animatedTrailPath) animatedTrailPath.style.opacity = '1';
 
                     const outboundDuration = 8500;
                     const startTime1 = performance.now();
-                    let triggeredShow = false;
-                    let trailFaded = false;
+                    let textShown = false;
 
                     function animateOutbound(currentTime) {
                         const elapsed = currentTime - startTime1;
@@ -273,29 +222,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay bay tới gần about me: hiện gạch chân tĩnh + hiện chữ about me
-                        if (!triggeredShow && currentDist >= aboutMeDistance * 0.9) {
-                            triggeredShow = true;
-                            if (staticUnderlinePath) staticUnderlinePath.style.opacity = '1';
+                        if (!textShown && smoothProgress >= 0.45) {
+                            textShown = true;
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
-                        }
-
-                        // Khi máy bay đi qua khỏi about me một đoạn: đuôi nét đứt bám theo máy bay mờ dần biến mất
-                        if (!trailFaded && currentDist >= aboutMeDistance + 120) {
-                            trailFaded = true;
-                            if (animatedTrailPath) {
-                                animatedTrailPath.style.opacity = '0';
-                                setTimeout(() => {
-                                    animatedTrailPath.setAttribute('d', '');
-                                }, 500);
-                            }
                         }
 
                         if (progress < 1) {
                             requestAnimationFrame(animateOutbound);
                         } else {
                             svgPlane.style.opacity = '0';
+                            if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
                             setTimeout(() => {
                                 setActivePath(getInboundPathString());
@@ -313,11 +250,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                     const currentDist2 = easeOut * pathLength;
 
                                     positionSvgPlaneAt(currentDist2);
+                                    updateMovingTrail(currentDist2);
 
                                     if (progress2 < 1) {
                                         requestAnimationFrame(animateInbound);
                                     } else {
                                         svgPlane.style.opacity = '0';
+                                        if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
                                         
                                         if (sharkRange) {
                                             sharkRange.value = 100;
