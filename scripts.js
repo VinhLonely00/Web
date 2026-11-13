@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isFlying = false;
 
     if (animatedTrailPath) {
-        animatedTrailPath.style.transition = 'opacity 0.5s ease-in-out';
+        animatedTrailPath.style.transition = 'opacity 0.4s ease-in-out';
         animatedTrailPath.style.opacity = '1';
     }
 
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 animatedTrailPath.style.opacity = '0';
                                 setTimeout(() => {
                                     animatedTrailPath.setAttribute('d', '');
-                                }, 500);
+                                }, 400);
                             }
                         }
 
