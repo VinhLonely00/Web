@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const TRAIL_LENGTH = 280; 
     let isFlying = false;
 
-    // Thiết lập thời gian chuyển đổi mờ dần cho đuôi nét đứt bám theo máy bay
     if (animatedTrailPath) {
         animatedTrailPath.style.transition = 'opacity 0.5s ease-in-out';
         animatedTrailPath.style.opacity = '1';
@@ -65,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const startX = (trackRect.right - overlayRect.left) * scaleX;
         const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * scaleY;
 
-        // Tạm bật title để đo tọa độ chính xác của chữ about me
+        // Tạm bật title để lấy chính xác tọa độ gạch chân dưới chữ about me
         const wasShown = handwritingTitle.classList.contains('show');
         if (!wasShown) handwritingTitle.classList.add('show');
         
@@ -90,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const rightSafePeakX = c.screenW - 120;
         const topSafeArchY = -80;
 
-        // Quỹ đạo chuẩn bay lượn thoáng đãng
         const fullPath = `M ${c.startX} ${c.startY}
                           C ${loopX - 70} ${c.startY - 50},
                             ${loopX + 180} ${loopY + 110},
@@ -112,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pathLength = flightPath.getTotalLength();
         aboutMeDistance = pathLength * 0.55;
 
-        // Tạo sẵn đoạn gạch chân tĩnh nằm ngay dưới about me để khớp hoàn hảo với quỹ đạo
+        // Định hình đoạn gạch chân tĩnh nằm ngay dưới about me
         if (staticUnderlinePath) {
             let underlineD = '';
             const startDist = Math.max(0, aboutMeDistance - 140);
@@ -260,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay bay tới gần khu vực about me: hiện chữ about me và gạch chân tĩnh bên dưới
+                        // Khi máy bay bay tới gần: hiện chữ about me và gạch chân tĩnh cùng lúc
                         if (!triggeredShow && currentDist >= aboutMeDistance * 0.9) {
                             triggeredShow = true;
                             if (staticUnderlinePath) staticUnderlinePath.style.opacity = '1';
@@ -268,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
 
-                        // Khi máy bay bay qua khỏi about me một đoạn ngắn: đuôi nét đứt bám theo máy bay mờ dần rồi biến mất
+                        // Khi máy bay đi qua khỏi about me một đoạn: đuôi nét đứt bám theo máy bay mờ dần biến mất
                         if (!trailFaded && currentDist >= aboutMeDistance + 120) {
                             trailFaded = true;
                             if (animatedTrailPath) {
@@ -282,7 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (progress < 1) {
                             requestAnimationFrame(animateOutbound);
                         } else {
-                            // Máy bay bay tiếp ra ngoài, gạch chân tĩnh và about me vẫn ở lại cố định
                             svgPlane.style.opacity = '0';
 
                             setTimeout(() => {
