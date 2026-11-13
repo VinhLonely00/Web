@@ -23,24 +23,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC QUỸ ĐẠO MÁY BAY & ĐUÔI NÉT ĐỨT BIẾN MẤT KHI QUA ABOUT ME --- */
+    /* --- LOGIC QUỸ ĐẠO MÁY BAY & GẠCH CHÂN DƯỚI ABOUT ME --- */
     const sharkRange = document.getElementById('sharkRange');
     const sharkThumb = document.getElementById('sharkThumb');
     const svgPlane = document.getElementById('svgPlane');
     const flightPath = document.getElementById('flightPath');
     const animatedTrailPath = document.getElementById('animatedTrailPath');
+    const staticUnderlinePath = document.getElementById('staticUnderlinePath');
     const handwritingTitle = document.getElementById('handwritingTitle');
     const externalAboutContent = document.getElementById('externalAboutContent');
     const customSliderTrack = document.getElementById('sliderTrack');
 
     let pathLength = 0;
     let aboutMeDistance = 0; 
-    const TRAIL_LENGTH = 320; // Độ dài vệt nét đứt bám theo sau máy bay
+    const TRAIL_LENGTH = 280; 
     let isFlying = false;
 
-    // Thiết lập hiệu ứng mờ dần mượt mà cho vệt nét đứt
+    // Thiết lập thời gian chuyển đổi mờ dần cho đuôi nét đứt bám theo máy bay
     if (animatedTrailPath) {
-        animatedTrailPath.style.transition = 'opacity 0.6s ease-in-out';
+        animatedTrailPath.style.transition = 'opacity 0.5s ease-in-out';
         animatedTrailPath.style.opacity = '1';
     }
 
@@ -64,9 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const startX = (trackRect.right - overlayRect.left) * scaleX;
         const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * scaleY;
 
-        const endRect = targetPlaneAnchor.getBoundingClientRect();
-        const midX = (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
-        const midY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
+        // Tạm bật title để đo tọa độ chính xác của chữ about me
+        const wasShown = handwritingTitle.classList.contains('show');
+        if (!wasShown) handwritingTitle.classList.add('show');
+        
+        const titleRect = handwritingTitle.getBoundingClientRect();
+        const midX = (titleRect.left + titleRect.width * 0.5 - overlayRect.left) * scaleX;
+        const midY = (titleRect.bottom - 2 - overlayRect.top) * scaleY;
+
+        if (!wasShown) handwritingTitle.classList.remove('show');
 
         const screenW = overlay.offsetWidth;
         const screenH = overlay.offsetHeight;
@@ -74,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startX, startY, midX, midY, screenW, screenH };
     }
 
-    // Giữ nguyên hoàn toàn quỹ đạo bay thoáng đãng, mượt mà chuẩn ban đầu
     function setupOutboundPath() {
         const c = getCoordinates();
         if (!c || !flightPath) return;
@@ -84,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rightSafePeakX = c.screenW - 120;
         const topSafeArchY = -80;
 
+        // Quỹ đạo chuẩn bay lượn thoáng đãng
         const fullPath = `M ${c.startX} ${c.startY}
                           C ${loopX - 70} ${c.startY - 50},
                             ${loopX + 180} ${loopY + 110},
@@ -103,7 +110,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         flightPath.setAttribute('d', fullPath);
         pathLength = flightPath.getTotalLength();
-        aboutMeDistance = pathLength * 0.55; // Vị trí ngang qua khu vực about me
+        aboutMeDistance = pathLength * 0.55;
+
+        // Tạo sẵn đoạn gạch chân tĩnh nằm ngay dưới about me để khớp hoàn hảo với quỹ đạo
+        if (staticUnderlinePath) {
+            let underlineD = '';
+            const startDist = Math.max(0, aboutMeDistance - 140);
+            const endDist = Math.min(pathLength, aboutMeDistance + 140);
+            const segs = 20;
+            for (let i = 0; i <= segs; i++) {
+                const pt = flightPath.getPointAtLength(startDist + (endDist - startDist) * (i / segs));
+                underlineD += `${i === 0 ? 'M' : 'L'} ${pt.x} ${pt.y} `;
+            }
+            staticUnderlinePath.setAttribute('d', underlineD);
+        }
     }
 
     function getInboundPathString() {
@@ -164,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
         animatedTrailPath.setAttribute('d', '');
         animatedTrailPath.style.opacity = '1';
     }
+    if (staticUnderlinePath) staticUnderlinePath.style.opacity = '0';
     if (svgPlane) svgPlane.style.opacity = '0';
 
     requestAnimationFrame(() => {
@@ -194,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     animatedTrailPath.setAttribute('d', '');
                     animatedTrailPath.style.opacity = '1';
                 }
+                if (staticUnderlinePath) staticUnderlinePath.style.opacity = '0';
 
                 if (handwritingTitle) handwritingTitle.classList.remove('show');
                 if (externalAboutContent) externalAboutContent.classList.remove('show');
@@ -223,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const outboundDuration = 8500;
                     const startTime1 = performance.now();
                     let triggeredShow = false;
-                    let trailFading = false;
+                    let trailFaded = false;
 
                     function animateOutbound(currentTime) {
                         const elapsed = currentTime - startTime1;
@@ -238,27 +260,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionSvgPlaneAt(currentDist);
                         updateMovingTrail(currentDist);
 
-                        // Khi máy bay bay qua khu vực about me: hiển thị chữ "about me"
+                        // Khi máy bay bay tới gần khu vực about me: hiện chữ about me và gạch chân tĩnh bên dưới
                         if (!triggeredShow && currentDist >= aboutMeDistance * 0.9) {
                             triggeredShow = true;
+                            if (staticUnderlinePath) staticUnderlinePath.style.opacity = '1';
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
 
-                        // Khi máy bay bay qua about me một đoạn ngắn -> vệt nét đứt mờ dần rồi biến mất
-                        if (!trailFading && currentDist >= aboutMeDistance + 120) {
-                            trailFading = true;
+                        // Khi máy bay bay qua khỏi about me một đoạn ngắn: đuôi nét đứt bám theo máy bay mờ dần rồi biến mất
+                        if (!trailFaded && currentDist >= aboutMeDistance + 120) {
+                            trailFaded = true;
                             if (animatedTrailPath) {
                                 animatedTrailPath.style.opacity = '0';
                                 setTimeout(() => {
                                     animatedTrailPath.setAttribute('d', '');
-                                }, 600); // Khớp với thời gian transition mờ dần
+                                }, 500);
                             }
                         }
 
                         if (progress < 1) {
                             requestAnimationFrame(animateOutbound);
                         } else {
+                            // Máy bay bay tiếp ra ngoài, gạch chân tĩnh và about me vẫn ở lại cố định
                             svgPlane.style.opacity = '0';
 
                             setTimeout(() => {
