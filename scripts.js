@@ -233,19 +233,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         positionSvgPlaneAt(currentDist);
                         
-                        // Chỉ vẽ đuôi khi chưa đi qua đoạn about me
+                        // Vẫn vẽ đuôi bình thường khi chưa đến about me
                         if (!trailHidden) {
                             updateMovingTrail(currentDist);
                         }
 
-                        // Khi máy bay bay tới vị trí about me (khoảng 45% hành trình): hiện chữ
+                        // Khi bay tới about me: hiện chữ
                         if (!textShown && smoothProgress >= 0.45) {
                             textShown = true;
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
 
-                        // Ngay khi vừa đi qua khỏi about me (khoảng 52% hành trình): mờ dần và mất hẳn đuôi
+                        // Vừa đi qua khỏi about me: mờ dần và mất hẳn đuôi trên đường đi
                         if (!trailHidden && smoothProgress >= 0.52) {
                             trailHidden = true;
                             if (animatedTrailPath) {
@@ -266,7 +266,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 setActivePath(getInboundPathString());
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
-                                if (animatedTrailPath) animatedTrailPath.style.opacity = '1';
+                                
+                                // KHÔNG CÓ ĐUÔI KHI BAY VỀ
+                                if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
                                 const inboundDuration = 3000;
                                 const startTime2 = performance.now();
@@ -279,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     const currentDist2 = easeOut * pathLength;
 
                                     positionSvgPlaneAt(currentDist2);
-                                    updateMovingTrail(currentDist2);
+                                    // Tuyệt đối không gọi updateMovingTrail ở đây để lúc bay về hoàn toàn sạch sẽ không có đuôi
 
                                     if (progress2 < 1) {
                                         requestAnimationFrame(animateInbound);
