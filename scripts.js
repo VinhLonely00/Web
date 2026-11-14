@@ -82,8 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const topSafeArchY = -80;
 
         return `M ${c.startX} ${c.startY}
-                C ${loopX - 70} ${c.startY - 50},
-                  ${loopX + 180} ${loopY + 125},
+                C ${loopX - 70} ${c.startY - 100},
+                  ${loopX + 180} ${loopY + 145},
                   ${loopX + 100} ${loopY - 50}
                 C ${loopX + 50} ${loopY - 170},
                   ${loopX - 130} ${loopY - 100},
