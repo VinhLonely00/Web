@@ -81,15 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const rightSafePeakX = c.screenW - 120;
         const topSafeArchY = -80;
 
-        // Giữ điểm kiểm soát đầu tiên cùng trục Y với c.startY để máy bay cất cánh thẳng mượt ~1cm rồi mới uốn cong nhẹ
         return `M ${c.startX} ${c.startY}
-                C ${c.startX - 50} ${c.startY},
-                  ${loopX - 90} ${c.startY - 60},
-                  ${loopX + 180} ${loopY + 110}
-                C ${loopX + 100} ${loopY - 50},
-                  ${loopX + 50} ${loopY - 170},
-                  ${loopX - 130} ${loopY - 100}
-                C ${loopX - 40} ${loopY + 40},
+                C ${loopX - 70} ${c.startY - 50},
+                  ${loopX + 180} ${loopY + 110},
+                  ${loopX + 100} ${loopY - 50}
+                C ${loopX + 50} ${loopY - 170},
+                  ${loopX - 130} ${loopY - 100},
+                  ${loopX - 40} ${loopY + 40}
+                C ${loopX + 40} ${loopY + 160},
                   ${c.midX - 220} ${c.midY + 80},
                   ${c.midX} ${c.midY}
                 C ${c.midX + 220} ${c.midY - 50},
