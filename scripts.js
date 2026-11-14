@@ -81,10 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const rightSafePeakX = c.screenW - 120;
         const topSafeArchY = -80;
 
-        // Giữ thẳng khoảng ngắn (~1cm) đầu tiên từ vạch xuất phát, sau đó mới bắt đầu uốn cong nhẹ
+        // Giữ điểm kiểm soát đầu tiên cùng trục Y với c.startY để máy bay cất cánh thẳng mượt ~1cm rồi mới uốn cong nhẹ
         return `M ${c.startX} ${c.startY}
-                L ${c.startX - 35} ${c.startY}
-                C ${c.startX - 90} ${c.startY - 10},
+                C ${c.startX - 50} ${c.startY},
                   ${loopX - 90} ${c.startY - 60},
                   ${loopX + 180} ${loopY + 110}
                 C ${loopX + 100} ${loopY - 50},
@@ -234,19 +233,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         positionSvgPlaneAt(currentDist);
                         
-                        // Có đuôi ở đoạn đầu khi chưa tới about me
                         if (!trailHidden) {
                             updateMovingTrail(currentDist);
                         }
 
-                        // Hiện chữ khi bay đến about me
                         if (!textShown && smoothProgress >= 0.45) {
                             textShown = true;
                             if (handwritingTitle) handwritingTitle.classList.add('show');
                             if (externalAboutContent) externalAboutContent.classList.add('show');
                         }
 
-                        // Mờ dần và biến mất đuôi ngay sau khi qua about me
                         if (!trailHidden && smoothProgress >= 0.52) {
                             trailHidden = true;
                             if (animatedTrailPath) {
@@ -268,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 positionSvgPlaneAt(0);
                                 svgPlane.style.opacity = '1';
                                 
-                                // Đảm bảo tuyệt đối không có đuôi khi bay về
                                 if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
 
                                 const inboundDuration = 3000;
