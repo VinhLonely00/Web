@@ -81,9 +81,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const rightSafePeakX = c.screenW - 120;
         const topSafeArchY = -80;
 
-        // Đã uốn cong nhẹ đoạn xuất phát để máy bay cất cánh từ thanh slider mượt mà, không bị thô cứng
+        // Giữ thẳng khoảng ngắn (~1cm) đầu tiên từ vạch xuất phát, sau đó mới bắt đầu uốn cong nhẹ
         return `M ${c.startX} ${c.startY}
-                C ${c.startX - 40} ${c.startY - 35},
+                L ${c.startX - 35} ${c.startY}
+                C ${c.startX - 90} ${c.startY - 10},
                   ${loopX - 90} ${c.startY - 60},
                   ${loopX + 180} ${loopY + 110}
                 C ${loopX + 100} ${loopY - 50},
