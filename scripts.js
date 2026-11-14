@@ -390,4 +390,13 @@ document.addEventListener('DOMContentLoaded', () => {
             window.verifyPassword();
         }
     };
+
+    /* --- CHUYỂN TRẠNG THÁI ACTIVE TRÊN NAVBAR --- */
+    const navItems = document.querySelectorAll('.nav-menu li');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+        });
+    });
 });
