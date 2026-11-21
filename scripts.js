@@ -23,45 +23,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- 2. HỆ THỐNG CHUYỂN TAB ĐỒNG BỘ (NAVBAR & CARD) --- */
+    /* --- 2. TRẠNG THÁI THANH ĐỊNH HƯỚNG --- */
     const navItems = document.querySelectorAll('.nav-menu li');
-    const innerPills = document.querySelectorAll('.inner-pill');
-    const tabPanels = document.querySelectorAll('.tab-panel');
     const tabContainerCard = document.getElementById('tabContainerCard');
+    const tabPanels = document.querySelectorAll('.tab-panel');
 
-    function switchTab(targetTabId, shouldScroll = false) {
+    function setActiveNavAndTab(targetTabId) {
         if (!targetTabId) return;
 
         navItems.forEach(item => {
             item.classList.toggle('active', item.getAttribute('data-tab') === targetTabId);
         });
 
-        innerPills.forEach(pill => {
-            pill.classList.toggle('active', pill.getAttribute('data-tab') === targetTabId);
-        });
-
-        tabPanels.forEach(panel => {
-            panel.classList.toggle('active', panel.id === targetTabId);
-        });
-
-        if (shouldScroll && tabContainerCard) {
-            const yOffset = -80;
-            const y = tabContainerCard.getBoundingClientRect().top + window.scrollY + yOffset;
-            window.scrollTo({ top: y, behavior: 'smooth' });
+        const matchingPanel = document.getElementById(targetTabId);
+        if (matchingPanel && tabContainerCard) {
+            tabContainerCard.style.display = 'block';
+            tabPanels.forEach(panel => {
+                panel.classList.toggle('active', panel.id === targetTabId);
+            });
         }
     }
 
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const targetTab = item.getAttribute('data-tab');
-            switchTab(targetTab, true);
-        });
-    });
-
-    innerPills.forEach(pill => {
-        pill.addEventListener('click', () => {
-            const targetTab = pill.getAttribute('data-tab');
-            switchTab(targetTab, false);
+            setActiveNavAndTab(targetTab);
         });
     });
 
@@ -86,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const roleModal = document.getElementById('roleModal');
     const passwordModal = document.getElementById('passwordModal');
     const secretMenuLi = document.getElementById('secretMenuLi');
-    const secretInnerPill = document.getElementById('secretInnerPill');
     const passInput = document.getElementById('passInput');
     const passError = document.getElementById('passError');
 
@@ -94,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (roleModal) roleModal.style.display = 'none';
         if (role === 'guest') {
             if (secretMenuLi) secretMenuLi.style.display = 'none';
-            if (secretInnerPill) secretInnerPill.style.display = 'none';
         } else if (role === 'owner') {
             if (passwordModal) {
                 passwordModal.style.display = 'flex';
@@ -115,9 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (passInput.value === 'Vinh23456f@@') {
             if (passwordModal) passwordModal.style.display = 'none';
             if (secretMenuLi) secretMenuLi.style.display = 'inline-block';
-            if (secretInnerPill) secretInnerPill.style.display = 'inline-flex';
             if (passError) passError.style.display = 'none';
-            switchTab('tab-secret', false);
+            setActiveNavAndTab('tab-secret');
         } else {
             if (passError) passError.style.display = 'block';
         }
