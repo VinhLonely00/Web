@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabContainerCard = document.getElementById('tabContainerCard');
     const tabPanels = document.querySelectorAll('.tab-panel');
 
-    function setActiveNavAndTab(targetTabId) {
+    function setActiveNavAndTab(targetTabId, scrollTargetId = null) {
         if (!targetTabId) return;
 
         navItems.forEach(item => {
@@ -41,15 +41,27 @@ document.addEventListener('DOMContentLoaded', () => {
             tabPanels.forEach(panel => {
                 panel.classList.toggle('active', panel.id === targetTabId);
             });
-        } else if (tabContainerCard) {
-            tabContainerCard.style.display = 'none';
+            const yOffset = -80;
+            const y = tabContainerCard.getBoundingClientRect().top + window.scrollY + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        } else {
+            if (tabContainerCard) tabContainerCard.style.display = 'none';
+            if (scrollTargetId) {
+                const el = document.getElementById(scrollTargetId);
+                if (el) {
+                    const yOffset = -80;
+                    const y = el.getBoundingClientRect().top + window.scrollY + yOffset;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+            }
         }
     }
 
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const targetTab = item.getAttribute('data-tab');
-            setActiveNavAndTab(targetTab);
+            const scrollTarget = item.getAttribute('data-scroll');
+            setActiveNavAndTab(targetTab, scrollTarget);
         });
     });
 
