@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* --- 0. HIỆU ỨNG ĐÁNH MÁY TAB TITLE --- */
+    /* --- 1. HIỆU ỨNG ĐÁNH MÁY TAB TITLE --- */
     const textToType = "@ᴠʏɴᴅᴜsᴋᴡɪɴᴛᴇʀ";
     let charIndex = textToType.length;
     let isDeleting = true;
@@ -23,290 +23,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeEffect();
 
-    /* --- LOGIC QUỸ ĐẠO MÁY BAY GIẤY --- */
-    const sharkRange = document.getElementById('sharkRange');
-    const sharkThumb = document.getElementById('sharkThumb');
-    const svgPlane = document.getElementById('svgPlane');
-    const flightPath = document.getElementById('flightPath');
-    const animatedTrailPath = document.getElementById('animatedTrailPath');
-    const handwritingTitle = document.getElementById('handwritingTitle');
-    const targetPlaneAnchor = document.getElementById('targetPlaneAnchor');
-    const externalAboutContent = document.getElementById('externalAboutContent');
-    const customSliderTrack = document.getElementById('sliderTrack');
+    /* --- 2. HỆ THỐNG CHUYỂN TAB ĐỒNG BỘ (NAVBAR & CARD) --- */
+    const navItems = document.querySelectorAll('.nav-menu li');
+    const innerPills = document.querySelectorAll('.inner-pill');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    const tabContainerCard = document.getElementById('tabContainerCard');
 
-    let pathLength = 0;
-    const TRAIL_LENGTH = 380;
-    let isFlying = false;
+    function switchTab(targetTabId, shouldScroll = false) {
+        if (!targetTabId) return;
 
-    if (animatedTrailPath) {
-        animatedTrailPath.style.transition = 'opacity 0.5s ease-out';
-    }
-
-    function updateSliderThumbPosition(val) {
-        if (!customSliderTrack || !sharkThumb) return;
-        const trackWidth = customSliderTrack.offsetWidth;
-        const thumbPos = (val / 100) * trackWidth;
-        sharkThumb.style.left = thumbPos + 'px';
-    }
-
-    function getCoordinates() {
-        const overlay = document.getElementById('airplaneOverlay');
-        if (!overlay || !customSliderTrack || !targetPlaneAnchor) return null;
-
-        const overlayRect = overlay.getBoundingClientRect();
-        const scaleX = overlay.offsetWidth / overlayRect.width;
-        const scaleY = overlay.offsetHeight / overlayRect.height;
-
-        const trackRect = customSliderTrack.getBoundingClientRect();
-        const startX = (trackRect.right - overlayRect.left) * scaleX;
-        const startY = (trackRect.top + trackRect.height / 2 - overlayRect.top) * scaleY;
-
-        const endRect = targetPlaneAnchor.getBoundingClientRect();
-        const midX = (endRect.left + endRect.width / 2 - overlayRect.left) * scaleX;
-        const midY = (endRect.top + endRect.height / 2 - overlayRect.top) * scaleY;
-
-        const screenW = overlay.offsetWidth;
-        const screenH = overlay.offsetHeight;
-
-        return { startX, startY, midX, midY, screenW, screenH };
-    }
-
-    function getOutboundPathString() {
-        const c = getCoordinates();
-        if (!c) return '';
-
-        const loopX = c.startX + (c.midX - c.startX) * 0.44;
-        const loopY = c.startY + (c.midY - c.startY) * 0.45;
-
-        const rightSafePeakX = c.screenW - 120;
-        const topSafeArchY = -80;
-
-        return `M ${c.startX} ${c.startY}
-                C ${loopX - 70} ${c.startY - 100},
-                  ${loopX + 180} ${loopY + 145},
-                  ${loopX + 100} ${loopY - 50}
-                C ${loopX + 50} ${loopY - 170},
-                  ${loopX - 130} ${loopY - 100},
-                  ${loopX - 40} ${loopY + 40}
-                C ${loopX + 40} ${loopY + 160},
-                  ${c.midX - 220} ${c.midY + 80},
-                  ${c.midX} ${c.midY}
-                C ${c.midX + 220} ${c.midY - 50},
-                  ${rightSafePeakX} ${c.midY - 180},
-                  ${c.screenW * 0.45} ${topSafeArchY}
-                C ${c.screenW * 0.15} ${topSafeArchY},
-                  100 80,
-                  -250 380`;
-    }
-
-    function getInboundPathString() {
-        const c = getCoordinates();
-        if (!c) return '';
-
-        return `M -250 ${c.startY} L ${c.startX} ${c.startY}`;
-    }
-
-    function setActivePath(pathString) {
-        if (!flightPath || !pathString) return;
-        flightPath.setAttribute('d', pathString);
-        pathLength = flightPath.getTotalLength();
-    }
-
-    function updateMovingTrail(currentDistance) {
-        if (!animatedTrailPath || !flightPath) return;
-
-        if (currentDistance <= 0) {
-            animatedTrailPath.setAttribute('d', '');
-            return;
-        }
-
-        const startDistance = Math.max(0, currentDistance - TRAIL_LENGTH);
-        const actualLength = currentDistance - startDistance;
-
-        if (actualLength <= 0) {
-            animatedTrailPath.setAttribute('d', '');
-            return;
-        }
-
-        const segments = Math.max(28, Math.ceil(actualLength / 4));
-        let d = '';
-
-        for (let i = 0; i <= segments; i++) {
-            const sampleDist = startDistance + (actualLength * (i / segments));
-            const point = flightPath.getPointAtLength(sampleDist);
-            d += `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y} `;
-        }
-
-        animatedTrailPath.setAttribute('d', d);
-    }
-
-    function positionSvgPlaneAt(distance) {
-        if (!svgPlane || !flightPath) return;
-        const point = flightPath.getPointAtLength(distance);
-        
-        const delta = 1;
-        const nextDist = Math.min(distance + delta, pathLength);
-        const prevDist = Math.max(0, distance - delta);
-        const nextPoint = flightPath.getPointAtLength(nextDist);
-        const prevPoint = flightPath.getPointAtLength(prevDist);
-
-        const angle = Math.atan2(nextPoint.y - prevPoint.y, nextPoint.x - prevPoint.x) * (180 / Math.PI);
-
-        svgPlane.setAttribute('transform', `translate(${point.x}, ${point.y}) rotate(${angle})`);
-    }
-
-    if (animatedTrailPath) {
-        animatedTrailPath.setAttribute('d', '');
-        animatedTrailPath.style.opacity = '1';
-    }
-    if (svgPlane) svgPlane.style.opacity = '0';
-
-    requestAnimationFrame(() => {
-        setActivePath(getOutboundPathString());
-        updateSliderThumbPosition(0);
-    });
-
-    window.addEventListener('resize', () => {
-        if (!isFlying) {
-            setActivePath(getOutboundPathString());
-            const val = sharkRange ? Number(sharkRange.value) : 0;
-            updateSliderThumbPosition(val);
-        }
-    });
-
-    if (sharkRange) {
-        sharkRange.addEventListener('input', (e) => {
-            if (isFlying) return;
-
-            const val = Number(e.target.value);
-            updateSliderThumbPosition(val);
-            setActivePath(getOutboundPathString());
-
-            if (val < 99) {
-                sharkThumb.style.opacity = '1';
-                if (svgPlane) svgPlane.style.opacity = '0';
-                if (animatedTrailPath) {
-                    animatedTrailPath.setAttribute('d', '');
-                    animatedTrailPath.style.opacity = '1';
-                }
-
-                if (handwritingTitle) handwritingTitle.classList.remove('show');
-                if (externalAboutContent) externalAboutContent.classList.remove('show');
-            } else {
-                sharkThumb.style.opacity = '0';
-                if (svgPlane) {
-                    svgPlane.style.opacity = '1';
-                    positionSvgPlaneAt(0);
-                }
-            }
+        // Cập nhật trạng thái trên Navbar
+        navItems.forEach(item => {
+            item.classList.toggle('active', item.getAttribute('data-tab') === targetTabId);
         });
 
-        ['mouseup', 'touchend', 'change'].forEach(eventType => {
-            sharkRange.addEventListener(eventType, () => {
-                if (isFlying) return;
-                const val = Number(sharkRange.value);
-
-                if (val >= 99 && !isFlying) {
-                    isFlying = true;
-                    sharkRange.disabled = true;
-                    sharkThumb.style.opacity = '0';
-                    
-                    setActivePath(getOutboundPathString());
-                    svgPlane.style.opacity = '1';
-                    if (animatedTrailPath) animatedTrailPath.style.opacity = '1';
-
-                    const outboundDuration = 8500;
-                    const startTime1 = performance.now();
-                    let textShown = false;
-                    let trailHidden = false;
-
-                    function animateOutbound(currentTime) {
-                        const elapsed = currentTime - startTime1;
-                        const progress = Math.min(elapsed / outboundDuration, 1);
-                        
-                        const smoothProgress = progress < 0.5
-                            ? 2 * progress * progress
-                            : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-                        const currentDist = smoothProgress * pathLength;
-
-                        positionSvgPlaneAt(currentDist);
-                        
-                        if (!trailHidden) {
-                            updateMovingTrail(currentDist);
-                        }
-
-                        if (!textShown && smoothProgress >= 0.45) {
-                            textShown = true;
-                            if (handwritingTitle) handwritingTitle.classList.add('show');
-                            if (externalAboutContent) externalAboutContent.classList.add('show');
-                        }
-
-                        if (!trailHidden && smoothProgress >= 0.52) {
-                            trailHidden = true;
-                            if (animatedTrailPath) {
-                                animatedTrailPath.style.opacity = '0';
-                                setTimeout(() => {
-                                    animatedTrailPath.setAttribute('d', '');
-                                }, 500);
-                            }
-                        }
-
-                        if (progress < 1) {
-                            requestAnimationFrame(animateOutbound);
-                        } else {
-                            svgPlane.style.opacity = '0';
-                            if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
-
-                            setTimeout(() => {
-                                setActivePath(getInboundPathString());
-                                positionSvgPlaneAt(0);
-                                svgPlane.style.opacity = '1';
-                                
-                                if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
-
-                                const inboundDuration = 3000;
-                                const startTime2 = performance.now();
-
-                                function animateInbound(time2) {
-                                    const elapsed2 = time2 - startTime2;
-                                    const progress2 = Math.min(elapsed2 / inboundDuration, 1);
-                                    
-                                    const easeOut = 1 - Math.pow(1 - progress2, 3);
-                                    const currentDist2 = easeOut * pathLength;
-
-                                    positionSvgPlaneAt(currentDist2);
-
-                                    if (progress2 < 1) {
-                                        requestAnimationFrame(animateInbound);
-                                    } else {
-                                        svgPlane.style.opacity = '0';
-                                        if (animatedTrailPath) animatedTrailPath.setAttribute('d', '');
-                                        
-                                        if (sharkRange) {
-                                            sharkRange.value = 100;
-                                            updateSliderThumbPosition(100);
-                                            sharkRange.disabled = false;
-                                        }
-                                        if (sharkThumb) {
-                                            sharkThumb.style.opacity = '1';
-                                        }
-                                        isFlying = false;
-                                    }
-                                }
-
-                                requestAnimationFrame(animateInbound);
-                            }, 700);
-                        }
-                    }
-
-                    requestAnimationFrame(animateOutbound);
-                }
-            });
+        // Cập nhật trạng thái các nút bên trong Card
+        innerPills.forEach(pill => {
+            pill.classList.toggle('active', pill.getAttribute('data-tab') === targetTabId);
         });
+
+        // Hiển thị Panel tương ứng
+        tabPanels.forEach(panel => {
+            panel.classList.toggle('active', panel.id === targetTabId);
+        });
+
+        // Cuộn mượt tới khung nội dung khi bấm trên Navbar (hữu ích cho điện thoại)
+        if (shouldScroll && tabContainerCard) {
+            const yOffset = -80;
+            const y = tabContainerCard.getBoundingClientRect().top + window.scrollY + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
     }
 
-    /* --- CHUYỂN ĐỔI BACKGROUND VIDEO --- */
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetTab = item.getAttribute('data-tab');
+            switchTab(targetTab, true);
+        });
+    });
+
+    innerPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            const targetTab = pill.getAttribute('data-tab');
+            switchTab(targetTab, false);
+        });
+    });
+
+    /* --- 3. CHUYỂN ĐỔI BACKGROUND VIDEO --- */
     const switchBgBtn = document.getElementById('switchBgBtn');
     const bgVideo1 = document.getElementById('bgVideo1');
     const bgVideo2 = document.getElementById('bgVideo2');
@@ -327,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* --- TỰ ĐỘNG MỜ DẦN SAU 10 GIÂY KHÔNG TƯƠNG TÁC --- */
+    /* --- 4. TỰ ĐỘNG MỜ DẦN SAU 10 GIÂY KHÔNG TƯƠNG TÁC (DESKTOP & MOBILE) --- */
     let idleTimer;
     function resetIdleTimer() {
         if (document.body.classList.contains('idle-mode')) {
@@ -339,17 +102,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10000);
     }
 
-    window.addEventListener('mousemove', resetIdleTimer);
-    window.addEventListener('mousedown', resetIdleTimer);
-    window.addEventListener('keypress', resetIdleTimer);
-    window.addEventListener('scroll', resetIdleTimer);
+    ['mousemove', 'mousedown', 'touchstart', 'keypress', 'scroll'].forEach(evt => {
+        window.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
     resetIdleTimer();
 
-    /* --- CHẾ ĐỘ KHÁCH / CHỦ VÀ MẬT KHẨU --- */
+    /* --- 5. CHẾ ĐỘ KHÁCH / CHỦ VÀ MẬT KHẨU --- */
     const roleModal = document.getElementById('roleModal');
     const passwordModal = document.getElementById('passwordModal');
     const secretMenuLi = document.getElementById('secretMenuLi');
-    const secretSection = document.getElementById('secret-section');
+    const secretInnerPill = document.getElementById('secretInnerPill');
     const passInput = document.getElementById('passInput');
     const passError = document.getElementById('passError');
 
@@ -357,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (roleModal) roleModal.style.display = 'none';
         if (role === 'guest') {
             if (secretMenuLi) secretMenuLi.style.display = 'none';
-            if (secretSection) secretSection.style.display = 'none';
+            if (secretInnerPill) secretInnerPill.style.display = 'none';
         } else if (role === 'owner') {
             if (passwordModal) {
                 passwordModal.style.display = 'flex';
@@ -378,8 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (passInput.value === 'Vinh23456f@@') {
             if (passwordModal) passwordModal.style.display = 'none';
             if (secretMenuLi) secretMenuLi.style.display = 'inline-block';
-            if (secretSection) secretSection.style.display = 'block';
+            if (secretInnerPill) secretInnerPill.style.display = 'inline-flex';
             if (passError) passError.style.display = 'none';
+            switchTab('tab-secret', false);
         } else {
             if (passError) passError.style.display = 'block';
         }
@@ -390,13 +153,4 @@ document.addEventListener('DOMContentLoaded', () => {
             window.verifyPassword();
         }
     };
-
-    /* --- CHUYỂN TRẠNG THÁI ACTIVE TRÊN NAVBAR --- */
-    const navItems = document.querySelectorAll('.nav-menu li');
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            navItems.forEach(nav => nav.classList.remove('active'));
-            item.classList.add('active');
-        });
-    });
 });
