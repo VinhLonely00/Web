@@ -32,22 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function switchTab(targetTabId, shouldScroll = false) {
         if (!targetTabId) return;
 
-        // Cập nhật trạng thái trên Navbar
         navItems.forEach(item => {
             item.classList.toggle('active', item.getAttribute('data-tab') === targetTabId);
         });
 
-        // Cập nhật trạng thái các nút bên trong Card
         innerPills.forEach(pill => {
             pill.classList.toggle('active', pill.getAttribute('data-tab') === targetTabId);
         });
 
-        // Hiển thị Panel tương ứng
         tabPanels.forEach(panel => {
             panel.classList.toggle('active', panel.id === targetTabId);
         });
 
-        // Cuộn mượt tới khung nội dung khi bấm trên Navbar (hữu ích cho điện thoại)
         if (shouldScroll && tabContainerCard) {
             const yOffset = -80;
             const y = tabContainerCard.getBoundingClientRect().top + window.scrollY + yOffset;
@@ -69,28 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    /* --- 3. CHUYỂN ĐỔI BACKGROUND VIDEO --- */
-    const switchBgBtn = document.getElementById('switchBgBtn');
-    const bgVideo1 = document.getElementById('bgVideo1');
-    const bgVideo2 = document.getElementById('bgVideo2');
-
-    if (switchBgBtn && bgVideo1 && bgVideo2) {
-        switchBgBtn.addEventListener('click', () => {
-            if (bgVideo1.classList.contains('active')) {
-                bgVideo1.classList.remove('active');
-                bgVideo1.pause();
-                bgVideo2.classList.add('active');
-                bgVideo2.play().catch(e => console.log(e));
-            } else {
-                bgVideo2.classList.remove('active');
-                bgVideo2.pause();
-                bgVideo1.classList.add('active');
-                bgVideo1.play().catch(e => console.log(e));
-            }
-        });
-    }
-
-    /* --- 4. TỰ ĐỘNG MỜ DẦN SAU 10 GIÂY KHÔNG TƯƠNG TÁC (DESKTOP & MOBILE) --- */
+    /* --- 3. TỰ ĐỘNG MỜ DẦN SAU 10 GIÂY KHÔNG TƯƠNG TÁC (DESKTOP & MOBILE) --- */
     let idleTimer;
     function resetIdleTimer() {
         if (document.body.classList.contains('idle-mode')) {
@@ -107,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     resetIdleTimer();
 
-    /* --- 5. CHẾ ĐỘ KHÁCH / CHỦ VÀ MẬT KHẨU --- */
+    /* --- 4. CHẾ ĐỘ KHÁCH / CHỦ VÀ MẬT KHẨU --- */
     const roleModal = document.getElementById('roleModal');
     const passwordModal = document.getElementById('passwordModal');
     const secretMenuLi = document.getElementById('secretMenuLi');
