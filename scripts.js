@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
             tabPanels.forEach(panel => {
                 panel.classList.toggle('active', panel.id === targetTabId);
             });
+        } else if (tabContainerCard) {
+            tabContainerCard.style.display = 'none';
         }
     }
 
