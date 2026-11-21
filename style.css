@@ -321,40 +321,7 @@ main {
     }
 }
 
-/* 1. SKILLS */
-.skills-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.95rem;
-}
-
-.skill-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.92rem;
-    font-weight: 600;
-    margin-bottom: 0.35rem;
-}
-
-.skill-info i {
-    margin-right: 0.4rem;
-}
-
-.skill-bar {
-    width: 100%;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.skill-progress {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
-    border-radius: 10px;
-}
-
-/* 2. PROJECTS */
+/* PROJECTS */
 .projects-list {
     display: flex;
     flex-direction: column;
@@ -417,7 +384,7 @@ main {
     color: #c7d2fe;
 }
 
-/* 3. SOCIALS */
+/* SOCIALS */
 .socials-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
