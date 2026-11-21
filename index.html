@@ -36,50 +36,79 @@
         </nav>
     </header>
 
+    <!-- AVATAR DẠNG BÓNG DI CHUYỂN ĐƯỢC TRÊN MÀN HÌNH -->
+    <div class="floating-avatar-ball" id="floatingAvatarBall" title="Kéo để di chuyển hoặc bấm để mở hồ sơ">
+        <img src="mp3/avatar.jpg" alt="VinhLonely Avatar" class="ball-avatar-img" draggable="false">
+        <button type="button" class="ball-profile-trigger" id="ballProfileTrigger" aria-label="Mở hồ sơ & liên kết">
+            <i class="fa-solid fa-user"></i>
+        </button>
+    </div>
+
+    <!-- POPOVER HỒ SƠ KHI BẤM VÀO NÚT TRÊN BÓNG AVATAR -->
+    <div class="avatar-popover" id="avatarPopover">
+        <div class="avatar-popover-top">
+            <img src="mp3/avatar.jpg" alt="Avatar" class="popover-avatar">
+            <div>
+                <h3>VinhLonely</h3>
+                <span>Developer & Content Creator</span>
+            </div>
+            <button type="button" class="popover-close" id="closePopoverBtn" aria-label="Đóng">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="social-links">
+            <a href="https://web.facebook.com/vinhlonely00/" target="_blank" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.tiktok.com/@iam_domdom2611" target="_blank" class="social-icon" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://discord.gg/MYBPKaWa" target="_blank" class="social-icon" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+            <a href="https://github.com/VinhLonely00" target="_blank" class="social-icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+        </div>
+    </div>
+
     <!-- MAIN CONTENT -->
     <main id="mainContentArea">
         <div class="grid">
-            <!-- CỘT CHÍNH -->
             <div class="col-left">
-                <!-- PROFILE -->
-                <div class="card profile" id="profileCard">
-                    <img src="mp3/avatar.jpg" alt="Avatar" class="avatar">
-                    <h2>VinhLonely</h2>
-                    <p class="subtitle">Developer & Content Creator</p>
-                    <div class="social-links">
-                        <a href="https://web.facebook.com/vinhlonely00/" target="_blank" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                        <a href="https://www.tiktok.com/@iam_domdom2611" target="_blank" class="social-icon" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-                        <a href="https://discord.gg/MYBPKaWa" target="_blank" class="social-icon" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
-                        <a href="https://github.com/VinhLonely00" target="_blank" class="social-icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-                    </div>
-                </div>
-
-                <!-- CARD ABOUT ME NGHỆ THUẬT & SỞ THÍCH -->
-                <div class="card about-art-card" id="aboutCard">
-                    <div class="about-art-header">
+                <!-- CARD ABOUT ME PHONG CÁCH MẪU + CHỮ NGHỆ THUẬT & SỞ THÍCH -->
+                <div class="card about-hero-card" id="aboutCard">
+                    <div class="hero-kicker">
+                        <span class="kicker-line"></span>
                         <span class="handwriting-title">about me</span>
                     </div>
-                    <div class="about-art-body">
-                        <p class="intro-text">Xin chào! Mình là VinhLonely ♡</p>
-                        <p class="sub-text">Một người yêu công nghệ, thích anime, âm nhạc và những điều dễ thương ~</p>
-                        
-                        <div class="sky-hobbies-grid">
-                            <div class="sky-hobby-pill">
-                                <i class="fa-solid fa-tv" style="color: #c084fc;"></i>
-                                <span>Xem Anime & Nghệ thuật</span>
-                            </div>
-                            <div class="sky-hobby-pill">
-                                <i class="fa-solid fa-headphones" style="color: #38bdf8;"></i>
-                                <span>Nghe nhạc Lofi / Chill</span>
-                            </div>
-                            <div class="sky-hobby-pill">
-                                <i class="fa-solid fa-gamepad" style="color: #34d399;"></i>
-                                <span>Gaming cùng bạn bè</span>
-                            </div>
-                            <div class="sky-hobby-pill">
-                                <i class="fa-solid fa-laptop-code" style="color: #fbbf24;"></i>
-                                <span>Sáng tạo hiệu ứng Web</span>
-                            </div>
+
+                    <h1 class="hero-display-title">
+                        Xin chào,<br>
+                        mình là <span class="hero-accent">VinhLonely.</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        Mình làm website, sáng tạo hiệu ứng và nội dung số. Thích biến những ý tưởng nhỏ thành thứ gì đó có thể chạm vào, nghe thấy và cảm nhận mỗi ngày.
+                    </p>
+
+                    <div class="hero-actions">
+                        <button type="button" class="hero-btn-primary" id="exploreBtn">
+                            Khám phá góc nhỏ này <span>↓</span>
+                        </button>
+                        <a href="https://web.facebook.com/vinhlonely00/" target="_blank" class="hero-btn-link">
+                            Nói lời chào <span>↗</span>
+                        </a>
+                    </div>
+
+                    <div class="sky-hobbies-grid" id="hobbiesGrid">
+                        <div class="sky-hobby-pill">
+                            <i class="fa-solid fa-tv" style="color: #c084fc;"></i>
+                            <span>Xem Anime & Nghệ thuật</span>
+                        </div>
+                        <div class="sky-hobby-pill">
+                            <i class="fa-solid fa-headphones" style="color: #38bdf8;"></i>
+                            <span>Nghe nhạc Lofi / Chill</span>
+                        </div>
+                        <div class="sky-hobby-pill">
+                            <i class="fa-solid fa-gamepad" style="color: #34d399;"></i>
+                            <span>Gaming cùng bạn bè</span>
+                        </div>
+                        <div class="sky-hobby-pill">
+                            <i class="fa-solid fa-laptop-code" style="color: #fbbf24;"></i>
+                            <span>Sáng tạo hiệu ứng Web</span>
                         </div>
                     </div>
                 </div>
