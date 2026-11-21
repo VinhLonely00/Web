@@ -128,16 +128,15 @@ body.idle-mode main {
 main {
     margin-top: 84px;
     padding-top: 1rem;
-    max-width: 1080px;
+    max-width: 720px;
     width: 100%;
     z-index: 10;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 1.75rem;
-    align-items: start;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
 }
 
 .card {
@@ -152,8 +151,7 @@ main {
     position: relative;
 }
 
-.col-left > .card:last-child,
-.col-right > .card:last-child {
+.col-left > .card:last-child {
     margin-bottom: 0;
 }
 
@@ -316,29 +314,6 @@ main {
     line-height: 1.6;
 }
 
-/* SPOTIFY CARD (CỘT PHẢI) */
-.spotify-card {
-    position: sticky;
-    top: 84px;
-}
-
-.player-title {
-    font-weight: 600;
-    font-size: 1.05rem;
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    color: #ffffff;
-}
-
-.player-title i {
-    color: #1db954;
-}
-
-.spotify-embed-container {
-    margin-top: 1rem;
-}
-
 .secret-menu-item {
     display: none;
 }
@@ -432,17 +407,6 @@ main {
 /* =========================================
    RESPONSIVE CHO ĐIỆN THOẠI & TABLET
    ========================================= */
-@media (max-width: 860px) {
-    .grid {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
-    }
-
-    .spotify-card {
-        position: static;
-    }
-}
-
 @media (max-width: 540px) {
     body {
         padding: 0 0.85rem 2rem;
@@ -492,10 +456,6 @@ main {
     .sky-hobby-pill {
         justify-content: flex-start;
         padding: 0.65rem 0.9rem;
-    }
-
-    .spotify-embed-container iframe {
-        height: 352px;
     }
 
     .modal-btns {
