@@ -264,43 +264,7 @@ main {
     border-color: var(--primary-hover);
 }
 
-/* HỆ THỐNG TAB TRONG CARD */
-.inner-tab-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    padding-bottom: 1rem;
-    margin-bottom: 1.2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.inner-pill {
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: var(--text-secondary);
-    padding: 0.48rem 0.95rem;
-    border-radius: 20px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    transition: all 0.25s ease;
-}
-
-.inner-pill:hover {
-    color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.35);
-}
-
-.inner-pill.active {
-    background: var(--primary-color);
-    color: #ffffff;
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
-}
-
+/* TAB PANEL */
 .tab-panel {
     display: none;
     animation: fadeInTab 0.35s ease forwards;
@@ -320,119 +284,6 @@ main {
         transform: translateY(0);
     }
 }
-
-/* PROJECTS */
-.projects-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-}
-
-.project-box {
-    background: rgba(15, 23, 42, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
-    padding: 0.95rem 1.1rem;
-    transition: transform 0.25s ease, border-color 0.25s ease;
-}
-
-.project-box:hover {
-    transform: translateY(-2px);
-    border-color: var(--primary-color);
-}
-
-.project-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.4rem;
-}
-
-.project-top h3 {
-    font-size: 1rem;
-    color: #ffffff;
-}
-
-.project-link {
-    color: var(--text-secondary);
-    padding: 0.2rem;
-}
-
-.project-link:hover {
-    color: var(--primary-hover);
-}
-
-.project-box p {
-    font-size: 0.88rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: 0.7rem;
-}
-
-.project-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-}
-
-.project-tags span {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.65rem;
-    border-radius: 20px;
-    background: rgba(99, 102, 241, 0.2);
-    border: 1px solid rgba(99, 102, 241, 0.4);
-    color: #c7d2fe;
-}
-
-/* SOCIALS */
-.socials-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.85rem;
-}
-
-.social-card {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    padding: 0.85rem 1rem;
-    border-radius: 12px;
-    text-decoration: none;
-    color: var(--text-color);
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.social-card i {
-    font-size: 1.35rem;
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.social-card h4 {
-    font-size: 0.92rem;
-}
-
-.social-card span {
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-}
-
-.social-card:hover {
-    transform: translateY(-2px);
-}
-
-.social-card.fb:hover { border-color: #1877f2; box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3); }
-.social-card.tt:hover { border-color: #ff0050; box-shadow: 0 4px 15px rgba(255, 0, 80, 0.3); }
-.social-card.dc:hover { border-color: #5865f2; box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3); }
-.social-card.gh:hover { border-color: #e2e8f0; box-shadow: 0 4px 15px rgba(226, 232, 240, 0.25); }
 
 /* SECRET CONTENT */
 .secret-content {
@@ -621,23 +472,13 @@ main {
         font-size: 2.75rem;
     }
 
-    .sky-hobbies-grid,
-    .socials-grid {
+    .sky-hobbies-grid {
         grid-template-columns: 1fr;
     }
 
     .sky-hobby-pill {
         justify-content: flex-start;
         padding: 0.65rem 0.9rem;
-    }
-
-    .inner-tab-pills {
-        gap: 0.4rem;
-    }
-
-    .inner-pill {
-        padding: 0.42rem 0.8rem;
-        font-size: 0.82rem;
     }
 
     .spotify-embed-container iframe {
